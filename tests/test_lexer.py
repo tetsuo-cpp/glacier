@@ -17,7 +17,7 @@ class LexerTestCase(unittest.TestCase):
                 break
         self.assertEqual(len(self.tokens), len(expected_tokens))
         for t, exp in zip(self.tokens, expected_tokens):
-            self.assertEqual(t, exp, msg="Got=({}), Expected=({})".format(t, exp))
+            self.assertEqual(t, exp, msg="Got=({0}), Expected=({1})".format(t, exp))
 
     def test_function(self):
         buf = """

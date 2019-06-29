@@ -34,7 +34,7 @@ class Token:
         return "Type={0}, Value=\"{1}\"".format(self.type, self.value)
 
     def __eq__(self, other):
-        return self.type == other.type and self.value == other.value;
+        return self.type == other.type and self.value == other.value
 
 
 KEYWORDS = {
@@ -67,13 +67,6 @@ class Lexer:
         self.pos = 0
         self._get_char()
 
-    def _get_char(self):
-        if self.pos >= len(self.buffer):
-            self.cur_char = None
-            return
-        self.cur_char = self.buffer[self.pos]
-        self.pos += 1
-
     def lex_token(self):
         self._trim_whitespace()
         if self.cur_char is None:
@@ -85,6 +78,13 @@ class Lexer:
         if self.cur_char == "\"":
             return self._lex_string()
         return self._lex_symbol()
+
+    def _get_char(self):
+        if self.pos >= len(self.buffer):
+            self.cur_char = None
+            return
+        self.cur_char = self.buffer[self.pos]
+        self.pos += 1
 
     def _trim_whitespace(self):
         while self.cur_char is not None and self.cur_char.isspace():
