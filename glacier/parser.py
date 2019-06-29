@@ -50,7 +50,7 @@ class Parser:
     def _parse_structure(self):
         s_name = self.cur_tok.value
         self._expect_token(TokenType.IDENTIFIER)
-        self._expect_token(TokenType.R_BRACE)
+        self._expect_token(TokenType.L_BRACE)
 
         # Parse members.
         members = []
