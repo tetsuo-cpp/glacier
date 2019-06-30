@@ -53,11 +53,12 @@ class Type(Enum):
 
 
 class Member:
-    def __init__(self, name, m_type, default_value=None):
+    def __init__(self, name, m_type, m_type_name, default_value=None):
         self.name = name
         self.type = m_type
+        self.type_name = m_type_name
         self.default_value = default_value
 
     def __eq__(self, other):
         return (self.name == other.name and self.type == other.type and
-                self.default_value == other.default_value)
+                self.type_name == other.type_name and self.default_value == other.default_value)

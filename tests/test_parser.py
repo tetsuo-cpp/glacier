@@ -37,8 +37,8 @@ class ParserTestCase(unittest.TestCase):
         '''
         exprs = [
             ast.Structure("Foo", [
-                (ast.Type.STRING, "name"),
-                (ast.Type.INT, "age")
+                ast.Member("name", ast.Type.STRING, "string"),
+                ast.Member("age", ast.Type.INT, "int")
             ])
         ]
         self._test_parse_impl(buf, exprs)

@@ -67,6 +67,7 @@ class Parser:
 
     def _parse_member(self):
         m_type = ast.Type.USER
+        m_type_name = self.cur_tok.value
         if self._consume_token(TokenType.INT):
             m_type = ast.Type.INT
         elif self._consume_token(TokenType.STRING):
@@ -76,4 +77,4 @@ class Parser:
         m_name = self.cur_tok.value
         self._expect_token(TokenType.IDENTIFIER)
         self._expect_token(TokenType.SEMICOLON)
-        return m_type, m_name
+        return ast.Member(m_name, m_type, m_type_name)
