@@ -74,7 +74,7 @@ class LexerTestCase(unittest.TestCase):
         ]
         self._test_lex_impl(buf, tokens)
 
-    def test_class(self):
+    def test_struct(self):
         buf = """
         struct Foo {
           int id = 3;

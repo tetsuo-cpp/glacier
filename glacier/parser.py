@@ -54,11 +54,26 @@ class Parser:
 
         # Parse members.
         members = []
-        while not (self._consume_token(TokenType.FUNCTION) or
-                   self._consume_token(TokenType.R_BRACE)):
+        while not (self.cur_tok.type == TokenType.FUNCTION or
+                   self.cur_tok.type == TokenType.R_BRACE):
             members.append(self._parse_member())
 
+        while self._consume_token(TokenType.FUNCTION):
+            pass
+
+        self._expect_token(TokenType.R_BRACE)
+        self._expect_token(TokenType.SEMICOLON)
         return ast.Structure(s_name, members)
 
     def _parse_member(self):
-        pass
+        m_type = ast.Type.USER
+        if self._consume_token(TokenType.INT):
+            m_type = ast.Type.INT
+        elif self._consume_token(TokenType.STRING):
+            m_type = ast.Type.STRING
+        else:
+            self._expect_token(TokenType.IDENTIFIER)
+        m_name = self.cur_tok.value
+        self._expect_token(TokenType.IDENTIFIER)
+        self._expect_token(TokenType.SEMICOLON)
+        return m_type, m_name
