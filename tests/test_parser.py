@@ -39,6 +39,40 @@ class ParserTestCase(unittest.TestCase):
             ast.Structure("Foo", [
                 ast.Member("name", ast.Type.STRING, "string"),
                 ast.Member("age", ast.Type.INT, "int")
+            ], [])
+        ]
+        self._test_parse_impl(buf, exprs)
+
+    def test_function(self):
+        buf = '''
+        fn fooFunc(string name, int age) -> int {
+          return 1;
+        }
+        '''
+        exprs = [
+            ast.Function("fooFunc", [
+                ("name", ast.Type.STRING, "string"),
+                ("age", ast.Type.INT, "int")
+            ], [], ("int", ast.Type.INT))
+        ]
+        self._test_parse_impl(buf, exprs)
+
+    def test_struct_with_member_functions(self):
+        buf = '''
+        struct Foo {
+          string name;
+          int age;
+          fn memberFunc() -> int {
+            return age;
+          }
+        };
+        '''
+        exprs = [
+            ast.Structure("Foo", [
+                ast.Member("name", ast.Type.STRING, "string"),
+                ast.Member("age", ast.Type.INT, "int")
+            ], [
+                ast.Function("memberFunc", [], [], ("int", ast.Type.INT))
             ])
         ]
         self._test_parse_impl(buf, exprs)

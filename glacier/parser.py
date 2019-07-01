@@ -45,7 +45,29 @@ class Parser:
     def _parse_function(self):
         f_name = self.cur_tok.value
         self._expect_token(TokenType.IDENTIFIER)
-        return ast.Function(f_name, [])
+        self._expect_token(TokenType.L_BRACKET)
+
+        # Parse function arguments.
+        args = []
+        while not self._consume_token(TokenType.R_BRACKET):
+            if args:
+                self._expect_token(TokenType.COMMA)
+            arg_type_name = self.cur_tok.value
+            arg_type = self._parse_type()
+            arg_name = self.cur_tok.value
+            self._expect_token(TokenType.IDENTIFIER)
+            args.append((arg_name, arg_type, arg_type_name))
+
+        # Parse return type.
+        self._expect_token(TokenType.ARROW)
+        return_type_name = self.cur_tok.value
+        return_type = self._parse_type()
+
+        self._expect_token(TokenType.L_BRACE)
+        while not self._consume_token(TokenType.R_BRACE):
+            self._next_token()
+
+        return ast.Function(f_name, args, [], (return_type_name, return_type))
 
     def _parse_structure(self):
         s_name = self.cur_tok.value
@@ -58,23 +80,28 @@ class Parser:
                    self.cur_tok.type == TokenType.R_BRACE):
             members.append(self._parse_member())
 
+        member_functions = []
         while self._consume_token(TokenType.FUNCTION):
-            pass
+            member_functions.append(self._parse_function())
 
         self._expect_token(TokenType.R_BRACE)
         self._expect_token(TokenType.SEMICOLON)
-        return ast.Structure(s_name, members)
+        return ast.Structure(s_name, members, member_functions)
 
     def _parse_member(self):
-        m_type = ast.Type.USER
         m_type_name = self.cur_tok.value
-        if self._consume_token(TokenType.INT):
-            m_type = ast.Type.INT
-        elif self._consume_token(TokenType.STRING):
-            m_type = ast.Type.STRING
-        else:
-            self._expect_token(TokenType.IDENTIFIER)
+        m_type = self._parse_type()
         m_name = self.cur_tok.value
         self._expect_token(TokenType.IDENTIFIER)
         self._expect_token(TokenType.SEMICOLON)
         return ast.Member(m_name, m_type, m_type_name)
+
+    def _parse_type(self):
+        if self._consume_token(TokenType.INT):
+            return ast.Type.INT
+        elif self._consume_token(TokenType.STRING):
+            return ast.Type.STRING
+        else:
+            # User defined type. Should just look like a regular identifier.
+            self._expect_token(TokenType.IDENTIFIER)
+            return ast.Type.USER

@@ -29,21 +29,26 @@ class BinaryOp:
 
 
 class Function:
-    def __init__(self, name, statements):
+    def __init__(self, name, args, statements, return_type):
         self.name = name
+        self.args = args
         self.statements = statements
+        self.return_type = return_type
 
     def __eq__(self, other):
-        return self.name == other.name and self.statements == other.statements
+        return (self.name == other.name and self.args == other.args and
+                self.statements == other.statements)
 
 
 class Structure:
-    def __init__(self, name, members):
+    def __init__(self, name, members, member_functions):
         self.name = name
         self.members = members
+        self.member_functions = member_functions
 
     def __eq__(self, other):
-        return self.name == other.name and self.members == other.members
+        return (self.name == other.name and self.members == other.members and
+                self.member_functions == other.member_functions)
 
 
 class Type(Enum):
