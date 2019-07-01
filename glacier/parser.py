@@ -64,10 +64,11 @@ class Parser:
         return_type = self._parse_type()
 
         self._expect_token(TokenType.L_BRACE)
+        statements = []
         while not self._consume_token(TokenType.R_BRACE):
-            self._next_token()
+            statements.append(self._parse_statement())
 
-        return ast.Function(f_name, args, [], (return_type_name, return_type))
+        return ast.Function(f_name, args, statements, (return_type_name, return_type))
 
     def _parse_structure(self):
         s_name = self.cur_tok.value
@@ -105,3 +106,27 @@ class Parser:
             # User defined type. Should just look like a regular identifier.
             self._expect_token(TokenType.IDENTIFIER)
             return ast.Type.USER
+
+    def _parse_statement(self):
+        if self._consume_token(TokenType.LET):
+            return self._parse_let()
+        elif self._consume_token(TokenType.RETURN):
+            return self._parse_return()
+        else:
+            raise RuntimeError("unknown statement type: Token=({0})".format(self.cur_tok))
+
+    def _parse_let(self):
+        v_name = self.cur_tok.value
+        self._expect_token(TokenType.IDENTIFIER)
+        self._expect_token(TokenType.ASSIGNMENT)
+        v_expr = self._parse_expr()
+        return ast.LetStatement(v_name, v_expr)
+
+    def _parse_return(self):
+        expr = self._parse_expr()
+        return ast.ReturnStatement(expr)
+
+    def _parse_expr(self):
+        while not self._consume_token(TokenType.SEMICOLON):
+            self._next_token()
+        return None

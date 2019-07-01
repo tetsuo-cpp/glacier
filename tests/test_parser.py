@@ -53,7 +53,9 @@ class ParserTestCase(unittest.TestCase):
             ast.Function("fooFunc", [
                 ("name", ast.Type.STRING, "string"),
                 ("age", ast.Type.INT, "int")
-            ], [], ("int", ast.Type.INT))
+            ], [
+                ast.ReturnStatement(None)
+            ], ("int", ast.Type.INT))
         ]
         self._test_parse_impl(buf, exprs)
 
@@ -72,7 +74,9 @@ class ParserTestCase(unittest.TestCase):
                 ast.Member("name", ast.Type.STRING, "string"),
                 ast.Member("age", ast.Type.INT, "int")
             ], [
-                ast.Function("memberFunc", [], [], ("int", ast.Type.INT))
+                ast.Function("memberFunc", [], [
+                    ast.ReturnStatement(None)
+                ], ("int", ast.Type.INT))
             ])
         ]
         self._test_parse_impl(buf, exprs)

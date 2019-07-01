@@ -67,3 +67,11 @@ class Member:
     def __eq__(self, other):
         return (self.name == other.name and self.type == other.type and
                 self.type_name == other.type_name and self.default_value == other.default_value)
+
+
+class ReturnStatement:
+    def __init__(self, expr):
+        self.expr = expr
+
+    def __eq__(self, other):
+        return self.expr == other.expr
