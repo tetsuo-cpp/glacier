@@ -75,3 +75,19 @@ class ReturnStatement:
 
     def __eq__(self, other):
         return self.expr == other.expr
+
+
+class Number:
+    def __init__(self, value):
+        self.value = value
+
+    def __eq__(self, other):
+        return self.value == other.value
+
+
+class String:
+    def __init__(self, value):
+        self.value = value
+
+    def __eq__(self, other):
+        return self.value == other.value

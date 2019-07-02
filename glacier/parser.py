@@ -127,6 +127,15 @@ class Parser:
         return ast.ReturnStatement(expr)
 
     def _parse_expr(self):
+        # Need to do Pratt parsing here like in Monkey.
+        # For the time being, let's just make sure we understand literals.
+        value = self.cur_tok.value
+        expr = None
+        if self._consume_token(TokenType.NUMBER_LITERAL):
+            expr = ast.Number(int(value))
+        elif self._consume_token(TokenType.STRING_LITERAL):
+            expr = ast.String(value)
+
         while not self._consume_token(TokenType.SEMICOLON):
             self._next_token()
-        return None
+        return expr

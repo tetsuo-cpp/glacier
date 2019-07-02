@@ -54,7 +54,7 @@ class ParserTestCase(unittest.TestCase):
                 ("name", ast.Type.STRING, "string"),
                 ("age", ast.Type.INT, "int")
             ], [
-                ast.ReturnStatement(None)
+                ast.ReturnStatement(ast.Number(1))
             ], ("int", ast.Type.INT))
         ]
         self._test_parse_impl(buf, exprs)
@@ -78,6 +78,21 @@ class ParserTestCase(unittest.TestCase):
                     ast.ReturnStatement(None)
                 ], ("int", ast.Type.INT))
             ])
+        ]
+        self._test_parse_impl(buf, exprs)
+
+    def test_let_statement(self):
+        buf = '''
+        fn letFunc() -> int {
+          let x = 1;
+          return x;
+        }
+        '''
+        exprs = [
+            ast.Function("letFunc", [], [
+                ast.LetStatement("x", ast.Number(1)),
+                ast.ReturnStatement(None)
+            ], ("int", ast.Type.INT))
         ]
         self._test_parse_impl(buf, exprs)
 
