@@ -24,6 +24,8 @@ class ParserTestCase(unittest.TestCase):
             if expr is None:
                 break
             self.exprs.append(expr)
+        for e in self.exprs:
+            print(e)
         self.assertEqual(len(self.exprs), len(expected_exprs))
         for e, exp in zip(self.exprs, expected_exprs):
             self.assertEqual(e, exp)
