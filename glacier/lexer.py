@@ -129,7 +129,9 @@ class Lexer:
         # This technique only works for two char compound symbols.
         single = self.cur_char
         self._get_char()
-        compound = single + self.cur_char
+        compound = None
+        if self.cur_char is not None:
+            compound = single + self.cur_char
         if compound in SYMBOLS:
             self._get_char()
             return Token(SYMBOLS[compound], compound)

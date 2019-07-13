@@ -150,3 +150,50 @@ class String:
 
     def __str__(self):
         return "String(Value={0})".format(self.value)
+
+
+class AstWalker:
+    def walk_ast(self, top_level_exprs):
+        for expr in top_level_exprs:
+            self._walk(expr)
+
+    def _walk(self, expr):
+        if isinstance(expr, Structure):
+            self._walk_structure(expr)
+        elif isinstance(expr, LetStatement):
+            self._walk_let_statement(expr)
+        elif isinstance(expr, ExprStatement):
+            self._walk(expr.expr)
+        elif isinstance(expr, BinaryOp):
+            self._walk_binary_op(expr)
+        elif isinstance(expr, Function):
+            self._walk_function(expr)
+        elif isinstance(expr, ReturnStatement):
+            self._walk_return_statement(expr)
+        elif isinstance(expr, Number):
+            self._walk_number(expr)
+        elif isinstance(expr, String):
+            self._walk_string(expr)
+        else:
+            raise RuntimeError("unexpected ast type: Ast=({0})".format(expr))
+
+    def _walk_structure(self, expr):
+        raise NotImplementedError("_walk_structure is unimplemented")
+
+    def _walk_let_statement(self, expr):
+        raise NotImplementedError("_walk_let_statement is unimplemented")
+
+    def _walk_binary_op(self, expr):
+        raise NotImplementedError("_walk_binary_op is unimplemented")
+
+    def _walk_function(self, expr):
+        raise NotImplementedError("_walk_function is unimplemented")
+
+    def _walk_return_statement(self, expr):
+        raise NotImplementedError("_walk_return_statement is unimplemented")
+
+    def _walk_number(self, expr):
+        raise NotImplementedError("_walk_number is unimplemented")
+
+    def _walk_string(self, expr):
+        raise NotImplementedError("_walk_string is unimplemented")

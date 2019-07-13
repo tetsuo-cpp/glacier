@@ -1,5 +1,5 @@
 # Glacier
-This is a toy object oriented programming language that I'm working on to consolidate what I've learnt about compilers so far. I plan to compile down to C and a custom bytecode format that I'll write a VM for (in C).
+This is a toy object oriented programming language that I'm working on to consolidate what I've learnt about compilers so far. I plan to compile down to a custom bytecode format that I'll write a VM for (in C).
 ## Definition
 I'll be making this up as I go along but here are some ideas.
 ```

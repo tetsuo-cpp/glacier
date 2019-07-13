@@ -1,0 +1,8 @@
+struct Foo {
+  string name;
+  int age;
+};
+
+fn fooFunc(string name) -> int {
+  let x = name;
+}

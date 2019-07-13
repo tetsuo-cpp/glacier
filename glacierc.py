@@ -1,10 +1,12 @@
+from glacier.codegen import CodeGenerator
 from glacier.lexer import Lexer, TokenType
 from glacier.parser import Parser
 
 
 def main():
     file_name = "test.glac"
-    lexer = Lexer(file_name)
+    with open(file_name) as f:
+        lexer = Lexer(f.read())
     tokens = []
     while True:
         tok = lexer.lex_token()
@@ -22,6 +24,8 @@ def main():
         print(expr)
         exprs.append(expr)
     print("Successfully parsed {0} top level expressions.".format(len(exprs)))
+    codegen = CodeGenerator()
+    codegen.walk_ast(exprs)
 
 
 if __name__ == "__main__":
