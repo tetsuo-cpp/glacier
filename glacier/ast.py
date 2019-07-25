@@ -178,22 +178,22 @@ class AstWalker:
             raise RuntimeError("unexpected ast type: Ast=({0})".format(expr))
 
     def _walk_structure(self, expr):
-        raise NotImplementedError("_walk_structure is unimplemented")
+        pass
 
     def _walk_let_statement(self, expr):
-        raise NotImplementedError("_walk_let_statement is unimplemented")
+        pass
 
     def _walk_binary_op(self, expr):
-        raise NotImplementedError("_walk_binary_op is unimplemented")
+        pass
 
     def _walk_function(self, expr):
-        raise NotImplementedError("_walk_function is unimplemented")
+        pass
 
     def _walk_return_statement(self, expr):
-        raise NotImplementedError("_walk_return_statement is unimplemented")
+        pass
 
     def _walk_number(self, expr):
-        raise NotImplementedError("_walk_number is unimplemented")
+        pass
 
     def _walk_string(self, expr):
-        raise NotImplementedError("_walk_string is unimplemented")
+        pass
