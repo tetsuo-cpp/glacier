@@ -10,7 +10,8 @@ class OpCode(enum.Enum):
     MEMBER_1 (1 byte)
     ...
     """
-    STRUCT_DEF = 0x0
+    STRUCT_DEF = 0x00
+    METHOD_DEF = 0x01
 
 
 class ByteCode:

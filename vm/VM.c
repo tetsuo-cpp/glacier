@@ -1,25 +1,36 @@
 #include "VM.h"
 
+#include "Util.h"
+
 #include <stdio.h>
 
 void glacierVMInit(GlacierVM *vm, GlacierByteCode *bc) { vm->bc = bc; }
 
-void glacierVMRun(GlacierVM *vm) {
+int glacierVMRun(GlacierVM *vm) {
   while (!glacierByteCodeEnd(vm->bc)) {
-    uint8_t byteVal = glacierByteCodeReadByte(vm->bc);
+    uint8_t byteVal;
+    GLC_RET(glacierByteCodeRead8(vm->bc, &byteVal));
     fprintf(stderr, "Read byte %c.\n", byteVal);
-    if (byteVal == GLACIER_BYTECODE_STRUCT_DEF)
+    switch (byteVal) {
+    case GLACIER_BYTECODE_STRUCT_DEF:
       glacierVMStructDef(vm);
+      break;
+    default:
+      fprintf(stderr, "Unrecognised opcode.\n");
+      break;
+    }
   }
-
   fprintf(stderr, "Reached end of bytecode. Exiting.\n");
+  return 0;
 }
 
-void glacierVMStructDef(GlacierVM *vm) {
-  uint8_t numMembers = glacierByteCodeReadByte(vm->bc);
+int glacierVMStructDef(GlacierVM *vm) {
+  uint8_t numMembers;
+  GLC_RET(glacierByteCodeRead8(vm->bc, &numMembers));
   fprintf(stderr, "Parsing struct def with %d members.\n", numMembers);
   for (int i = 0; i < numMembers; ++i) {
-    uint8_t typeId = glacierByteCodeReadByte(vm->bc);
+    uint8_t typeId;
+    GLC_RET(glacierByteCodeRead8(vm->bc, &typeId));
     switch (typeId) {
     case GLACIER_TYPEID_INT:
       fprintf(stderr, "Parsed int member.\n");
@@ -32,4 +43,5 @@ void glacierVMStructDef(GlacierVM *vm) {
       break;
     }
   }
+  return 0;
 }

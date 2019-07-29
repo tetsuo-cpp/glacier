@@ -17,7 +17,8 @@ typedef struct {
 } GlacierByteCode;
 
 void glacierByteCodeInit(GlacierByteCode *bc, const char *buf, size_t len);
-uint8_t glacierByteCodeReadByte(GlacierByteCode *bc);
+int glacierByteCodeRead8(GlacierByteCode *bc, uint8_t *val);
+int glacierByteCodeRead16(GlacierByteCode *bc, uint16_t *val);
 bool glacierByteCodeEnd(GlacierByteCode *bc);
 
 #endif // GLACIERVM_BYTECODE_H

@@ -8,7 +8,7 @@ typedef struct {
 } GlacierVM;
 
 void glacierVMInit(GlacierVM *vm, GlacierByteCode *bc);
-void glacierVMRun(GlacierVM *vm);
-void glacierVMStructDef(GlacierVM *vm);
+int glacierVMRun(GlacierVM *vm);
+int glacierVMStructDef(GlacierVM *vm);
 
 #endif // GLACIERVM_VM_H
