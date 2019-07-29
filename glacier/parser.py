@@ -48,7 +48,7 @@ class Parser:
         self._expect_token(TokenType.L_BRACKET)
 
         # Parse function arguments.
-        args = []
+        args = list()
         while not self._consume_token(TokenType.R_BRACKET):
             if args:
                 self._expect_token(TokenType.COMMA)
@@ -64,7 +64,7 @@ class Parser:
         return_type = self._parse_type()
 
         self._expect_token(TokenType.L_BRACE)
-        statements = []
+        statements = list()
         while not self._consume_token(TokenType.R_BRACE):
             statements.append(self._parse_statement())
 
@@ -76,12 +76,12 @@ class Parser:
         self._expect_token(TokenType.L_BRACE)
 
         # Parse members.
-        members = []
+        members = list()
         while not (self.cur_tok.type == TokenType.FUNCTION or
                    self.cur_tok.type == TokenType.R_BRACE):
             members.append(self._parse_member())
 
-        member_functions = []
+        member_functions = list()
         while self._consume_token(TokenType.FUNCTION):
             member_functions.append(self._parse_function())
 
@@ -113,29 +113,103 @@ class Parser:
         elif self._consume_token(TokenType.RETURN):
             return self._parse_return()
         else:
-            raise RuntimeError("unknown statement type: Token=({0})".format(self.cur_tok))
+            return self._parse_expr_statement()
 
     def _parse_let(self):
         v_name = self.cur_tok.value
         self._expect_token(TokenType.IDENTIFIER)
-        self._expect_token(TokenType.ASSIGNMENT)
+        self._expect_token(TokenType.ASSIGN)
         v_expr = self._parse_expr()
+        while not self._consume_token(TokenType.SEMICOLON):
+            self._next_token()
         return ast.LetStatement(v_name, v_expr)
 
     def _parse_return(self):
         expr = self._parse_expr()
+        while not self._consume_token(TokenType.SEMICOLON):
+            self._next_token()
         return ast.ReturnStatement(expr)
 
+    def _parse_expr_statement(self):
+        expr = self._parse_expr()
+        while not self._consume_token(TokenType.SEMICOLON):
+            self._next_token()
+        return ast.ExprStatement(expr)
+
     def _parse_expr(self):
-        # Need to do Pratt parsing here like in Monkey.
-        # For the time being, let's just make sure we understand literals.
+        return self._parse_equality()
+
+    def _parse_equality(self):
+        lhs = self._parse_relational()
+        while True:
+            tok = self.cur_tok
+            if (self._consume_token(TokenType.EQUALS) or
+                self._consume_token(TokenType.NOT_EQUALS)):
+                lhs = ast.BinaryOp(lhs, self._parse_relational(), tok)
+            else:
+                return lhs
+
+    def _parse_relational(self):
+        lhs = self._parse_addition()
+        while True:
+            tok = self.cur_tok
+            if (self._consume_token(TokenType.LESS_THAN) or
+                self._consume_token(TokenType.LESS_THAN_EQ) or
+                self._consume_token(TokenType.GREATER_THAN) or
+                self._consume_token(TokenType.GREATER_THAN_EQ)):
+                lhs = ast.BinaryOp(lhs, self._parse_addition(), tok)
+            else:
+                return lhs
+
+    def _parse_addition(self):
+        lhs = self._parse_multiplication()
+        while True:
+            tok = self.cur_tok
+            if (self._consume_token(TokenType.ADD) or
+                self._consume_token(TokenType.SUBTRACT)):
+                lhs = ast.BinaryOp(lhs, self._parse_multiplication(), tok)
+            else:
+                return lhs
+
+    def _parse_multiplication(self):
+        lhs = self._parse_primary_expr()
+        while True:
+            tok = self.cur_tok
+            if (self._consume_token(TokenType.MULTIPLY) or
+                self._consume_token(TokenType.DIVIDE)):
+                lhs = ast.BinaryOp(lhs, self._parse_primary_expr(), tok)
+            else:
+                return lhs
+
+    def _parse_primary_expr(self):
         value = self.cur_tok.value
         expr = None
         if self._consume_token(TokenType.NUMBER_LITERAL):
             expr = ast.Number(int(value))
         elif self._consume_token(TokenType.STRING_LITERAL):
             expr = ast.String(value)
-
-        while not self._consume_token(TokenType.SEMICOLON):
-            self._next_token()
+        elif self._consume_token(TokenType.L_PAREN):
+            expr = self._parse_array()
+        elif self._consume_token(TokenType.IDENTIFIER):
+            if self._consume_token(TokenType.L_BRACKET):
+                return self._parse_function_call(value)
+            return ast.VariableRef(value)
+        else:
+            raise RuntimeError("unrecognised primary expression: Token=({0})".format(self.cur_tok))
         return expr
+
+    def _parse_array(self):
+        elements = list()
+        while not self._consume_token(TokenType.R_PAREN):
+            if elements:
+                self._expect_token(TokenType.COMMA)
+            elements.append(self._parse_expr())
+        return ast.Array(elements)
+
+    def _parse_function_call(self, name):
+        args = list()
+        while not self._consume_token(TokenType.R_BRACKET):
+            if args:
+                self._expect_token(TokenType.COMMA)
+            args.append(self._parse_expr())
+        return ast.FunctionCall(name, args)

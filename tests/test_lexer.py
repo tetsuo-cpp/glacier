@@ -90,7 +90,7 @@ class LexerTestCase(unittest.TestCase):
             Token(TokenType.L_BRACE, "{"),
             Token(TokenType.INT, "int"),
             Token(TokenType.IDENTIFIER, "id"),
-            Token(TokenType.ASSIGNMENT, "="),
+            Token(TokenType.ASSIGN, "="),
             Token(TokenType.NUMBER_LITERAL, "3"),
             Token(TokenType.SEMICOLON, ";"),
             Token(TokenType.STRING, "string"),

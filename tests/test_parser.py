@@ -1,7 +1,7 @@
 import glacier.ast as ast
 import unittest
 
-from glacier.lexer import Lexer, TokenType
+from glacier.lexer import Lexer, TokenType, Token
 from glacier.parser import Parser
 
 
@@ -77,7 +77,7 @@ class ParserTestCase(unittest.TestCase):
                 ast.Member("age", ast.Type.INT, "int")
             ], [
                 ast.Function("memberFunc", [], [
-                    ast.ReturnStatement(None)
+                    ast.ReturnStatement(ast.VariableRef("age"))
                 ], ("int", ast.Type.INT))
             ])
         ]
@@ -93,7 +93,40 @@ class ParserTestCase(unittest.TestCase):
         exprs = [
             ast.Function("letFunc", [], [
                 ast.LetStatement("x", ast.Number(1)),
-                ast.ReturnStatement(None)
+                ast.ReturnStatement(ast.VariableRef("x"))
+            ], ("int", ast.Type.INT))
+        ]
+        self._test_parse_impl(buf, exprs)
+
+    def test_function_call(self):
+        buf = '''
+        fn funcCall() -> int {
+          return otherFunc();
+        }
+        '''
+        exprs = [
+            ast.Function("funcCall", [], [
+                ast.ReturnStatement(ast.FunctionCall("otherFunc", []))
+            ], ("int", ast.Type.INT))
+        ]
+        self._test_parse_impl(buf, exprs)
+
+    def test_precedence(self):
+        buf = '''
+        fn prec() -> int {
+          2 + 3 * 2 + 2 / 8;
+        }
+        '''
+        exprs = [
+            ast.Function("prec", [], [
+                ast.ExprStatement(ast.BinaryOp(
+                    ast.BinaryOp(
+                        ast.Number(2),
+                        ast.BinaryOp(ast.Number(3), ast.Number(2), Token(TokenType.MULTIPLY, "*")),
+                        Token(TokenType.ADD, "+")),
+                    ast.BinaryOp(ast.Number(2), ast.Number(8), Token(TokenType.DIVIDE, "/")),
+                    Token(TokenType.ADD, "+")
+                ))
             ], ("int", ast.Type.INT))
         ]
         self._test_parse_impl(buf, exprs)

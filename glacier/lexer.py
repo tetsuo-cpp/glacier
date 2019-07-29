@@ -16,13 +16,24 @@ class TokenType(Enum):
     L_BRACKET = 11,
     R_BRACKET = 12,
     SEMICOLON = 13,
-    ASSIGNMENT = 14,
+    ASSIGN = 14,
     ARROW = 15,
     EQUALS = 16,
     INT = 17,
     STRING = 18,
     COMMA = 19,
-    RETURN = 20
+    RETURN = 20,
+    L_PAREN = 21,
+    R_PAREN = 22,
+    NOT_EQUALS = 23,
+    LESS_THAN = 24,
+    LESS_THAN_EQ = 25,
+    GREATER_THAN = 26,
+    GREATER_THAN_EQ = 27,
+    ADD = 28,
+    SUBTRACT = 29,
+    MULTIPLY = 30,
+    DIVIDE = 31
 
 
 class Token:
@@ -54,10 +65,21 @@ SYMBOLS = {
     "(": TokenType.L_BRACKET,
     ")": TokenType.R_BRACKET,
     ";": TokenType.SEMICOLON,
-    "=": TokenType.ASSIGNMENT,
+    "=": TokenType.ASSIGN,
     "->": TokenType.ARROW,
     "==": TokenType.EQUALS,
-    ",": TokenType.COMMA
+    ",": TokenType.COMMA,
+    "[": TokenType.L_PAREN,
+    "]": TokenType.R_PAREN,
+    "!=": TokenType.NOT_EQUALS,
+    "<": TokenType.LESS_THAN,
+    "<=": TokenType.LESS_THAN_EQ,
+    ">": TokenType.GREATER_THAN,
+    ">=": TokenType.GREATER_THAN_EQ,
+    "+": TokenType.ADD,
+    "-": TokenType.SUBTRACT,
+    "*": TokenType.MULTIPLY,
+    "/": TokenType.DIVIDE
 }
 
 

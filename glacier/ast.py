@@ -152,6 +152,45 @@ class String:
         return "String(Value={0})".format(self.value)
 
 
+class Array:
+    def __init__(self, elements):
+        self.elements = elements
+
+    def __eq__(self, other):
+        if not isinstance(other, Array):
+            return False
+        return self.elements == other.elements
+
+    def __str__(self):
+        return "Array(Elements={0})".format(list_to_string(self.elements))
+
+
+class VariableRef:
+    def __init__(self, name):
+        self.name = name
+
+    def __eq__(self, other):
+        if not isinstance(other, VariableRef):
+            return False
+        return self.name == other.name
+
+    def __str__(self):
+        return "VariableRef(Name={0})".format(self.name)
+
+
+class FunctionCall:
+    def __init__(self, name, args):
+        self.name = name
+        self.args = args
+
+    def __eq__(self, other):
+        if not isinstance(other, FunctionCall):
+            return False
+        return self.name == other.name and self.args == other.args
+
+    def __str__(self):
+        return "FunctionCall(Name={0}, Args={1})".format(self.name, list_to_string(self.args))
+
 class AstWalker:
     def walk_ast(self, top_level_exprs):
         for expr in top_level_exprs:
@@ -163,6 +202,7 @@ class AstWalker:
         elif isinstance(expr, LetStatement):
             self._walk_let_statement(expr)
         elif isinstance(expr, ExprStatement):
+
             self._walk(expr.expr)
         elif isinstance(expr, BinaryOp):
             self._walk_binary_op(expr)
