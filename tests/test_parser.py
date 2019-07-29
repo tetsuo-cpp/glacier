@@ -119,14 +119,17 @@ class ParserTestCase(unittest.TestCase):
         '''
         exprs = [
             ast.Function("prec", [], [
-                ast.ExprStatement(ast.BinaryOp(
+                ast.ExprStatement(
                     ast.BinaryOp(
-                        ast.Number(2),
-                        ast.BinaryOp(ast.Number(3), ast.Number(2), Token(TokenType.MULTIPLY, "*")),
-                        Token(TokenType.ADD, "+")),
-                    ast.BinaryOp(ast.Number(2), ast.Number(8), Token(TokenType.DIVIDE, "/")),
-                    Token(TokenType.ADD, "+")
-                ))
+                        ast.BinaryOp(
+                            ast.Number(2),
+                            ast.BinaryOp(ast.Number(3), ast.Number(2), Token(TokenType.MULTIPLY, "*")),
+                            Token(TokenType.ADD, "+")
+                        ),
+                        ast.BinaryOp(ast.Number(2), ast.Number(8), Token(TokenType.DIVIDE, "/")),
+                        Token(TokenType.ADD, "+")
+                    )
+                )
             ], ("int", ast.Type.INT))
         ]
         self._test_parse_impl(buf, exprs)

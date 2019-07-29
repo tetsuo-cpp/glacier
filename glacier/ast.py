@@ -191,6 +191,7 @@ class FunctionCall:
     def __str__(self):
         return "FunctionCall(Name={0}, Args={1})".format(self.name, list_to_string(self.args))
 
+
 class AstWalker:
     def walk_ast(self, top_level_exprs):
         for expr in top_level_exprs:
@@ -202,7 +203,6 @@ class AstWalker:
         elif isinstance(expr, LetStatement):
             self._walk_let_statement(expr)
         elif isinstance(expr, ExprStatement):
-
             self._walk(expr.expr)
         elif isinstance(expr, BinaryOp):
             self._walk_binary_op(expr)

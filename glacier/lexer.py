@@ -42,7 +42,7 @@ class Token:
         self.value = value
 
     def __str__(self):
-        return "Type={0}, Value=\"{1}\"".format(self.type, self.value)
+        return "Token(Type={0}, Value=\"{1}\")".format(self.type, self.value)
 
     def __eq__(self, other):
         return self.type == other.type and self.value == other.value
