@@ -90,8 +90,8 @@ class Structure:
 
 
 class Type(Enum):
-    INT = 1,
-    STRING = 2,
+    INT = 1
+    STRING = 2
     USER = 3
 
 
@@ -214,6 +214,12 @@ class AstWalker:
             self._walk_number(expr)
         elif isinstance(expr, String):
             self._walk_string(expr)
+        elif isinstance(expr, Array):
+            self._walk_array(expr)
+        elif isinstance(expr, VariableRef):
+            self._walk_variable(expr)
+        elif isinstance(expr, FunctionCall):
+            self._walk_function_call(expr)
         else:
             raise RuntimeError("unexpected ast type: Ast=({0})".format(expr))
 
@@ -236,4 +242,13 @@ class AstWalker:
         pass
 
     def _walk_string(self, expr):
+        pass
+
+    def _walk_array(self, expr):
+        pass
+
+    def _walk_variable(self, expr):
+        pass
+
+    def _walk_function_call(self, expr):
         pass

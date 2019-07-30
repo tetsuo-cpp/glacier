@@ -1,4 +1,5 @@
 from glacier.bytecode import ByteCode
+from glacier.passes.codegen import CodeGenerator
 from glacier.passes.struct_defs import StructureDefinitions
 from glacier.lexer import Lexer, TokenType
 from glacier.parser import Parser
@@ -30,7 +31,8 @@ def main():
 
     bc = ByteCode()
     passes = [
-        StructureDefinitions(bc)
+        StructureDefinitions(bc),
+        CodeGenerator(bc)
     ]
     for p in passes:
         p.walk_ast(exprs)
