@@ -12,12 +12,10 @@ class CodeGenerator(ast.AstWalker):
         args = list()
         args.append(self.function_id)
         args.append(len(expr.args))
-
-        for s in expr.statements:
-            self._walk(s)
-
         self.bc.write_op(bytecode.OpCode.FUNCTION_DEF, args)
         self.function_id += 1
+        for s in expr.statements:
+            self._walk(s)
 
     def _walk_return_statement(self, expr):
         if expr.expr is None:
