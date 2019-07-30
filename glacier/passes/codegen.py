@@ -1,4 +1,4 @@
-from .. import ast, bytecode
+from .. import ast, bytecode, lexer
 
 
 class CodeGenerator(ast.AstWalker):
@@ -36,11 +36,20 @@ class CodeGenerator(ast.AstWalker):
     def _walk_let_statement(self, expr):
         if expr.name in self.variables:
             raise RuntimeError("variable {0} declared twice".format(expr.name))
+        self._walk(expr.rhs)
         self.variables[expr.name] = self.variable_id
-        self.bc.write_op(bytecode.OpCode.SET_VAR, [self.variable_id])
+        self.bc.write_op(bytecode.OpCode.SET_VAR, list(self.variable_id))
         self.variable_id += 1
+
+    def _walk_binary_op(self, expr):
+        self._walk(expr.lhs)
+        self._walk(expr.rhs)
+        if expr.operator.type == lexer.TokenType.ADD:
+            self.bc.write_op(bytecode.OpCode.ADD, list())
+        else:
+            raise RuntimeError("invalid token type for binop: {0}".format(expr.operator))
 
     def _walk_variable(self, expr):
         if expr.name not in self.variables:
             raise RuntimeError("reference to unrecognised variable {0}".format(expr.name))
-        self.bc.write_op(bytecode.OpCode.GET_VAR, [self.variables[expr.name]])
+        self.bc.write_op(bytecode.OpCode.GET_VAR, list(self.variables[expr.name]))

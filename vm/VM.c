@@ -15,6 +15,9 @@ int glacierVMRun(GlacierVM *vm) {
     case GLACIER_BYTECODE_STRUCT_DEF:
       glacierVMStructDef(vm);
       break;
+    case GLACIER_BYTECODE_FUNCTION_DEF:
+      glacierVMFunctionDef(vm);
+      break;
     default:
       fprintf(stderr, "Unrecognised opcode.\n");
       break;
@@ -43,5 +46,12 @@ int glacierVMStructDef(GlacierVM *vm) {
       break;
     }
   }
+  return 0;
+}
+
+int glacierVMFunctionDef(GlacierVM *vm) {
+  uint8_t functionId, numArgs;
+  GLC_RET(glacierByteCodeRead8(vm->bc, &functionId));
+  GLC_RET(glacierByteCodeRead8(vm->bc, &numArgs));
   return 0;
 }

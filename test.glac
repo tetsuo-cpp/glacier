@@ -4,5 +4,5 @@ struct Foo {
 };
 
 fn fooFunc(string name) -> int {
-  let x = name;
+  return 1 + 2;
 }
