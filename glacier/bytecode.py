@@ -71,6 +71,6 @@ class ByteCode:
     def __init__(self):
         self.buf = bytearray()
 
-    def write_op(self, op, args):
+    def write_op(self, op, args=list()):
         self.buf.append(op.value)
         self.buf.extend(args)

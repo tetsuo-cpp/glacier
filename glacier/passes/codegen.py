@@ -19,10 +19,10 @@ class CodeGenerator(ast.AstWalker):
 
     def _walk_return_statement(self, expr):
         if expr.expr is None:
-            self.bc.write_op(bytecode.OpCode.RETURN, list())
+            self.bc.write_op(bytecode.OpCode.RETURN)
             return
         self._walk(expr.expr)
-        self.bc.write_op(bytecode.OpCode.RETURN_VAL, list())
+        self.bc.write_op(bytecode.OpCode.RETURN_VAL)
 
     def _walk_number(self, expr):
         self.bc.write_op(bytecode.OpCode.INT, [expr.value])
@@ -45,7 +45,7 @@ class CodeGenerator(ast.AstWalker):
         self._walk(expr.lhs)
         self._walk(expr.rhs)
         if expr.operator.type == lexer.TokenType.ADD:
-            self.bc.write_op(bytecode.OpCode.ADD, list())
+            self.bc.write_op(bytecode.OpCode.ADD)
         else:
             raise RuntimeError("invalid token type for binop: {0}".format(expr.operator))
 
