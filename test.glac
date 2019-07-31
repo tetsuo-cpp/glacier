@@ -1,8 +1,0 @@
-struct Foo {
-  string name;
-  int age;
-};
-
-fn fooFunc(string name) -> int {
-  return 1 + 2;
-}

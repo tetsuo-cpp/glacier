@@ -12,7 +12,7 @@ def _get_type_id(expr):
         return expr.type_id
 
 
-class StructureDefinitions(ast.AstWalker):
+class StructureDefinitions(ast.ASTWalker):
     def __init__(self, bc):
         self.structs = dict()
         self.bc = bc

@@ -65,7 +65,21 @@ class OpCode(enum.Enum):
     - The string data (length bytes).
     """
     STRING = 0x09
-
+    """
+    Pops and subtracts the top two elements of the stack and pushes the result.
+    - The SUBTRACT opcode (1 byte).
+    """
+    SUBTRACT = 0x0A
+    """
+    Pops and multiplies the top two elements of the stack and pushes the result.
+    - The MULTIPLY opcode (1 byte).
+    """
+    MULTIPLY = 0x0B
+    """
+    Pops and divides the top two elements of the stack and pushes the result.
+    - The DIVIDE opcode (1 byte).
+    """
+    DIVIDE = 0x0C
 
 class ByteCode:
     def __init__(self):

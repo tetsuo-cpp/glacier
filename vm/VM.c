@@ -4,6 +4,15 @@
 
 #include <stdio.h>
 
+static int glacierVMStructDef(GlacierVM *vm);
+static int glacierVMFunctionDef(GlacierVM *vm);
+static int glacierVMInt(GlacierVM *vm);
+static int glacierVMAdd(GlacierVM *vm);
+static int glacierVMSubtract(GlacierVM *vm);
+static int glacierVMMultiply(GlacierVM *vm);
+static int glacierVMDivide(GlacierVM *vm);
+static int glacierVMReturnVal(GlacierVM *vm);
+
 void glacierVMInit(GlacierVM *vm, GlacierByteCode *bc, GlacierStack *stack) {
   vm->bc = bc;
   vm->stack = stack;
@@ -30,7 +39,7 @@ int glacierVMRun(GlacierVM *vm) {
   return 0;
 }
 
-int glacierVMStructDef(GlacierVM *vm) {
+static int glacierVMStructDef(GlacierVM *vm) {
   uint8_t numMembers;
   GLC_RET(glacierByteCodeRead8(vm->bc, &numMembers));
   fprintf(stderr, "Parsing struct def with %d members.\n", numMembers);
@@ -52,7 +61,7 @@ int glacierVMStructDef(GlacierVM *vm) {
   return 0;
 }
 
-int glacierVMFunctionDef(GlacierVM *vm) {
+static int glacierVMFunctionDef(GlacierVM *vm) {
   uint8_t functionId, numArgs;
   GLC_RET(glacierByteCodeRead8(vm->bc, &functionId));
   GLC_RET(glacierByteCodeRead8(vm->bc, &numArgs));
@@ -68,6 +77,15 @@ int glacierVMFunctionDef(GlacierVM *vm) {
     case GLACIER_BYTECODE_ADD:
       glacierVMAdd(vm);
       break;
+    case GLACIER_BYTECODE_SUBTRACT:
+      glacierVMSubtract(vm);
+      break;
+    case GLACIER_BYTECODE_MULTIPLY:
+      glacierVMMultiply(vm);
+      break;
+    case GLACIER_BYTECODE_DIVIDE:
+      glacierVMDivide(vm);
+      break;
     case GLACIER_BYTECODE_RETURN_VAL:
       glacierVMReturnVal(vm);
       break;
@@ -79,7 +97,7 @@ int glacierVMFunctionDef(GlacierVM *vm) {
   return 0;
 }
 
-int glacierVMInt(GlacierVM *vm) {
+static int glacierVMInt(GlacierVM *vm) {
   uint8_t value;
   GLC_RET(glacierByteCodeRead8(vm->bc, &value));
   GLC_RET(glacierStackPush(vm->stack, value));
@@ -87,16 +105,47 @@ int glacierVMInt(GlacierVM *vm) {
   return 0;
 }
 
-int glacierVMAdd(GlacierVM *vm) {
+static int glacierVMAdd(GlacierVM *vm) {
   int lhs, rhs;
   GLC_RET(glacierStackPop(vm->stack, &lhs));
   GLC_RET(glacierStackPop(vm->stack, &rhs));
-  GLC_RET(glacierStackPush(vm->stack, lhs + rhs));
-  fprintf(stderr, "Adding %d and %d to get %d.\n", lhs, rhs, lhs + rhs);
+  int result = lhs + rhs;
+  GLC_RET(glacierStackPush(vm->stack, result));
+  fprintf(stderr, "Adding %d and %d to get %d.\n", lhs, rhs, result);
   return 0;
 }
 
-int glacierVMReturnVal(GlacierVM *vm) {
+static int glacierVMSubtract(GlacierVM *vm) {
+  int lhs, rhs;
+  GLC_RET(glacierStackPop(vm->stack, &lhs));
+  GLC_RET(glacierStackPop(vm->stack, &rhs));
+  int result = lhs - rhs;
+  GLC_RET(glacierStackPush(vm->stack, result));
+  fprintf(stderr, "Subtracting %d and %d to get %d.\n", lhs, rhs, result);
+  return 0;
+}
+
+static int glacierVMMultiply(GlacierVM *vm) {
+  int lhs, rhs;
+  GLC_RET(glacierStackPop(vm->stack, &lhs));
+  GLC_RET(glacierStackPop(vm->stack, &rhs));
+  int result = lhs * rhs;
+  GLC_RET(glacierStackPush(vm->stack, result));
+  fprintf(stderr, "Multiplying %d and %d to get %d.\n", lhs, rhs, result);
+  return 0;
+}
+
+static int glacierVMDivide(GlacierVM *vm) {
+  int lhs, rhs;
+  GLC_RET(glacierStackPop(vm->stack, &lhs));
+  GLC_RET(glacierStackPop(vm->stack, &rhs));
+  int result = lhs / rhs;
+  GLC_RET(glacierStackPush(vm->stack, result));
+  fprintf(stderr, "Dividing %d and %d to get %d.\n", lhs, rhs, result);
+  return 0;
+}
+
+static int glacierVMReturnVal(GlacierVM *vm) {
   int top;
   GLC_RET(glacierStackPop(vm->stack, &top));
   fprintf(stderr, "Returned with value %d.\n", top);

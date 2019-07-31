@@ -38,4 +38,11 @@ int glacierByteCodeRead64(GlacierByteCode *bc, uint64_t *val) {
   return 0;
 }
 
+int glacierByteCodeJump(GlacierByteCode *bc, size_t offset) {
+  if (offset < 0 || offset >= bc->len)
+    return -1;
+  bc->offset = offset;
+  return 0;
+}
+
 bool glacierByteCodeEnd(GlacierByteCode *bc) { return bc->offset >= bc->len; }

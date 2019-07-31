@@ -11,10 +11,5 @@ typedef struct {
 
 void glacierVMInit(GlacierVM *vm, GlacierByteCode *bc, GlacierStack *stack);
 int glacierVMRun(GlacierVM *vm);
-int glacierVMStructDef(GlacierVM *vm);
-int glacierVMFunctionDef(GlacierVM *vm);
-int glacierVMInt(GlacierVM *vm);
-int glacierVMAdd(GlacierVM *vm);
-int glacierVMReturnVal(GlacierVM *vm);
 
 #endif // GLACIERVM_VM_H

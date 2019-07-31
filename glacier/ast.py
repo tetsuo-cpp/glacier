@@ -192,7 +192,7 @@ class FunctionCall:
         return "FunctionCall(Name={0}, Args={1})".format(self.name, list_to_string(self.args))
 
 
-class AstWalker:
+class ASTWalker:
     def walk_ast(self, top_level_exprs):
         for expr in top_level_exprs:
             self._walk(expr)

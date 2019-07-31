@@ -6,7 +6,7 @@ from glacier.parser import Parser
 
 
 def main():
-    file_name = "test.glac"
+    file_name = "test.glc"
     with open(file_name) as f:
         lexer = Lexer(f.read())
 

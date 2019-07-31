@@ -1,7 +1,7 @@
 from .. import ast, bytecode, lexer
 
 
-class CodeGenerator(ast.AstWalker):
+class CodeGenerator(ast.ASTWalker):
     def __init__(self, bc):
         self.bc = bc
         self.function_id = 1
@@ -46,6 +46,12 @@ class CodeGenerator(ast.AstWalker):
         self._walk(expr.rhs)
         if expr.operator.type == lexer.TokenType.ADD:
             self.bc.write_op(bytecode.OpCode.ADD)
+        elif expr.operator.type == lexer.TokenType.SUBTRACT:
+            self.bc.write_op(bytecode.OpCode.SUBTRACT)
+        elif expr.operator.type == lexer.TokenType.MULTIPLY:
+            self.bc.write_op(bytecode.OpCode.MULTIPLY)
+        elif expr.operator.type == lexer.TokenType.DIVIDE:
+            self.bc.write_op(bytecode.OpCode.DIVIDE)
         else:
             raise RuntimeError("invalid token type for binop: {0}".format(expr.operator))
 
