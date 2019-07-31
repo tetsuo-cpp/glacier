@@ -7,6 +7,8 @@ set(
   GLACIER_FILES
   ByteCode.c
   ByteCode.h
+  Stack.c
+  Stack.h
   VM.c
   VM.h
   )

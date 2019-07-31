@@ -6,7 +6,7 @@ from glacier.lexer import Lexer, TokenType, Token
 class LexerTestCase(unittest.TestCase):
     def setUp(self) -> None:
         self.lexer = None
-        self.tokens = []
+        self.tokens = list()
 
     def _test_lex_impl(self, buf, expected_tokens):
         self.lexer = Lexer(buf)

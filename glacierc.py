@@ -10,7 +10,7 @@ def main():
     with open(file_name) as f:
         lexer = Lexer(f.read())
 
-    tokens = []
+    tokens = list()
     while True:
         tok = lexer.lex_token()
         print(tok)
@@ -20,7 +20,7 @@ def main():
     print("Successfully lexed {0} tokens.".format(len(tokens)))
 
     parser = Parser(tokens)
-    exprs = []
+    exprs = list()
     while True:
         expr = parser.parse_top_level_expr()
         if expr is None:

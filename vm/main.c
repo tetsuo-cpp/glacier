@@ -17,8 +17,11 @@ int main(int arg, char **argv) {
   GlacierByteCode bc;
   glacierByteCodeInit(&bc, buf, len);
 
+  GlacierStack stack;
+  glacierStackInit(&stack);
+
   GlacierVM vm;
-  glacierVMInit(&vm, &bc);
+  glacierVMInit(&vm, &bc, &stack);
   GLC_RET(glacierVMRun(&vm));
   return 0;
 }

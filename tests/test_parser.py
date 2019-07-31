@@ -8,11 +8,11 @@ from glacier.parser import Parser
 class ParserTestCase(unittest.TestCase):
     def setUp(self) -> None:
         self.parser = None
-        self.exprs = []
+        self.exprs = list()
 
     def _test_parse_impl(self, buf, expected_exprs):
         lexer = Lexer(buf)
-        tokens = []
+        tokens = list()
         while True:
             tok = lexer.lex_token()
             tokens.append(tok)

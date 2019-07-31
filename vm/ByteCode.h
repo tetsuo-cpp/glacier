@@ -28,6 +28,8 @@ typedef struct {
 void glacierByteCodeInit(GlacierByteCode *bc, const char *buf, size_t len);
 int glacierByteCodeRead8(GlacierByteCode *bc, uint8_t *val);
 int glacierByteCodeRead16(GlacierByteCode *bc, uint16_t *val);
+int glacierByteCodeRead32(GlacierByteCode *bc, uint32_t *val);
+int glacierByteCodeRead64(GlacierByteCode *bc, uint64_t *val);
 bool glacierByteCodeEnd(GlacierByteCode *bc);
 
 #endif // GLACIERVM_BYTECODE_H
