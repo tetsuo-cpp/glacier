@@ -53,5 +53,6 @@ int glacierByteCodeTrim(GlacierByteCode *bc) {
   if (bc->offset < 0 || bc->offset >= bc->len)
     return GLC_OUT_OF_BUFFER;
   bc->buf = bc->buf + bc->offset;
+  bc->offset = 0;
   return GLC_OK;
 }
