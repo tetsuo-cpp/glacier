@@ -7,10 +7,18 @@ class CodeGenerator(ast.ASTWalker):
         self.function_id = 1
         self.variables = dict()
         self.variable_id = 0
+        self.seen_main = False
 
     def _walk_function(self, expr):
+        if expr.name == "main" and not self.seen_main:
+            # Function id 0 is reserved for main.
+            expr.function_id = 0
+            self.main = True
+        else:
+            expr.function_id = self.function_id
+        expr.offset = self.bc.current_offset()
         args = list()
-        args.append(self.function_id)
+        args.append(expr.function_id)
         args.append(len(expr.args))
         self.bc.write_op(bytecode.OpCode.FUNCTION_DEF, args)
         self.function_id += 1

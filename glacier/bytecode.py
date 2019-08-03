@@ -80,11 +80,34 @@ class OpCode(enum.Enum):
     - The DIVIDE opcode (1 byte).
     """
     DIVIDE = 0x0C
+    """
+    An entry in the function table.
+    - The FUNCTION_JMP opcode (1 byte).
+    - The function id (1 byte).
+    - The offset of the corresponding FUNCTION_DEF in bytes (1 byte).
+    """
+    FUNCTION_JMP = 0x0D
+    """
+    The end of the header portion of the bytecode.
+    - The HEADER_END opcode (1 byte).
+    """
+    HEADER_END = 0x0F
 
 class ByteCode:
     def __init__(self):
+        self.header = bytearray()
         self.buf = bytearray()
+
+    def write_header(self, op, args=list()):
+        self.header.append(op.value)
+        self.header.extend(args)
 
     def write_op(self, op, args=list()):
         self.buf.append(op.value)
         self.buf.extend(args)
+
+    def current_offset(self):
+        return len(self.buf)
+
+    def construct(self):
+        return self.header + bytearray([OpCode.HEADER_END.value]) + self.buf

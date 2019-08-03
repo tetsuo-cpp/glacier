@@ -32,4 +32,4 @@ class StructureDefinitions(ast.ASTWalker):
         for m in expr.members:
             args.append(_get_type_id(m))
 
-        self.bc.write_op(bytecode.OpCode.STRUCT_DEF, args)
+        self.bc.write_header(bytecode.OpCode.STRUCT_DEF, args)

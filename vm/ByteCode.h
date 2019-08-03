@@ -18,6 +18,8 @@
 #define GLACIER_BYTECODE_SUBTRACT 0x0A
 #define GLACIER_BYTECODE_MULTIPLY 0x0B
 #define GLACIER_BYTECODE_DIVIDE 0x0C
+#define GLACIER_BYTECODE_FUNCTION_JMP 0x0D
+#define GLACIER_BYTECODE_HEADER_END 0x0F
 
 #define GLACIER_TYPEID_INT 0x00
 #define GLACIER_TYPEID_STRING 0x01
@@ -35,5 +37,6 @@ int glacierByteCodeRead32(GlacierByteCode *bc, uint32_t *val);
 int glacierByteCodeRead64(GlacierByteCode *bc, uint64_t *val);
 int glacierByteCodeJump(GlacierByteCode *bc, size_t offset);
 bool glacierByteCodeEnd(GlacierByteCode *bc);
+int glacierByteCodeTrim(GlacierByteCode *bc);
 
 #endif // GLACIERVM_BYTECODE_H
