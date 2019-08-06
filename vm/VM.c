@@ -13,12 +13,16 @@ static int glacierVMMultiply(GlacierVM *vm);
 static int glacierVMDivide(GlacierVM *vm);
 static int glacierVMReturnVal(GlacierVM *vm);
 static int glacierVMHeader(GlacierVM *vm);
+static int glacierVMFunctionJmp(GlacierVM *vm);
+static int glacierVMSetVar(GlacierVM *vm);
+static int glacierVMGetVar(GlacierVM *vm);
 
 void glacierVMInit(GlacierVM *vm, GlacierByteCode *bc, GlacierStack *stack,
-                   GlacierFunctionTable *ft) {
+                   GlacierFunctionTable *ft, GlacierCallStack *cs) {
   vm->bc = bc;
   vm->stack = stack;
   vm->ft = ft;
+  vm->cs = cs;
 }
 
 int glacierVMRun(GlacierVM *vm) {
@@ -94,8 +98,14 @@ static int glacierVMFunctionDef(GlacierVM *vm) {
     case GLACIER_BYTECODE_RETURN_VAL:
       glacierVMReturnVal(vm);
       break;
+    case GLACIER_BYTECODE_SET_VAR:
+      glacierVMSetVar(vm);
+      break;
+    case GLACIER_BYTECODE_GET_VAR:
+      glacierVMGetVar(vm);
+      break;
     default:
-      fprintf(stderr, "Parsed unrecognised instruction.\n");
+      fprintf(stderr, "Parsed unrecognised instruction %d.\n", opCode);
       return GLC_INVALID_OP;
     }
   }
@@ -153,6 +163,7 @@ static int glacierVMDivide(GlacierVM *vm) {
 static int glacierVMReturnVal(GlacierVM *vm) {
   int top;
   GLC_RET(glacierStackPop(vm->stack, &top));
+  GLC_RET(glacierCallStackPop(vm->cs));
   fprintf(stderr, "Returned with value %d.\n", top);
   return GLC_OK;
 }
@@ -165,15 +176,9 @@ static int glacierVMHeader(GlacierVM *vm) {
     if (val == GLACIER_BYTECODE_HEADER_END)
       return GLC_OK;
     switch (val) {
-    case GLACIER_BYTECODE_FUNCTION_JMP: {
-      uint8_t functionId, offset;
-      GLC_RET(glacierByteCodeRead8(vm->bc, &functionId));
-      GLC_RET(glacierByteCodeRead8(vm->bc, &offset));
-      GLC_RET(glacierFunctionTableSet(vm->ft, functionId, offset));
-      fprintf(stderr, "Jump func for id %d at offset %d.\n", functionId,
-              offset);
+    case GLACIER_BYTECODE_FUNCTION_JMP:
+      GLC_RET(glacierVMFunctionJmp(vm));
       break;
-    }
     case GLACIER_BYTECODE_STRUCT_DEF:
       GLC_RET(glacierVMStructDef(vm));
       break;
@@ -182,4 +187,34 @@ static int glacierVMHeader(GlacierVM *vm) {
       return GLC_INVALID_OP;
     }
   }
+}
+
+static int glacierVMFunctionJmp(GlacierVM *vm) {
+  uint8_t functionId, offset;
+  GLC_RET(glacierByteCodeRead8(vm->bc, &functionId));
+  GLC_RET(glacierByteCodeRead8(vm->bc, &offset));
+  GLC_RET(glacierFunctionTableSet(vm->ft, functionId, offset));
+  GLC_RET(glacierCallStackPush(vm->cs));
+  fprintf(stderr, "Jump func for id %d at offset %d.\n", functionId, offset);
+  return GLC_OK;
+}
+
+static int glacierVMSetVar(GlacierVM *vm) {
+  uint8_t varId;
+  int val;
+  GLC_RET(glacierByteCodeRead8(vm->bc, &varId));
+  GLC_RET(glacierStackPop(vm->stack, &val));
+  GLC_RET(glacierCallStackSet(vm->cs, varId, val));
+  fprintf(stderr, "Just set %d to value %d.\n", varId, val);
+  return GLC_OK;
+}
+
+static int glacierVMGetVar(GlacierVM *vm) {
+  uint8_t varId;
+  int val;
+  GLC_RET(glacierByteCodeRead8(vm->bc, &varId));
+  GLC_RET(glacierCallStackGet(vm->cs, varId, &val));
+  GLC_RET(glacierStackPush(vm->stack, val));
+  fprintf(stderr, "Got %d and found value %d.\n", varId, val);
+  return GLC_OK;
 }

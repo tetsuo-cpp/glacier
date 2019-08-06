@@ -26,10 +26,13 @@ int main(int arg, char **argv) {
   GlacierStack stack;
   glacierStackInit(&stack);
 
+  GlacierCallStack cs;
+  glacierCallStackInit(&cs);
+
   GlacierVM vm;
-  glacierVMInit(&vm, &bc, &stack, &ft);
+  glacierVMInit(&vm, &bc, &stack, &ft, &cs);
   int ret = glacierVMRun(&vm);
-  if (ret != 0)
-    fprintf(stderr, "terminated unsuccessfully.\n");
+  fprintf(stderr, ret == 0 ? "Terminated successfully.\n"
+                           : "Terminated unsuccessfully.\n");
   return 0;
 }

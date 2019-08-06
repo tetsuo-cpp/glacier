@@ -46,7 +46,7 @@ class CodeGenerator(ast.ASTWalker):
             raise RuntimeError("variable {0} declared twice".format(expr.name))
         self._walk(expr.rhs)
         self.variables[expr.name] = self.variable_id
-        self.bc.write_op(bytecode.OpCode.SET_VAR, list(self.variable_id))
+        self.bc.write_op(bytecode.OpCode.SET_VAR, [self.variable_id])
         self.variable_id += 1
 
     def _walk_binary_op(self, expr):
@@ -66,4 +66,4 @@ class CodeGenerator(ast.ASTWalker):
     def _walk_variable(self, expr):
         if expr.name not in self.variables:
             raise RuntimeError("reference to unrecognised variable {0}".format(expr.name))
-        self.bc.write_op(bytecode.OpCode.GET_VAR, list(self.variables[expr.name]))
+        self.bc.write_op(bytecode.OpCode.GET_VAR, [self.variables[expr.name]])
