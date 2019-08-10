@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #define GLACIER_BYTECODE_STRUCT_DEF 0x00
 #define GLACIER_BYTECODE_FUNCTION_DEF 0x01
@@ -38,5 +39,6 @@ int glacierByteCodeRead64(GlacierByteCode *bc, uint64_t *val);
 int glacierByteCodeJump(GlacierByteCode *bc, size_t offset);
 bool glacierByteCodeEnd(GlacierByteCode *bc);
 int glacierByteCodeTrim(GlacierByteCode *bc);
+void glacierByteCodePrint(GlacierByteCode *bc, FILE *fd);
 
 #endif // GLACIERVM_BYTECODE_H

@@ -59,7 +59,7 @@ int glacierCallStackPop(GlacierCallStack *stack) {
 
 int glacierCallStackGet(GlacierCallStack *stack, int id, int *value) {
   GlacierCallStackFrame *frame = &stack->frames[stack->stackPointer - 1];
-  if (id <= 0 || id >= MAX_FRAME_BINDINGS)
+  if (id < 0 || id >= MAX_FRAME_BINDINGS)
     return GLC_OUT_OF_BUFFER;
   int temp = frame->bindings[id];
   if (temp == -1)
@@ -70,7 +70,7 @@ int glacierCallStackGet(GlacierCallStack *stack, int id, int *value) {
 
 int glacierCallStackSet(GlacierCallStack *stack, int id, int value) {
   GlacierCallStackFrame *frame = &stack->frames[stack->stackPointer - 1];
-  if (id <= 0 || id >= MAX_FRAME_BINDINGS)
+  if (id < 0 || id >= MAX_FRAME_BINDINGS)
     return GLC_OUT_OF_BUFFER;
   frame->bindings[id] = value;
   return GLC_OK;

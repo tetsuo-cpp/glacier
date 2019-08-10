@@ -52,7 +52,22 @@ bool glacierByteCodeEnd(GlacierByteCode *bc) { return bc->offset >= bc->len; }
 int glacierByteCodeTrim(GlacierByteCode *bc) {
   if (bc->offset < 0 || bc->offset >= bc->len)
     return GLC_OUT_OF_BUFFER;
-  bc->buf = bc->buf + bc->offset;
+  bc->len -= bc->offset;
+  bc->buf += bc->offset;
   bc->offset = 0;
   return GLC_OK;
+}
+
+#define COLUMN_WIDTH 10
+
+void glacierByteCodePrint(GlacierByteCode *bc, FILE *fd) {
+  for (size_t i = 0; i < bc->len; ++i) {
+    if (i != 0 && i % COLUMN_WIDTH == 0)
+      fprintf(fd, "\n");
+    if (i == bc->offset)
+      fprintf(fd, "[0x%02hhx]", bc->buf[i]);
+    else
+      fprintf(fd, " 0x%02hhx ", bc->buf[i]);
+  }
+  fprintf(fd, "\n");
 }
