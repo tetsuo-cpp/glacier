@@ -38,13 +38,13 @@ int glacierStackPop(GlacierStack *stack, int *value) {
 void glacierCallStackInit(GlacierCallStack *stack) {
   stack->stackPointer = 0;
   for (int i = 0; i < MAX_STACK_SIZE; ++i)
-    glacierCallStackFrameInit(&stack->frames[i]);
+    glacierCallStackFrameInit(&stack->frames[i], -1);
 }
 
-int glacierCallStackPush(GlacierCallStack *stack) {
+int glacierCallStackPush(GlacierCallStack *stack, int bcOffset) {
   if (!glacierStackIsValidPointer(stack->stackPointer))
     return GLC_STACK_OVERFLOW;
-  glacierCallStackFrameInit(&stack->frames[stack->stackPointer]);
+  glacierCallStackFrameInit(&stack->frames[stack->stackPointer], bcOffset);
   stack->stackPointer++;
   return GLC_OK;
 }
@@ -68,6 +68,12 @@ int glacierCallStackGet(GlacierCallStack *stack, int id, int *value) {
   return GLC_OK;
 }
 
+int glacierCallStackGetByteCodeOffset(GlacierCallStack *stack, int *bcOffset) {
+  GlacierCallStackFrame *frame = &stack->frames[stack->stackPointer - 1];
+  *bcOffset = frame->bcOffset;
+  return GLC_OK;
+}
+
 int glacierCallStackSet(GlacierCallStack *stack, int id, int value) {
   GlacierCallStackFrame *frame = &stack->frames[stack->stackPointer - 1];
   if (id < 0 || id >= MAX_FRAME_BINDINGS)
@@ -76,7 +82,8 @@ int glacierCallStackSet(GlacierCallStack *stack, int id, int value) {
   return GLC_OK;
 }
 
-void glacierCallStackFrameInit(GlacierCallStackFrame *frame) {
+void glacierCallStackFrameInit(GlacierCallStackFrame *frame, int bcOffset) {
+  frame->bcOffset = bcOffset;
   frame->numBindings = 0;
   for (int i = 0; i < MAX_FRAME_BINDINGS; ++i)
     frame->bindings[i] = -1;

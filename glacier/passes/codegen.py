@@ -4,6 +4,7 @@ from .. import ast, bytecode, lexer
 class CodeGenerator(ast.ASTWalker):
     def __init__(self, bc):
         self.bc = bc
+        self.functions = dict()
         self.function_id = 1
         self.variables = dict()
         self.variable_id = 0
@@ -16,6 +17,7 @@ class CodeGenerator(ast.ASTWalker):
             self.main = True
         else:
             expr.function_id = self.function_id
+        self.functions[expr.name] = expr.function_id
         expr.offset = self.bc.current_offset()
         args = list()
         args.append(expr.function_id)
@@ -67,3 +69,8 @@ class CodeGenerator(ast.ASTWalker):
         if expr.name not in self.variables:
             raise RuntimeError("reference to unrecognised variable {0}".format(expr.name))
         self.bc.write_op(bytecode.OpCode.GET_VAR, [self.variables[expr.name]])
+
+    def _walk_function_call(self, expr):
+        if expr.name not in self.functions:
+            raise RuntimeError("reference to unrecognised function {0}.".format(expr.name))
+        self.bc.write_op(bytecode.OpCode.CALL_FUNC, [self.functions[expr.name]])

@@ -20,8 +20,9 @@ int glacierStackTop(GlacierStack *stack, int *value);
 int glacierStackPop(GlacierStack *stack, int *value);
 
 typedef struct {
-  int bindings[MAX_FRAME_BINDINGS];
-  int numBindings;
+  int bindings[MAX_FRAME_BINDINGS]; // Id => value mapping.
+  int numBindings;                  // Number of bindings.
+  int bcOffset;                     // Bytecode offset to jump back to.
 } GlacierCallStackFrame;
 
 typedef struct {
@@ -30,10 +31,11 @@ typedef struct {
 } GlacierCallStack;
 
 void glacierCallStackInit(GlacierCallStack *stack);
-int glacierCallStackPush(GlacierCallStack *stack);
+int glacierCallStackPush(GlacierCallStack *stack, int bcOffset);
 int glacierCallStackPop(GlacierCallStack *stack);
 int glacierCallStackGet(GlacierCallStack *stack, int id, int *value);
 int glacierCallStackSet(GlacierCallStack *stack, int id, int value);
-void glacierCallStackFrameInit(GlacierCallStackFrame *frame);
+int glacierCallStackGetByteCodeOffset(GlacierCallStack *stack, int *bcOffset);
+void glacierCallStackFrameInit(GlacierCallStackFrame *frame, int bcOffset);
 
 #endif // GLACIERVM_STACK_H

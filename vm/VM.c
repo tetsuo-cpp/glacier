@@ -16,6 +16,7 @@ static int glacierVMHeader(GlacierVM *vm);
 static int glacierVMFunctionJmp(GlacierVM *vm);
 static int glacierVMSetVar(GlacierVM *vm);
 static int glacierVMGetVar(GlacierVM *vm);
+static int glacierVMCallFunc(GlacierVM *vm);
 
 void glacierVMInit(GlacierVM *vm, GlacierByteCode *bc, GlacierStack *stack,
                    GlacierFunctionTable *ft, GlacierCallStack *cs) {
@@ -37,6 +38,7 @@ int glacierVMRun(GlacierVM *vm) {
   int mainOffset;
   GLC_RET(glacierFunctionTableGet(vm->ft, 0, &mainOffset));
   GLC_RET(glacierByteCodeJump(vm->bc, mainOffset));
+  GLC_RET(glacierCallStackPush(vm->cs, -1));
 
   // Execute main.
   GLC_RET(glacierVMFunctionDef(vm));
@@ -76,7 +78,6 @@ static int glacierVMFunctionDef(GlacierVM *vm) {
   GLC_RET(glacierByteCodeRead8(vm->bc, &numArgs));
   fprintf(stderr, "Executing function with id %d and %d args.\n", functionId,
           numArgs);
-  GLC_RET(glacierCallStackPush(vm->cs));
   while (!glacierByteCodeEnd(vm->bc)) {
     uint8_t opCode;
     GLC_RET(glacierByteCodeRead8(vm->bc, &opCode));
@@ -96,21 +97,32 @@ static int glacierVMFunctionDef(GlacierVM *vm) {
     case GLACIER_BYTECODE_DIVIDE:
       GLC_RET(glacierVMDivide(vm));
       break;
-    case GLACIER_BYTECODE_RETURN_VAL:
+    case GLACIER_BYTECODE_RETURN_VAL: {
+      int bcOffset;
       GLC_RET(glacierVMReturnVal(vm));
-      break;
+      GLC_RET(glacierCallStackGetByteCodeOffset(vm->cs, &bcOffset));
+      GLC_RET(glacierCallStackPop(vm->cs));
+      GLC_RET(glacierByteCodeJump(vm->bc, bcOffset));
+      return GLC_OK;
+    }
     case GLACIER_BYTECODE_SET_VAR:
       GLC_RET(glacierVMSetVar(vm));
       break;
     case GLACIER_BYTECODE_GET_VAR:
       GLC_RET(glacierVMGetVar(vm));
       break;
+    case GLACIER_BYTECODE_CALL_FUNC:
+      GLC_RET(glacierVMCallFunc(vm));
+      break;
     default:
       fprintf(stderr, "Parsed unrecognised instruction %d.\n", opCode);
       return GLC_INVALID_OP;
     }
   }
-  return GLC_OK;
+  // At the moment, we're assuming all functions should be terminated by a
+  // return. If we run right off the end of the bytecode buffer, that's a nono
+  // from the compiler.
+  return GLC_OUT_OF_BUFFER;
 }
 
 static int glacierVMInt(GlacierVM *vm) {
@@ -163,8 +175,7 @@ static int glacierVMDivide(GlacierVM *vm) {
 
 static int glacierVMReturnVal(GlacierVM *vm) {
   int top;
-  GLC_RET(glacierStackPop(vm->stack, &top));
-  GLC_RET(glacierCallStackPop(vm->cs));
+  GLC_RET(glacierStackTop(vm->stack, &top));
   fprintf(stderr, "Returned with value %d.\n", top);
   return GLC_OK;
 }
@@ -216,5 +227,18 @@ static int glacierVMGetVar(GlacierVM *vm) {
   GLC_RET(glacierCallStackGet(vm->cs, varId, &val));
   GLC_RET(glacierStackPush(vm->stack, val));
   fprintf(stderr, "Got %d and found value %d.\n", varId, val);
+  return GLC_OK;
+}
+
+static int glacierVMCallFunc(GlacierVM *vm) {
+  uint8_t functionId;
+  int functionOffset;
+  GLC_RET(glacierByteCodeRead8(vm->bc, &functionId));
+  GLC_RET(glacierFunctionTableGet(vm->ft, functionId, &functionOffset));
+
+  // We need to jump back here after the function call is done.
+  GLC_RET(glacierCallStackPush(vm->cs, vm->bc->offset));
+  GLC_RET(glacierByteCodeJump(vm->bc, functionOffset));
+  GLC_RET(glacierVMFunctionDef(vm));
   return GLC_OK;
 }
