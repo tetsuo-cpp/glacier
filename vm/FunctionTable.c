@@ -21,7 +21,7 @@ int glacierFunctionTableSet(GlacierFunctionTable *ft, int functionId,
 
 int glacierFunctionTableGet(GlacierFunctionTable *ft, int functionId,
                             int *offset) {
-  if (functionId < 0 | functionId >= MAX_FUNCTION_NUMBER)
+  if (functionId < 0 || functionId >= MAX_FUNCTION_NUMBER)
     return GLC_OUT_OF_BUFFER;
   int value = ft->data[functionId];
   if (value == -1)
