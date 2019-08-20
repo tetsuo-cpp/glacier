@@ -6,5 +6,6 @@ if [ ! -d .ve/ ]; then
 fi
 
 source .ve/bin/activate
+black --line-length=100 glacierc.py
 black --line-length=100 glacier/
 black --line-length=100 tests/
