@@ -7,12 +7,14 @@
 
 #define BUF_SIZE 1024
 
-int main(int arg, char **argv) {
-  GLC_UNUSED(arg);
-  GLC_UNUSED(argv);
+int main(int argc, char **argv) {
+  if (argc != 2) {
+    GLC_LOG_ERR("Usage: glaciervm [BYTECODE_FILE]\n");
+    return -1;
+  }
 
   char buf[BUF_SIZE];
-  FILE *inputFile = fopen("test.bc", "r");
+  FILE *inputFile = fopen(argv[1], "r");
   int len = fread(buf, sizeof(char), BUF_SIZE, inputFile);
   if (ferror(inputFile))
     return -1;
@@ -36,6 +38,5 @@ int main(int arg, char **argv) {
     GLC_LOG_ERR("glaciervm: Terminated unsuccessfully with %d.\n", ret);
     glacierByteCodePrint(&bc, stderr);
   }
-
   return ret;
 }
