@@ -42,7 +42,7 @@ class Token:
         self.value = value
 
     def __str__(self):
-        return "Token(Type={0}, Value=\"{1}\")".format(self.type, self.value)
+        return 'Token(Type={0}, Value="{1}")'.format(self.type, self.value)
 
     def __eq__(self, other):
         return self.type == other.type and self.value == other.value
@@ -56,7 +56,7 @@ KEYWORDS = {
     "else": TokenType.ELSE,
     "int": TokenType.INT,
     "string": TokenType.STRING,
-    "return": TokenType.RETURN
+    "return": TokenType.RETURN,
 }
 
 SYMBOLS = {
@@ -79,7 +79,7 @@ SYMBOLS = {
     "+": TokenType.ADD,
     "-": TokenType.SUBTRACT,
     "*": TokenType.MULTIPLY,
-    "/": TokenType.DIVIDE
+    "/": TokenType.DIVIDE,
 }
 
 
@@ -97,7 +97,7 @@ class Lexer:
             return self._lex_number()
         if self.cur_char.isalpha():
             return self._lex_identifier()
-        if self.cur_char == "\"":
+        if self.cur_char == '"':
             return self._lex_string()
         return self._lex_symbol()
 
@@ -138,7 +138,7 @@ class Lexer:
         value = str()
         while True:
             self._get_char()
-            if self.cur_char is not None and self.cur_char != "\"":
+            if self.cur_char is not None and self.cur_char != '"':
                 value += self.cur_char
             else:
                 break

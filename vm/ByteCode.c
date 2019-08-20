@@ -61,6 +61,7 @@ int glacierByteCodeTrim(GlacierByteCode *bc) {
 #define COLUMN_WIDTH 10
 
 void glacierByteCodePrint(GlacierByteCode *bc, FILE *fd) {
+  fprintf(fd, "ByteCode: Dumping state.\n");
   for (size_t i = 0; i < bc->len; ++i) {
     if (i != 0 && i % COLUMN_WIDTH == 0)
       fprintf(fd, "\n");

@@ -39,8 +39,8 @@ class Parser:
     def _expect_token(self, token_type):
         if not self._consume_token(token_type):
             raise RuntimeError(
-                "unexpected token: Got=({0}), Expected=({1})".format(
-                    self.cur_tok.type, token_type))
+                "unexpected token: Got=({0}), Expected=({1})".format(self.cur_tok.type, token_type)
+            )
 
     def _parse_function(self):
         f_name = self.cur_tok.value
@@ -77,8 +77,9 @@ class Parser:
 
         # Parse members.
         members = list()
-        while not (self.cur_tok.type == TokenType.FUNCTION or
-                   self.cur_tok.type == TokenType.R_BRACE):
+        while not (
+            self.cur_tok.type == TokenType.FUNCTION or self.cur_tok.type == TokenType.R_BRACE
+        ):
             members.append(self._parse_member())
 
         member_functions = list()
@@ -143,8 +144,7 @@ class Parser:
         lhs = self._parse_relational()
         while True:
             tok = self.cur_tok
-            if (self._consume_token(TokenType.EQUALS) or
-                self._consume_token(TokenType.NOT_EQUALS)):
+            if self._consume_token(TokenType.EQUALS) or self._consume_token(TokenType.NOT_EQUALS):
                 lhs = ast.BinaryOp(lhs, self._parse_relational(), tok)
             else:
                 return lhs
@@ -153,10 +153,12 @@ class Parser:
         lhs = self._parse_addition()
         while True:
             tok = self.cur_tok
-            if (self._consume_token(TokenType.LESS_THAN) or
-                self._consume_token(TokenType.LESS_THAN_EQ) or
-                self._consume_token(TokenType.GREATER_THAN) or
-                self._consume_token(TokenType.GREATER_THAN_EQ)):
+            if (
+                self._consume_token(TokenType.LESS_THAN)
+                or self._consume_token(TokenType.LESS_THAN_EQ)
+                or self._consume_token(TokenType.GREATER_THAN)
+                or self._consume_token(TokenType.GREATER_THAN_EQ)
+            ):
                 lhs = ast.BinaryOp(lhs, self._parse_addition(), tok)
             else:
                 return lhs
@@ -165,8 +167,7 @@ class Parser:
         lhs = self._parse_multiplication()
         while True:
             tok = self.cur_tok
-            if (self._consume_token(TokenType.ADD) or
-                self._consume_token(TokenType.SUBTRACT)):
+            if self._consume_token(TokenType.ADD) or self._consume_token(TokenType.SUBTRACT):
                 lhs = ast.BinaryOp(lhs, self._parse_multiplication(), tok)
             else:
                 return lhs
@@ -175,8 +176,7 @@ class Parser:
         lhs = self._parse_primary_expr()
         while True:
             tok = self.cur_tok
-            if (self._consume_token(TokenType.MULTIPLY) or
-                self._consume_token(TokenType.DIVIDE)):
+            if self._consume_token(TokenType.MULTIPLY) or self._consume_token(TokenType.DIVIDE):
                 lhs = ast.BinaryOp(lhs, self._parse_primary_expr(), tok)
             else:
                 return lhs

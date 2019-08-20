@@ -40,7 +40,7 @@ class LexerTestCase(unittest.TestCase):
             Token(TokenType.SEMICOLON, ";"),
             Token(TokenType.R_BRACE, "}"),
             Token(TokenType.SEMICOLON, ";"),
-            Token(TokenType.EOF, str())
+            Token(TokenType.EOF, str()),
         ]
         self._test_lex_impl(buf, tokens)
 
@@ -70,7 +70,7 @@ class LexerTestCase(unittest.TestCase):
             Token(TokenType.SEMICOLON, ";"),
             Token(TokenType.R_BRACE, "}"),
             Token(TokenType.SEMICOLON, ";"),
-            Token(TokenType.EOF, str())
+            Token(TokenType.EOF, str()),
         ]
         self._test_lex_impl(buf, tokens)
 
@@ -109,7 +109,7 @@ class LexerTestCase(unittest.TestCase):
             Token(TokenType.R_BRACE, "}"),
             Token(TokenType.R_BRACE, "}"),
             Token(TokenType.SEMICOLON, ";"),
-            Token(TokenType.EOF, str())
+            Token(TokenType.EOF, str()),
         ]
         self._test_lex_impl(buf, tokens)
 

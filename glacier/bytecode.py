@@ -9,6 +9,7 @@ class OpCode(enum.Enum):
     - The number of members (1 byte).
     - The type id of each member (num members bytes).
     """
+
     STRUCT_DEF = 0x00
     """
     A function definition.
@@ -92,6 +93,7 @@ class OpCode(enum.Enum):
     - The HEADER_END opcode (1 byte).
     """
     HEADER_END = 0x0F
+
 
 class ByteCode:
     def __init__(self):

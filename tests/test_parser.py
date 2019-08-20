@@ -31,38 +31,42 @@ class ParserTestCase(unittest.TestCase):
             self.assertEqual(e, exp)
 
     def test_struct(self):
-        buf = '''
+        buf = """
         struct Foo {
           string name;
           int age;
         };
-        '''
+        """
         exprs = [
-            ast.Structure("Foo", [
-                ast.Member("name", ast.Type.STRING, "string"),
-                ast.Member("age", ast.Type.INT, "int")
-            ], [])
+            ast.Structure(
+                "Foo",
+                [
+                    ast.Member("name", ast.Type.STRING, "string"),
+                    ast.Member("age", ast.Type.INT, "int"),
+                ],
+                [],
+            )
         ]
         self._test_parse_impl(buf, exprs)
 
     def test_function(self):
-        buf = '''
+        buf = """
         fn fooFunc(string name, int age) -> int {
           return 1;
         }
-        '''
+        """
         exprs = [
-            ast.Function("fooFunc", [
-                ("name", ast.Type.STRING, "string"),
-                ("age", ast.Type.INT, "int")
-            ], [
-                ast.ReturnStatement(ast.Number(1))
-            ], ("int", ast.Type.INT))
+            ast.Function(
+                "fooFunc",
+                [("name", ast.Type.STRING, "string"), ("age", ast.Type.INT, "int")],
+                [ast.ReturnStatement(ast.Number(1))],
+                ("int", ast.Type.INT),
+            )
         ]
         self._test_parse_impl(buf, exprs)
 
     def test_struct_with_member_functions(self):
-        buf = '''
+        buf = """
         struct Foo {
           string name;
           int age;
@@ -70,70 +74,91 @@ class ParserTestCase(unittest.TestCase):
             return age;
           }
         };
-        '''
+        """
         exprs = [
-            ast.Structure("Foo", [
-                ast.Member("name", ast.Type.STRING, "string"),
-                ast.Member("age", ast.Type.INT, "int")
-            ], [
-                ast.Function("memberFunc", [], [
-                    ast.ReturnStatement(ast.VariableRef("age"))
-                ], ("int", ast.Type.INT))
-            ])
+            ast.Structure(
+                "Foo",
+                [
+                    ast.Member("name", ast.Type.STRING, "string"),
+                    ast.Member("age", ast.Type.INT, "int"),
+                ],
+                [
+                    ast.Function(
+                        "memberFunc",
+                        [],
+                        [ast.ReturnStatement(ast.VariableRef("age"))],
+                        ("int", ast.Type.INT),
+                    )
+                ],
+            )
         ]
         self._test_parse_impl(buf, exprs)
 
     def test_let_statement(self):
-        buf = '''
+        buf = """
         fn letFunc() -> int {
           let x = 1;
           return x;
         }
-        '''
+        """
         exprs = [
-            ast.Function("letFunc", [], [
-                ast.LetStatement("x", ast.Number(1)),
-                ast.ReturnStatement(ast.VariableRef("x"))
-            ], ("int", ast.Type.INT))
+            ast.Function(
+                "letFunc",
+                [],
+                [ast.LetStatement("x", ast.Number(1)), ast.ReturnStatement(ast.VariableRef("x"))],
+                ("int", ast.Type.INT),
+            )
         ]
         self._test_parse_impl(buf, exprs)
 
     def test_function_call(self):
-        buf = '''
+        buf = """
         fn funcCall() -> int {
           return otherFunc();
         }
-        '''
+        """
         exprs = [
-            ast.Function("funcCall", [], [
-                ast.ReturnStatement(ast.FunctionCall("otherFunc", []))
-            ], ("int", ast.Type.INT))
+            ast.Function(
+                "funcCall",
+                [],
+                [ast.ReturnStatement(ast.FunctionCall("otherFunc", []))],
+                ("int", ast.Type.INT),
+            )
         ]
         self._test_parse_impl(buf, exprs)
 
     def test_precedence(self):
-        buf = '''
+        buf = """
         fn prec() -> int {
           2 + 3 * 2 + 2 / 8;
         }
-        '''
+        """
         exprs = [
-            ast.Function("prec", [], [
-                ast.ExprStatement(
-                    ast.BinaryOp(
+            ast.Function(
+                "prec",
+                [],
+                [
+                    ast.ExprStatement(
                         ast.BinaryOp(
-                            ast.Number(2),
-                            ast.BinaryOp(ast.Number(3), ast.Number(2), Token(TokenType.MULTIPLY, "*")),
-                            Token(TokenType.ADD, "+")
-                        ),
-                        ast.BinaryOp(ast.Number(2), ast.Number(8), Token(TokenType.DIVIDE, "/")),
-                        Token(TokenType.ADD, "+")
+                            ast.BinaryOp(
+                                ast.Number(2),
+                                ast.BinaryOp(
+                                    ast.Number(3), ast.Number(2), Token(TokenType.MULTIPLY, "*")
+                                ),
+                                Token(TokenType.ADD, "+"),
+                            ),
+                            ast.BinaryOp(
+                                ast.Number(2), ast.Number(8), Token(TokenType.DIVIDE, "/")
+                            ),
+                            Token(TokenType.ADD, "+"),
+                        )
                     )
-                )
-            ], ("int", ast.Type.INT))
+                ],
+                ("int", ast.Type.INT),
+            )
         ]
         self._test_parse_impl(buf, exprs)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

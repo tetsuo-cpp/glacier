@@ -24,4 +24,14 @@
 #define GLC_OUT_OF_BUFFER -3
 #define GLC_STACK_OVERFLOW -4
 
+#ifdef LOG_DBG
+#define GLC_LOG_DBG(format, ...) printf(format, ##__VA_ARGS__)
+#else
+#define GLC_LOG_DBG(format, ...)                                               \
+  do {                                                                         \
+  } while (0)
+#endif
+
+#define GLC_LOG_ERR(format, ...) fprintf(stderr, format, ##__VA_ARGS__)
+
 #endif // GLACIERVM_UTIL_H

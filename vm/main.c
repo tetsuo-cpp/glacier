@@ -32,10 +32,10 @@ int main(int arg, char **argv) {
   GlacierVM vm;
   glacierVMInit(&vm, &bc, &stack, &ft, &cs);
   int ret = glacierVMRun(&vm);
-  glacierByteCodePrint(&bc, stderr);
-  fprintf(stderr,
-          ret == 0 ? "Terminated successfully with %d.\n"
-                   : "Terminated unsuccessfully with %d.\n",
-          ret);
-  return 0;
+  if (ret != 0) {
+    GLC_LOG_ERR("glaciervm: Terminated unsuccessfully with %d.\n", ret);
+    glacierByteCodePrint(&bc, stderr);
+  }
+
+  return ret;
 }

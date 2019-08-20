@@ -50,19 +50,19 @@ int glacierVMRun(GlacierVM *vm) {
 static int glacierVMStructDef(GlacierVM *vm) {
   uint8_t numMembers;
   GLC_RET(glacierByteCodeRead8(vm->bc, &numMembers));
-  fprintf(stderr, "Parsing struct def with %d members.\n", numMembers);
+  GLC_LOG_DBG("VM: Parsing struct def with %d members.\n", numMembers);
   for (int i = 0; i < numMembers; ++i) {
     uint8_t typeId;
     GLC_RET(glacierByteCodeRead8(vm->bc, &typeId));
     switch (typeId) {
     case GLACIER_TYPEID_INT:
-      fprintf(stderr, "Parsed int member.\n");
+      GLC_LOG_DBG("VM: Parsed int member.\n");
       break;
     case GLACIER_TYPEID_STRING:
-      fprintf(stderr, "Parsed string member.\n");
+      GLC_LOG_DBG("VM: Parsed string member.\n");
       break;
     default:
-      fprintf(stderr, "Parsed unrecognised member.\n");
+      GLC_LOG_ERR("VM: Parsed unrecognised member.\n");
       return GLC_INVALID_OP;
     }
   }
@@ -76,8 +76,8 @@ static int glacierVMFunctionDef(GlacierVM *vm) {
     return GLC_ERROR;
   GLC_RET(glacierByteCodeRead8(vm->bc, &functionId));
   GLC_RET(glacierByteCodeRead8(vm->bc, &numArgs));
-  fprintf(stderr, "Executing function with id %d and %d args.\n", functionId,
-          numArgs);
+  GLC_LOG_DBG("VM: Executing function with id %d and %d args.\n", functionId,
+              numArgs);
   while (!glacierByteCodeEnd(vm->bc)) {
     uint8_t opCode;
     GLC_RET(glacierByteCodeRead8(vm->bc, &opCode));
@@ -102,7 +102,9 @@ static int glacierVMFunctionDef(GlacierVM *vm) {
       GLC_RET(glacierVMReturnVal(vm));
       GLC_RET(glacierCallStackGetByteCodeOffset(vm->cs, &bcOffset));
       GLC_RET(glacierCallStackPop(vm->cs));
-      GLC_RET(glacierByteCodeJump(vm->bc, bcOffset));
+      // If we just finished main then get out of here.
+      if (vm->cs->stackPointer != 0)
+        GLC_RET(glacierByteCodeJump(vm->bc, bcOffset));
       return GLC_OK;
     }
     case GLACIER_BYTECODE_SET_VAR:
@@ -115,7 +117,7 @@ static int glacierVMFunctionDef(GlacierVM *vm) {
       GLC_RET(glacierVMCallFunc(vm));
       break;
     default:
-      fprintf(stderr, "Parsed unrecognised instruction %d.\n", opCode);
+      GLC_LOG_ERR("VM: Parsed unrecognised instruction %d.\n", opCode);
       return GLC_INVALID_OP;
     }
   }
@@ -129,7 +131,7 @@ static int glacierVMInt(GlacierVM *vm) {
   uint8_t value;
   GLC_RET(glacierByteCodeRead8(vm->bc, &value));
   GLC_RET(glacierStackPush(vm->stack, value));
-  fprintf(stderr, "Pushing an int of %d.\n", value);
+  GLC_LOG_DBG("VM: Pushing an int of %d.\n", value);
   return GLC_OK;
 }
 
@@ -139,7 +141,7 @@ static int glacierVMAdd(GlacierVM *vm) {
   GLC_RET(glacierStackPop(vm->stack, &rhs));
   int result = lhs + rhs;
   GLC_RET(glacierStackPush(vm->stack, result));
-  fprintf(stderr, "Adding %d and %d to get %d.\n", lhs, rhs, result);
+  GLC_LOG_DBG("VM: Adding %d and %d to get %d.\n", lhs, rhs, result);
   return GLC_OK;
 }
 
@@ -149,7 +151,7 @@ static int glacierVMSubtract(GlacierVM *vm) {
   GLC_RET(glacierStackPop(vm->stack, &rhs));
   int result = lhs - rhs;
   GLC_RET(glacierStackPush(vm->stack, result));
-  fprintf(stderr, "Subtracting %d and %d to get %d.\n", lhs, rhs, result);
+  GLC_LOG_DBG("VM: Subtracting %d and %d to get %d.\n", lhs, rhs, result);
   return GLC_OK;
 }
 
@@ -159,7 +161,7 @@ static int glacierVMMultiply(GlacierVM *vm) {
   GLC_RET(glacierStackPop(vm->stack, &rhs));
   int result = lhs * rhs;
   GLC_RET(glacierStackPush(vm->stack, result));
-  fprintf(stderr, "Multiplying %d and %d to get %d.\n", lhs, rhs, result);
+  GLC_LOG_DBG("VM: Multiplying %d and %d to get %d.\n", lhs, rhs, result);
   return GLC_OK;
 }
 
@@ -169,19 +171,19 @@ static int glacierVMDivide(GlacierVM *vm) {
   GLC_RET(glacierStackPop(vm->stack, &rhs));
   int result = lhs / rhs;
   GLC_RET(glacierStackPush(vm->stack, result));
-  fprintf(stderr, "Dividing %d and %d to get %d.\n", lhs, rhs, result);
+  GLC_LOG_DBG("VM: Dividing %d and %d to get %d.\n", lhs, rhs, result);
   return GLC_OK;
 }
 
 static int glacierVMReturnVal(GlacierVM *vm) {
   int top;
   GLC_RET(glacierStackTop(vm->stack, &top));
-  fprintf(stderr, "Returned with value %d.\n", top);
+  GLC_LOG_DBG("VM: Returned with value %d.\n", top);
   return GLC_OK;
 }
 
 static int glacierVMHeader(GlacierVM *vm) {
-  fprintf(stderr, "Reading bytecode header.\n");
+  GLC_LOG_DBG("VM: Reading bytecode header.\n");
   uint8_t val;
   while (true) {
     GLC_RET(glacierByteCodeRead8(vm->bc, &val));
@@ -195,7 +197,7 @@ static int glacierVMHeader(GlacierVM *vm) {
       GLC_RET(glacierVMStructDef(vm));
       break;
     default:
-      fprintf(stderr, "Unrecognised header op.\n");
+      GLC_LOG_ERR("VM: Unrecognised header op %d.\n", val);
       return GLC_INVALID_OP;
     }
   }
@@ -206,7 +208,7 @@ static int glacierVMFunctionJmp(GlacierVM *vm) {
   GLC_RET(glacierByteCodeRead8(vm->bc, &functionId));
   GLC_RET(glacierByteCodeRead8(vm->bc, &offset));
   GLC_RET(glacierFunctionTableSet(vm->ft, functionId, offset));
-  fprintf(stderr, "Jump func for id %d at offset %d.\n", functionId, offset);
+  GLC_LOG_DBG("VM: Jump func for id %d at offset %d.\n", functionId, offset);
   return GLC_OK;
 }
 
@@ -216,7 +218,7 @@ static int glacierVMSetVar(GlacierVM *vm) {
   GLC_RET(glacierByteCodeRead8(vm->bc, &varId));
   GLC_RET(glacierStackPop(vm->stack, &val));
   GLC_RET(glacierCallStackSet(vm->cs, varId, val));
-  fprintf(stderr, "Just set %d to value %d.\n", varId, val);
+  GLC_LOG_DBG("VM: Just set %d to value %d.\n", varId, val);
   return GLC_OK;
 }
 
@@ -226,7 +228,7 @@ static int glacierVMGetVar(GlacierVM *vm) {
   GLC_RET(glacierByteCodeRead8(vm->bc, &varId));
   GLC_RET(glacierCallStackGet(vm->cs, varId, &val));
   GLC_RET(glacierStackPush(vm->stack, val));
-  fprintf(stderr, "Got %d and found value %d.\n", varId, val);
+  GLC_LOG_DBG("VM: Got %d and found value %d.\n", varId, val);
   return GLC_OK;
 }
 
