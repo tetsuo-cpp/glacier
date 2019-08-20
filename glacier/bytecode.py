@@ -93,6 +93,11 @@ class OpCode(enum.Enum):
     - The HEADER_END opcode (1 byte).
     """
     HEADER_END = 0x0F
+    """
+    Print an integer at the top of the stack.
+    - The PRINT opcode (1 byte).
+    """
+    PRINT = 0x10
 
 
 class ByteCode:

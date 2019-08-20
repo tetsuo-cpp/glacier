@@ -71,6 +71,12 @@ class CodeGenerator(ast.ASTWalker):
         self.bc.write_op(bytecode.OpCode.GET_VAR, [self.variables[expr.name]])
 
     def _walk_function_call(self, expr):
-        if expr.name not in self.functions:
+        if expr.name not in self.functions and expr.name != "print":
             raise RuntimeError("reference to unrecognised function {0}.".format(expr.name))
+        for arg in expr.args:
+            self._walk(arg)
+        # Probably go check some builtins array. For now let's just add a conditional for print.
+        if expr.name == "print":
+            self.bc.write_op(bytecode.OpCode.PRINT)
+            return
         self.bc.write_op(bytecode.OpCode.CALL_FUNC, [self.functions[expr.name]])

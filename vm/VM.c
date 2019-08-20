@@ -17,6 +17,7 @@ static int glacierVMFunctionJmp(GlacierVM *vm);
 static int glacierVMSetVar(GlacierVM *vm);
 static int glacierVMGetVar(GlacierVM *vm);
 static int glacierVMCallFunc(GlacierVM *vm);
+static int glacierVMPrint(GlacierVM *vm);
 
 void glacierVMInit(GlacierVM *vm, GlacierByteCode *bc, GlacierStack *stack,
                    GlacierFunctionTable *ft, GlacierCallStack *cs) {
@@ -115,6 +116,9 @@ static int glacierVMFunctionDef(GlacierVM *vm) {
       break;
     case GLACIER_BYTECODE_CALL_FUNC:
       GLC_RET(glacierVMCallFunc(vm));
+      break;
+    case GLACIER_BYTECODE_PRINT:
+      GLC_RET(glacierVMPrint(vm));
       break;
     default:
       GLC_LOG_ERR("VM: Parsed unrecognised instruction %d.\n", opCode);
@@ -242,5 +246,12 @@ static int glacierVMCallFunc(GlacierVM *vm) {
   GLC_RET(glacierCallStackPush(vm->cs, vm->bc->offset));
   GLC_RET(glacierByteCodeJump(vm->bc, functionOffset));
   GLC_RET(glacierVMFunctionDef(vm));
+  return GLC_OK;
+}
+
+static int glacierVMPrint(GlacierVM *vm) {
+  int value;
+  GLC_RET(glacierStackPop(vm->stack, &value));
+  printf("%d\n", value);
   return GLC_OK;
 }

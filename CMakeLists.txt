@@ -5,7 +5,7 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Werror")
 
 # Toggle to get verbose logging.
-add_definitions(-DLOG_DBG)
+# add_definitions(-DLOG_DBG)
 
 add_subdirectory(vm)
 

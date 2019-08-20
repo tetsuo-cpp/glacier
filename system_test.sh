@@ -16,7 +16,18 @@ source_path="${test_prefix}.glc"
 bytecode_path="${test_prefix}.bc"
 
 source .ve/bin/activate
+echo "0: Running test $test_name"
 
-python glacierc.py "${source_path}" "${bytecode_path}" || exit 1
+python glacierc.py "$source_path" "$bytecode_path" || exit 1
 
-./glaciervm "${bytecode_path}" || exit 1
+output_path=$(mktemp)
+expected_path="${test_prefix}.out"
+./glaciervm "$bytecode_path" > "$output_path" || exit 1
+cmp "$output_path" "$expected_path"
+if [ $? -ne 0 ]; then
+    echo "$0: Does not match expected output"
+    echo "$0: Failed test $test_name"
+    exit 1
+fi
+rm "$output_path"
+echo "$0: Passed test $test_name"
