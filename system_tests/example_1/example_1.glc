@@ -1,0 +1,17 @@
+struct Foo {
+  string name;
+  int age;
+};
+
+fn fooFunc() -> int {
+  return 3 * 2;
+}
+
+fn fooFunc2() -> int {
+  return 8 * fooFunc();
+}
+
+fn main() -> int {
+  let x = 10;
+  return fooFunc2() * x;
+}
