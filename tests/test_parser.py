@@ -1,6 +1,5 @@
 import glacier.ast as ast
 import unittest
-
 from glacier.lexer import Lexer, TokenType, Token
 from glacier.parser import Parser
 

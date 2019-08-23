@@ -1,5 +1,4 @@
 import unittest
-
 from glacier.lexer import Lexer, TokenType, Token
 
 

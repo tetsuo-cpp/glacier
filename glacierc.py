@@ -1,11 +1,10 @@
+import sys
 from glacier.bytecode import ByteCode
 from glacier.passes.codegen import CodeGenerator
 from glacier.passes.struct_defs import StructureDefinitions
 from glacier.passes.function_table import FunctionTable
 from glacier.lexer import Lexer, TokenType
 from glacier.parser import Parser
-
-import sys
 
 
 def main():

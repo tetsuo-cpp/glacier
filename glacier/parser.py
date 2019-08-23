@@ -1,5 +1,5 @@
-from glacier.lexer import TokenType
 import glacier.ast as ast
+from glacier.lexer import TokenType
 
 
 class Parser:
