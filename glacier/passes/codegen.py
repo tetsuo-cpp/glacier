@@ -40,7 +40,7 @@ class CodeGenerator(ast.ASTWalker):
     def _walk_string(self, expr):
         args = list()
         args.append(len(expr.value))
-        args.extend([c for c in expr.value])
+        args.extend(bytes(expr.value, 'utf-8'))
         self.bc.write_op(bytecode.OpCode.STRING, args)
 
     def _walk_let_statement(self, expr):

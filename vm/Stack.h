@@ -16,7 +16,9 @@ typedef struct {
   };
 } GlacierValue;
 
+// Stack value constructors.
 GlacierValue glacierValueFromInt(uint64_t value);
+GlacierValue glacierValueFromString(char *value);
 
 typedef struct {
   GlacierValue data[MAX_STACK_SIZE];

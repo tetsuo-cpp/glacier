@@ -16,6 +16,13 @@ GlacierValue glacierValueFromInt(uint64_t value) {
   return obj;
 }
 
+GlacierValue glacierValueFromString(char *value) {
+  GlacierValue obj;
+  obj.typeId = GLC_TYPEID_STRING;
+  obj.stringValue = value;
+  return obj;
+}
+
 void glacierStackInit(GlacierStack *stack) { stack->stackPointer = 0; }
 
 int glacierStackPush(GlacierStack *stack, GlacierValue value) {

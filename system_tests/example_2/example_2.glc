@@ -1,0 +1,8 @@
+fn stringFunc() -> string {
+  return "blah";
+}
+
+fn main() -> int {
+  print(stringFunc());
+  return 0;
+}

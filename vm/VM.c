@@ -4,10 +4,12 @@
 
 #include <assert.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 static int glacierVMStructDef(GlacierVM *vm);
 static int glacierVMFunctionDef(GlacierVM *vm);
 static int glacierVMInt(GlacierVM *vm);
+static int glacierVMString(GlacierVM *vm);
 static int glacierVMAdd(GlacierVM *vm);
 static int glacierVMSubtract(GlacierVM *vm);
 static int glacierVMMultiply(GlacierVM *vm);
@@ -87,6 +89,9 @@ static int glacierVMFunctionDef(GlacierVM *vm) {
     case GLC_BYTECODE_INT:
       GLC_RET(glacierVMInt(vm));
       break;
+    case GLC_BYTECODE_STRING:
+      GLC_RET(glacierVMString(vm));
+      break;
     case GLC_BYTECODE_ADD:
       GLC_RET(glacierVMAdd(vm));
       break;
@@ -141,6 +146,21 @@ static int glacierVMInt(GlacierVM *vm) {
   return GLC_OK;
 }
 
+static int glacierVMString(GlacierVM *vm) {
+  uint8_t length;
+  GLC_RET(glacierByteCodeRead8(vm->bc, &length));
+  char *stringVal = malloc(sizeof(char) * (length + 1));
+  for (int i = 0; i < length; ++i) {
+    uint8_t val;
+    GLC_RET(glacierByteCodeRead8(vm->bc, &val));
+    stringVal[i] = val;
+  }
+  stringVal[length] = '\0';
+  GLC_RET(glacierStackPush(vm->stack, glacierValueFromString(stringVal)));
+  GLC_LOG_DBG("VM: Pushing a string of %s.\n", stringVal);
+  return GLC_OK;
+}
+
 static int glacierVMAdd(GlacierVM *vm) {
   GlacierValue lhs, rhs;
   GLC_RET(glacierStackPop(vm->stack, &lhs));
@@ -192,8 +212,13 @@ static int glacierVMDivide(GlacierVM *vm) {
 static int glacierVMReturnVal(GlacierVM *vm) {
   GlacierValue top;
   GLC_RET(glacierStackTop(vm->stack, &top));
-  assert(top.typeId == GLC_TYPEID_INT);
-  GLC_LOG_DBG("VM: Returned with value %d.\n", top.intValue);
+  assert(top.typeId == GLC_TYPEID_INT || top.typeId == GLC_TYPEID_STRING);
+  if (top.typeId == GLC_TYPEID_INT)
+    GLC_LOG_DBG("VM: Returned with value %d.\n", top.intValue);
+  else if (top.typeId == GLC_TYPEID_STRING)
+    GLC_LOG_DBG("VM: Returned with value %s.\n", top.stringValue);
+  else
+    assert(false);
   return GLC_OK;
 }
 
@@ -267,6 +292,9 @@ static int glacierVMPrint(GlacierVM *vm) {
   switch (value.typeId) {
   case GLC_TYPEID_INT:
     printf("%llu\n", value.intValue);
+    break;
+  case GLC_TYPEID_STRING:
+    printf("%s\n", value.stringValue);
     break;
   default:
     GLC_LOG_ERR("VM: Print on invalid type id %d.\n", value.typeId);
