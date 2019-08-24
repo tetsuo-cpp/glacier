@@ -1,5 +1,6 @@
 #include "Stack.h"
 
+#include "ByteCode.h"
 #include "Util.h"
 
 #include <stdbool.h>
@@ -8,24 +9,31 @@ static inline bool glacierStackIsValidPointer(int pointer) {
   return pointer >= 0 && pointer < MAX_STACK_SIZE;
 }
 
+GlacierValue glacierValueFromInt(uint64_t value) {
+  GlacierValue obj;
+  obj.typeId = GLC_TYPEID_INT;
+  obj.intValue = value;
+  return obj;
+}
+
 void glacierStackInit(GlacierStack *stack) { stack->stackPointer = 0; }
 
-int glacierStackPush(GlacierStack *stack, int value) {
+int glacierStackPush(GlacierStack *stack, GlacierValue value) {
   if (!glacierStackIsValidPointer(stack->stackPointer))
     return GLC_STACK_OVERFLOW;
-  stack->data[stack->stackPointer++].value = value;
+  stack->data[stack->stackPointer++] = value;
   return GLC_OK;
 }
 
-int glacierStackTop(GlacierStack *stack, int *value) {
+int glacierStackTop(GlacierStack *stack, GlacierValue *value) {
   int headPointer = stack->stackPointer - 1;
   if (!glacierStackIsValidPointer(headPointer))
     return GLC_STACK_OVERFLOW;
-  *value = stack->data[headPointer].value;
+  *value = stack->data[headPointer];
   return GLC_OK;
 }
 
-int glacierStackPop(GlacierStack *stack, int *value) {
+int glacierStackPop(GlacierStack *stack, GlacierValue *value) {
   int headPointer = stack->stackPointer - 1;
   if (!glacierStackIsValidPointer(headPointer))
     return GLC_STACK_OVERFLOW;
@@ -58,7 +66,10 @@ int glacierCallStackPop(GlacierCallStack *stack) {
 }
 
 int glacierCallStackGet(GlacierCallStack *stack, int id, int *value) {
-  GlacierCallStackFrame *frame = &stack->frames[stack->stackPointer - 1];
+  int headPointer = stack->stackPointer - 1;
+  if (!glacierStackIsValidPointer(headPointer))
+    return GLC_STACK_OVERFLOW;
+  GlacierCallStackFrame *frame = &stack->frames[headPointer];
   if (id < 0 || id >= MAX_FRAME_BINDINGS)
     return GLC_OUT_OF_BUFFER;
   int temp = frame->bindings[id];
@@ -69,13 +80,19 @@ int glacierCallStackGet(GlacierCallStack *stack, int id, int *value) {
 }
 
 int glacierCallStackGetByteCodeOffset(GlacierCallStack *stack, int *bcOffset) {
-  GlacierCallStackFrame *frame = &stack->frames[stack->stackPointer - 1];
+  int headPointer = stack->stackPointer - 1;
+  if (!glacierStackIsValidPointer(headPointer))
+    return GLC_STACK_OVERFLOW;
+  GlacierCallStackFrame *frame = &stack->frames[headPointer];
   *bcOffset = frame->bcOffset;
   return GLC_OK;
 }
 
 int glacierCallStackSet(GlacierCallStack *stack, int id, int value) {
-  GlacierCallStackFrame *frame = &stack->frames[stack->stackPointer - 1];
+  int headPointer = stack->stackPointer - 1;
+  if (!glacierStackIsValidPointer(headPointer))
+    return GLC_STACK_OVERFLOW;
+  GlacierCallStackFrame *frame = &stack->frames[headPointer];
   if (id < 0 || id >= MAX_FRAME_BINDINGS)
     return GLC_OUT_OF_BUFFER;
   frame->bindings[id] = value;

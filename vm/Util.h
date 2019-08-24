@@ -34,4 +34,21 @@
 
 #define GLC_LOG_ERR(format, ...) fprintf(stderr, format, ##__VA_ARGS__)
 
+static inline const char *glacierUtilErrorToString(int error) {
+  switch (error) {
+  case GLC_OK:
+    return "GLC_OK";
+  case GLC_ERROR:
+    return "GLC_ERROR";
+  case GLC_INVALID_OP:
+    return "GLC_INVALID_OP";
+  case GLC_OUT_OF_BUFFER:
+    return "GLC_OUT_OF_BUFFER";
+  case GLC_STACK_OVERFLOW:
+    return "GLC_STACK_OVERFLOW";
+  default:
+    return "UNKNOWN";
+  }
+}
+
 #endif // GLACIERVM_UTIL_H

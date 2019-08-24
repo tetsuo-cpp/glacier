@@ -1,23 +1,32 @@
 #ifndef GLACIERVM_STACK_H
 #define GLACIERVM_STACK_H
 
+#include <stdint.h>
+
 #define MAX_STACK_SIZE 1024
 #define MAX_FRAME_BINDINGS 1024
 
-// Maybe make this a union and type pun for other types.
+// Switch over the typeId and then use the appropriate union type.
 typedef struct {
-  int value;
-} GlacierStackFrame;
+  int typeId;
+  union {
+    uint64_t intValue;
+    char *stringValue;
+    void *structValue;
+  };
+} GlacierValue;
+
+GlacierValue glacierValueFromInt(uint64_t value);
 
 typedef struct {
-  GlacierStackFrame data[MAX_STACK_SIZE];
+  GlacierValue data[MAX_STACK_SIZE];
   int stackPointer;
 } GlacierStack;
 
 void glacierStackInit(GlacierStack *stack);
-int glacierStackPush(GlacierStack *stack, int value);
-int glacierStackTop(GlacierStack *stack, int *value);
-int glacierStackPop(GlacierStack *stack, int *value);
+int glacierStackPush(GlacierStack *stack, GlacierValue value);
+int glacierStackTop(GlacierStack *stack, GlacierValue *value);
+int glacierStackPop(GlacierStack *stack, GlacierValue *value);
 
 typedef struct {
   int bindings[MAX_FRAME_BINDINGS]; // Id => value mapping.

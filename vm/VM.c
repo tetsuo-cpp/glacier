@@ -2,6 +2,7 @@
 
 #include "Util.h"
 
+#include <assert.h>
 #include <stdio.h>
 
 static int glacierVMStructDef(GlacierVM *vm);
@@ -56,10 +57,10 @@ static int glacierVMStructDef(GlacierVM *vm) {
     uint8_t typeId;
     GLC_RET(glacierByteCodeRead8(vm->bc, &typeId));
     switch (typeId) {
-    case GLACIER_TYPEID_INT:
+    case GLC_TYPEID_INT:
       GLC_LOG_DBG("VM: Parsed int member.\n");
       break;
-    case GLACIER_TYPEID_STRING:
+    case GLC_TYPEID_STRING:
       GLC_LOG_DBG("VM: Parsed string member.\n");
       break;
     default:
@@ -73,7 +74,7 @@ static int glacierVMStructDef(GlacierVM *vm) {
 static int glacierVMFunctionDef(GlacierVM *vm) {
   uint8_t op, functionId, numArgs;
   GLC_RET(glacierByteCodeRead8(vm->bc, &op));
-  if (op != GLACIER_BYTECODE_FUNCTION_DEF)
+  if (op != GLC_BYTECODE_FUNCTION_DEF)
     return GLC_ERROR;
   GLC_RET(glacierByteCodeRead8(vm->bc, &functionId));
   GLC_RET(glacierByteCodeRead8(vm->bc, &numArgs));
@@ -83,41 +84,42 @@ static int glacierVMFunctionDef(GlacierVM *vm) {
     uint8_t opCode;
     GLC_RET(glacierByteCodeRead8(vm->bc, &opCode));
     switch (opCode) {
-    case GLACIER_BYTECODE_INT:
+    case GLC_BYTECODE_INT:
       GLC_RET(glacierVMInt(vm));
       break;
-    case GLACIER_BYTECODE_ADD:
+    case GLC_BYTECODE_ADD:
       GLC_RET(glacierVMAdd(vm));
       break;
-    case GLACIER_BYTECODE_SUBTRACT:
+    case GLC_BYTECODE_SUBTRACT:
       GLC_RET(glacierVMSubtract(vm));
       break;
-    case GLACIER_BYTECODE_MULTIPLY:
+    case GLC_BYTECODE_MULTIPLY:
       GLC_RET(glacierVMMultiply(vm));
       break;
-    case GLACIER_BYTECODE_DIVIDE:
+    case GLC_BYTECODE_DIVIDE:
       GLC_RET(glacierVMDivide(vm));
       break;
-    case GLACIER_BYTECODE_RETURN_VAL: {
+    case GLC_BYTECODE_RETURN_VAL: {
       int bcOffset;
       GLC_RET(glacierVMReturnVal(vm));
       GLC_RET(glacierCallStackGetByteCodeOffset(vm->cs, &bcOffset));
       GLC_RET(glacierCallStackPop(vm->cs));
-      // If we just finished main then get out of here.
       if (vm->cs->stackPointer != 0)
         GLC_RET(glacierByteCodeJump(vm->bc, bcOffset));
+      else
+        assert(bcOffset == -1);
       return GLC_OK;
     }
-    case GLACIER_BYTECODE_SET_VAR:
+    case GLC_BYTECODE_SET_VAR:
       GLC_RET(glacierVMSetVar(vm));
       break;
-    case GLACIER_BYTECODE_GET_VAR:
+    case GLC_BYTECODE_GET_VAR:
       GLC_RET(glacierVMGetVar(vm));
       break;
-    case GLACIER_BYTECODE_CALL_FUNC:
+    case GLC_BYTECODE_CALL_FUNC:
       GLC_RET(glacierVMCallFunc(vm));
       break;
-    case GLACIER_BYTECODE_PRINT:
+    case GLC_BYTECODE_PRINT:
       GLC_RET(glacierVMPrint(vm));
       break;
     default:
@@ -134,55 +136,64 @@ static int glacierVMFunctionDef(GlacierVM *vm) {
 static int glacierVMInt(GlacierVM *vm) {
   uint8_t value;
   GLC_RET(glacierByteCodeRead8(vm->bc, &value));
-  GLC_RET(glacierStackPush(vm->stack, value));
+  GLC_RET(glacierStackPush(vm->stack, glacierValueFromInt(value)));
   GLC_LOG_DBG("VM: Pushing an int of %d.\n", value);
   return GLC_OK;
 }
 
 static int glacierVMAdd(GlacierVM *vm) {
-  int lhs, rhs;
+  GlacierValue lhs, rhs;
   GLC_RET(glacierStackPop(vm->stack, &lhs));
   GLC_RET(glacierStackPop(vm->stack, &rhs));
-  int result = lhs + rhs;
+  assert(lhs.typeId == GLC_TYPEID_INT && rhs.typeId == GLC_TYPEID_INT);
+  GlacierValue result = glacierValueFromInt(lhs.intValue + rhs.intValue);
   GLC_RET(glacierStackPush(vm->stack, result));
-  GLC_LOG_DBG("VM: Adding %d and %d to get %d.\n", lhs, rhs, result);
+  GLC_LOG_DBG("VM: Adding %d and %d to get %d.\n", lhs.intValue, rhs.intValue,
+              result.intValue);
   return GLC_OK;
 }
 
 static int glacierVMSubtract(GlacierVM *vm) {
-  int lhs, rhs;
+  GlacierValue lhs, rhs;
   GLC_RET(glacierStackPop(vm->stack, &lhs));
   GLC_RET(glacierStackPop(vm->stack, &rhs));
-  int result = lhs - rhs;
+  assert(lhs.typeId == GLC_TYPEID_INT && rhs.typeId == GLC_TYPEID_INT);
+  GlacierValue result = glacierValueFromInt(lhs.intValue - rhs.intValue);
   GLC_RET(glacierStackPush(vm->stack, result));
-  GLC_LOG_DBG("VM: Subtracting %d and %d to get %d.\n", lhs, rhs, result);
+  GLC_LOG_DBG("VM: Subtracting %d and %d to get %d.\n", lhs.intValue,
+              rhs.intValue, result.intValue);
   return GLC_OK;
 }
 
 static int glacierVMMultiply(GlacierVM *vm) {
-  int lhs, rhs;
+  GlacierValue lhs, rhs;
   GLC_RET(glacierStackPop(vm->stack, &lhs));
   GLC_RET(glacierStackPop(vm->stack, &rhs));
-  int result = lhs * rhs;
+  assert(lhs.typeId == GLC_TYPEID_INT && rhs.typeId == GLC_TYPEID_INT);
+  GlacierValue result = glacierValueFromInt(lhs.intValue * rhs.intValue);
   GLC_RET(glacierStackPush(vm->stack, result));
-  GLC_LOG_DBG("VM: Multiplying %d and %d to get %d.\n", lhs, rhs, result);
+  GLC_LOG_DBG("VM: Multiplying %d and %d to get %d.\n", lhs.intValue,
+              rhs.intValue, result.intValue);
   return GLC_OK;
 }
 
 static int glacierVMDivide(GlacierVM *vm) {
-  int lhs, rhs;
+  GlacierValue lhs, rhs;
   GLC_RET(glacierStackPop(vm->stack, &lhs));
   GLC_RET(glacierStackPop(vm->stack, &rhs));
-  int result = lhs / rhs;
+  assert(lhs.typeId == GLC_TYPEID_INT && rhs.typeId == GLC_TYPEID_INT);
+  GlacierValue result = glacierValueFromInt(lhs.intValue / rhs.intValue);
   GLC_RET(glacierStackPush(vm->stack, result));
-  GLC_LOG_DBG("VM: Dividing %d and %d to get %d.\n", lhs, rhs, result);
+  GLC_LOG_DBG("VM: Dividing %d and %d to get %d.\n", lhs.intValue, rhs.intValue,
+              result.intValue);
   return GLC_OK;
 }
 
 static int glacierVMReturnVal(GlacierVM *vm) {
-  int top;
+  GlacierValue top;
   GLC_RET(glacierStackTop(vm->stack, &top));
-  GLC_LOG_DBG("VM: Returned with value %d.\n", top);
+  assert(top.typeId == GLC_TYPEID_INT);
+  GLC_LOG_DBG("VM: Returned with value %d.\n", top.intValue);
   return GLC_OK;
 }
 
@@ -191,13 +202,13 @@ static int glacierVMHeader(GlacierVM *vm) {
   uint8_t val;
   while (true) {
     GLC_RET(glacierByteCodeRead8(vm->bc, &val));
-    if (val == GLACIER_BYTECODE_HEADER_END)
+    if (val == GLC_BYTECODE_HEADER_END)
       return GLC_OK;
     switch (val) {
-    case GLACIER_BYTECODE_FUNCTION_JMP:
+    case GLC_BYTECODE_FUNCTION_JMP:
       GLC_RET(glacierVMFunctionJmp(vm));
       break;
-    case GLACIER_BYTECODE_STRUCT_DEF:
+    case GLC_BYTECODE_STRUCT_DEF:
       GLC_RET(glacierVMStructDef(vm));
       break;
     default:
@@ -218,11 +229,12 @@ static int glacierVMFunctionJmp(GlacierVM *vm) {
 
 static int glacierVMSetVar(GlacierVM *vm) {
   uint8_t varId;
-  int val;
+  GlacierValue val;
   GLC_RET(glacierByteCodeRead8(vm->bc, &varId));
   GLC_RET(glacierStackPop(vm->stack, &val));
-  GLC_RET(glacierCallStackSet(vm->cs, varId, val));
-  GLC_LOG_DBG("VM: Just set %d to value %d.\n", varId, val);
+  assert(val.typeId == GLC_TYPEID_INT);
+  GLC_RET(glacierCallStackSet(vm->cs, varId, val.intValue));
+  GLC_LOG_DBG("VM: Just set %d to value %d.\n", varId, val.intValue);
   return GLC_OK;
 }
 
@@ -231,7 +243,7 @@ static int glacierVMGetVar(GlacierVM *vm) {
   int val;
   GLC_RET(glacierByteCodeRead8(vm->bc, &varId));
   GLC_RET(glacierCallStackGet(vm->cs, varId, &val));
-  GLC_RET(glacierStackPush(vm->stack, val));
+  GLC_RET(glacierStackPush(vm->stack, glacierValueFromInt(val)));
   GLC_LOG_DBG("VM: Got %d and found value %d.\n", varId, val);
   return GLC_OK;
 }
@@ -250,8 +262,15 @@ static int glacierVMCallFunc(GlacierVM *vm) {
 }
 
 static int glacierVMPrint(GlacierVM *vm) {
-  int value;
+  GlacierValue value;
   GLC_RET(glacierStackPop(vm->stack, &value));
-  printf("%d\n", value);
+  switch (value.typeId) {
+  case GLC_TYPEID_INT:
+    printf("%llu\n", value.intValue);
+    break;
+  default:
+    GLC_LOG_ERR("VM: Print on invalid type id %d.\n", value.typeId);
+    return GLC_INVALID_OP;
+  }
   return GLC_OK;
 }
