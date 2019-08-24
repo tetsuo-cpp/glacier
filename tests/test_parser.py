@@ -158,6 +158,22 @@ class ParserTestCase(unittest.TestCase):
         ]
         self._test_parse_impl(buf, exprs)
 
+    def test_string_literals(self):
+        buf = """
+        fn fooString() -> string {
+          return "string_literal_value";
+        }
+        """
+        exprs = [
+            ast.Function(
+                "fooString",
+                [],
+                [ast.ReturnStatement(ast.String("string_literal_value"))],
+                ("string", ast.Type.STRING),
+            )
+        ]
+        self._test_parse_impl(buf, exprs)
+
 
 if __name__ == "__main__":
     unittest.main()
