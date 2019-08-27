@@ -33,7 +33,7 @@ class FrameStack:
     def get_variable(self, name):
         top = self.stack[-1]
         if name not in top.variables:
-            raise RuntimeError("reference to unrecognised variable {0}".format(expr.name))
+            raise RuntimeError("reference to unrecognised variable {0}".format(name))
         return top.variables[name]
 
 
@@ -57,6 +57,8 @@ class CodeGenerator(ast.ASTWalker):
         args = list()
         args.append(expr.function_id)
         args.append(len(expr.args))
+        for a in expr.args:
+            self.variables.register_variable(a[0])
         self.bc.write_op(bytecode.OpCode.FUNCTION_DEF, args)
         self.function_id += 1
         for s in expr.statements:
