@@ -21,6 +21,7 @@ static int glacierVMSetVar(GlacierVM *vm);
 static int glacierVMGetVar(GlacierVM *vm);
 static int glacierVMCallFunc(GlacierVM *vm);
 static int glacierVMPrint(GlacierVM *vm);
+static int glacierVMSetArgs(GlacierVM *vm, int numArgs);
 
 void glacierVMInit(GlacierVM *vm, GlacierByteCode *bc, GlacierStack *stack,
                    GlacierFunctionTable *ft, GlacierCallStack *cs) {
@@ -82,6 +83,7 @@ static int glacierVMFunctionDef(GlacierVM *vm) {
   GLC_RET(glacierByteCodeRead8(vm->bc, &numArgs));
   GLC_LOG_DBG("VM: Executing function with id %d and %d args.\n", functionId,
               numArgs);
+  GLC_RET(glacierVMSetArgs(vm, numArgs));
   while (!glacierByteCodeEnd(vm->bc)) {
     uint8_t opCode;
     GLC_RET(glacierByteCodeRead8(vm->bc, &opCode));
@@ -299,6 +301,17 @@ static int glacierVMPrint(GlacierVM *vm) {
   default:
     GLC_LOG_ERR("VM: Print on invalid type id %d.\n", value.typeId);
     return GLC_INVALID_OP;
+  }
+  return GLC_OK;
+}
+
+static int glacierVMSetArgs(GlacierVM *vm, int numArgs) {
+  assert(numArgs >= 0);
+  GlacierValue val;
+  for (int i = 0; i < numArgs; ++i) {
+    GLC_RET(glacierStackPop(vm->stack, &val));
+    GLC_RET(glacierCallStackSet(vm->cs, i, val.intValue));
+    GLC_LOG_DBG("VM: Just set arg %d to value %d.\n", varId, val.intValue);
   }
   return GLC_OK;
 }
