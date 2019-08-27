@@ -174,8 +174,8 @@ static int glacierVMAdd(GlacierVM *vm) {
   assert(lhs.typeId == GLC_TYPEID_INT && rhs.typeId == GLC_TYPEID_INT);
   GlacierValue result = glacierValueFromInt(lhs.intValue + rhs.intValue);
   GLC_RET(glacierStackPush(vm->stack, result));
-  GLC_LOG_DBG("VM: Adding %d and %d to get %d.\n", lhs.intValue, rhs.intValue,
-              result.intValue);
+  GLC_LOG_DBG("VM: Adding %llu and %llu to get %llu.\n", lhs.intValue,
+              rhs.intValue, result.intValue);
   return GLC_OK;
 }
 
@@ -186,7 +186,7 @@ static int glacierVMSubtract(GlacierVM *vm) {
   assert(lhs.typeId == GLC_TYPEID_INT && rhs.typeId == GLC_TYPEID_INT);
   GlacierValue result = glacierValueFromInt(lhs.intValue - rhs.intValue);
   GLC_RET(glacierStackPush(vm->stack, result));
-  GLC_LOG_DBG("VM: Subtracting %d and %d to get %d.\n", lhs.intValue,
+  GLC_LOG_DBG("VM: Subtracting %llu and %llu to get %llu.\n", lhs.intValue,
               rhs.intValue, result.intValue);
   return GLC_OK;
 }
@@ -198,7 +198,7 @@ static int glacierVMMultiply(GlacierVM *vm) {
   assert(lhs.typeId == GLC_TYPEID_INT && rhs.typeId == GLC_TYPEID_INT);
   GlacierValue result = glacierValueFromInt(lhs.intValue * rhs.intValue);
   GLC_RET(glacierStackPush(vm->stack, result));
-  GLC_LOG_DBG("VM: Multiplying %d and %d to get %d.\n", lhs.intValue,
+  GLC_LOG_DBG("VM: Multiplying %llu and %llu to get %llu.\n", lhs.intValue,
               rhs.intValue, result.intValue);
   return GLC_OK;
 }
@@ -210,8 +210,8 @@ static int glacierVMDivide(GlacierVM *vm) {
   assert(lhs.typeId == GLC_TYPEID_INT && rhs.typeId == GLC_TYPEID_INT);
   GlacierValue result = glacierValueFromInt(lhs.intValue / rhs.intValue);
   GLC_RET(glacierStackPush(vm->stack, result));
-  GLC_LOG_DBG("VM: Dividing %d and %d to get %d.\n", lhs.intValue, rhs.intValue,
-              result.intValue);
+  GLC_LOG_DBG("VM: Dividing %llu and %llu to get %llu.\n", lhs.intValue,
+              rhs.intValue, result.intValue);
   return GLC_OK;
 }
 
@@ -223,8 +223,8 @@ static int glacierVMEq(GlacierVM *vm) {
   GlacierValue result =
       glacierValueFromInt(lhs.intValue == rhs.intValue ? 1 : 0);
   GLC_RET(glacierStackPush(vm->stack, result));
-  GLC_LOG_DBG("VM: Equating %d and %d to got %d.\n", lhs.intValue, rhs.intValue,
-              result.intValue);
+  GLC_LOG_DBG("VM: Equating %llu and %llu to got %llu.\n", lhs.intValue,
+              rhs.intValue, result.intValue);
   return GLC_OK;
 }
 
@@ -233,7 +233,7 @@ static int glacierVMReturnVal(GlacierVM *vm) {
   GLC_RET(glacierStackTop(vm->stack, &top));
   assert(top.typeId == GLC_TYPEID_INT || top.typeId == GLC_TYPEID_STRING);
   if (top.typeId == GLC_TYPEID_INT)
-    GLC_LOG_DBG("VM: Returned with value %d.\n", top.intValue);
+    GLC_LOG_DBG("VM: Returned with value %llu.\n", top.intValue);
   else if (top.typeId == GLC_TYPEID_STRING)
     GLC_LOG_DBG("VM: Returned with value %s.\n", top.stringValue);
   else
@@ -278,7 +278,7 @@ static int glacierVMSetVar(GlacierVM *vm) {
   GLC_RET(glacierStackPop(vm->stack, &val));
   assert(val.typeId == GLC_TYPEID_INT);
   GLC_RET(glacierCallStackSet(vm->cs, varId, val.intValue));
-  GLC_LOG_DBG("VM: Just set %d to value %d.\n", varId, val.intValue);
+  GLC_LOG_DBG("VM: Just set %d to value %llu.\n", varId, val.intValue);
   return GLC_OK;
 }
 
@@ -328,7 +328,7 @@ static int glacierVMSetArgs(GlacierVM *vm, int numArgs) {
   for (int i = 0; i < numArgs; ++i) {
     GLC_RET(glacierStackPop(vm->stack, &val));
     GLC_RET(glacierCallStackSet(vm->cs, i, val.intValue));
-    GLC_LOG_DBG("VM: Just set arg %d to value %d.\n", varId, val.intValue);
+    GLC_LOG_DBG("VM: Just set arg %d to value %llu.\n", i, val.intValue);
   }
   return GLC_OK;
 }
