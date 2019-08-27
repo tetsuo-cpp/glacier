@@ -96,6 +96,8 @@ class CodeGenerator(ast.ASTWalker):
             self.bc.write_op(bytecode.OpCode.MULTIPLY)
         elif expr.operator.type == lexer.TokenType.DIVIDE:
             self.bc.write_op(bytecode.OpCode.DIVIDE)
+        elif expr.operator.type == lexer.TokenType.EQUALS:
+            self.bc.write_op(bytecode.OpCode.EQ)
         else:
             raise RuntimeError("invalid token type for binop: {0}".format(expr.operator))
 

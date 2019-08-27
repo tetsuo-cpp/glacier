@@ -98,6 +98,12 @@ class OpCode(enum.Enum):
     - The PRINT opcode (1 byte).
     """
     PRINT = 0x10
+    """
+    Compare equality of two integers at the top of the stack and place the result on the top of the
+    stack (1 for true, 0 for false).
+    - The EQ opcode (1 byte).
+    """
+    EQ = 0x11
 
 
 class ByteCode:
