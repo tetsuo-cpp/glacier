@@ -112,6 +112,30 @@ class LexerTestCase(unittest.TestCase):
         ]
         self._test_lex_impl(buf, tokens)
 
+    def test_control_flow(self):
+        buf = """
+        if (x == 3) {
+          let y = 3;
+        }
+        """
+        tokens = [
+            Token(TokenType.IF, "if"),
+            Token(TokenType.L_BRACKET, "("),
+            Token(TokenType.IDENTIFIER, "x"),
+            Token(TokenType.EQUALS, "=="),
+            Token(TokenType.NUMBER_LITERAL, "3"),
+            Token(TokenType.R_BRACKET, ")"),
+            Token(TokenType.L_BRACE, "{"),
+            Token(TokenType.LET, "let"),
+            Token(TokenType.IDENTIFIER, "y"),
+            Token(TokenType.ASSIGN, "="),
+            Token(TokenType.NUMBER_LITERAL, "3"),
+            Token(TokenType.SEMICOLON, ";"),
+            Token(TokenType.R_BRACE, "}"),
+            Token(TokenType.EOF, str()),
+        ]
+        self._test_lex_impl(buf, tokens)
+
 
 if __name__ == "__main__":
     unittest.main()
