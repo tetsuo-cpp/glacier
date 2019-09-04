@@ -25,6 +25,22 @@ class LetStatement:
         return "LetStatement(Name={0}, Rhs={1})".format(self.name, self.rhs)
 
 
+class IfStatement:
+    def __init__(self, cond, statements):
+        self.cond = cond
+        self.statements = statements
+
+    def __eq__(self, other):
+        if not isinstance(other, IfStatement):
+            return False
+        return self.cond == other.cond and self.statements == other.statements
+
+    def __str__(self):
+        return "IfStatement(Cond={0}, Statements={1})".format(
+            self.cond, list_to_string(self.statements)
+        )
+
+
 class ExprStatement:
     def __init__(self, expr):
         self.expr = expr
@@ -214,6 +230,8 @@ class ASTWalker:
             self._walk_structure(expr)
         elif isinstance(expr, LetStatement):
             self._walk_let_statement(expr)
+        elif isinstance(expr, IfStatement):
+            self._walk_if_statement(expr)
         elif isinstance(expr, ExprStatement):
             self._walk(expr.expr)
         elif isinstance(expr, BinaryOp):
@@ -239,6 +257,9 @@ class ASTWalker:
         pass
 
     def _walk_let_statement(self, expr):
+        pass
+
+    def _walk_if_statement(self, expr):
         pass
 
     def _walk_binary_op(self, expr):

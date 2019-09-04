@@ -174,6 +174,31 @@ class ParserTestCase(unittest.TestCase):
         ]
         self._test_parse_impl(buf, exprs)
 
+    def test_if_statements(self):
+        buf = """
+        fn foo() -> string {
+          if (3 == 3) {
+            return "foo";
+          }
+          return "bar";
+        }
+        """
+        exprs = [
+            ast.Function(
+                "foo",
+                [],
+                [
+                    ast.IfStatement(
+                        ast.BinaryOp(ast.Number(3), ast.Number(3), Token(TokenType.EQUALS, "==")),
+                        [ast.ReturnStatement(ast.String("foo"))],
+                    ),
+                    ast.ReturnStatement(ast.String("bar")),
+                ],
+                ("string", ast.Type.STRING),
+            )
+        ]
+        self._test_parse_impl(buf, exprs)
+
 
 if __name__ == "__main__":
     unittest.main()

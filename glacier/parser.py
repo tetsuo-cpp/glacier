@@ -113,6 +113,8 @@ class Parser:
             return self._parse_let()
         elif self._consume_token(TokenType.RETURN):
             return self._parse_return()
+        elif self._consume_token(TokenType.IF):
+            return self._parse_if_statement()
         else:
             return self._parse_expr_statement()
 
@@ -130,6 +132,16 @@ class Parser:
         while not self._consume_token(TokenType.SEMICOLON):
             self._next_token()
         return ast.ReturnStatement(expr)
+
+    def _parse_if_statement(self):
+        self._expect_token(TokenType.L_BRACKET)
+        cond = self._parse_expr()
+        self._expect_token(TokenType.R_BRACKET)
+        self._expect_token(TokenType.L_BRACE)
+        statements = list()
+        while not self._consume_token(TokenType.R_BRACE):
+            statements.append(self._parse_statement())
+        return ast.IfStatement(cond, statements)
 
     def _parse_expr_statement(self):
         expr = self._parse_expr()
