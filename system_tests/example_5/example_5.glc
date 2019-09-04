@@ -1,0 +1,10 @@
+fn main() -> int {
+  let x = 4;
+  if (x == 4) {
+    print("should see this");
+  }
+  if (x == 3) {
+    print("should not be seeing this");
+  }
+  return 0;
+}

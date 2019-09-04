@@ -104,6 +104,18 @@ class OpCode(enum.Enum):
     - The EQ opcode (1 byte).
     """
     EQ = 0x11
+    """
+    Jump to a given offset if the top of the stack is 1.
+    - The JUMP_IF_TRUE opcode (1 byte).
+    - The offset to jump to in bytes (1 byte).
+    """
+    JUMP_IF_TRUE = 0x12
+    """
+    Jump to a given offset if the top of the stack is 0.
+    - The JUMP_IF_FALSE opcode (1 byte).
+    - The offset to jump to in bytes (1 byte).
+    """
+    JUMP_IF_FALSE = 0x13
 
 
 class ByteCode:
@@ -118,6 +130,11 @@ class ByteCode:
     def write_op(self, op, args=list()):
         self.buf.append(op.value)
         self.buf.extend(args)
+
+    def edit_op(self, offset, op, args=list()):
+        self.buf[offset] = op.value
+        for i in range(1, len(args) + 1):
+            self.buf[offset + i] = args[i - 1]
 
     def current_offset(self):
         return len(self.buf)

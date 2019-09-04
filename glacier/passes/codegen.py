@@ -85,6 +85,15 @@ class CodeGenerator(ast.ASTWalker):
         variable_id = self.variables.register_variable(expr.name)
         self.bc.write_op(bytecode.OpCode.SET_VAR, [variable_id])
 
+    def _walk_if_statement(self, expr):
+        self._walk(expr.cond)
+        offset = self.bc.current_offset()
+        self.bc.write_op(bytecode.OpCode.JUMP_IF_FALSE, [0xFF])
+        for statement in expr.statements:
+            self._walk(statement)
+        after_then = self.bc.current_offset()
+        self.bc.edit_op(offset, bytecode.OpCode.JUMP_IF_FALSE, [after_then])
+
     def _walk_binary_op(self, expr):
         self._walk(expr.lhs)
         self._walk(expr.rhs)

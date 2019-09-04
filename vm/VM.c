@@ -22,6 +22,7 @@ static int glacierVMSetVar(GlacierVM *vm);
 static int glacierVMGetVar(GlacierVM *vm);
 static int glacierVMCallFunc(GlacierVM *vm);
 static int glacierVMPrint(GlacierVM *vm);
+static int glacierVMJumpIfFalse(GlacierVM *vm);
 static int glacierVMSetArgs(GlacierVM *vm, int numArgs);
 
 void glacierVMInit(GlacierVM *vm, GlacierByteCode *bc, GlacierStack *stack,
@@ -132,6 +133,9 @@ static int glacierVMFunctionDef(GlacierVM *vm) {
       break;
     case GLC_BYTECODE_PRINT:
       GLC_RET(glacierVMPrint(vm));
+      break;
+    case GLC_BYTECODE_JUMP_IF_FALSE:
+      GLC_RET(glacierVMJumpIfFalse(vm));
       break;
     default:
       GLC_LOG_ERR("VM: Parsed unrecognised instruction %d.\n", opCode);
@@ -319,6 +323,17 @@ static int glacierVMPrint(GlacierVM *vm) {
     GLC_LOG_ERR("VM: Print on invalid type id %d.\n", value.typeId);
     return GLC_INVALID_OP;
   }
+  return GLC_OK;
+}
+
+static int glacierVMJumpIfFalse(GlacierVM *vm) {
+  uint8_t offset;
+  GLC_RET(glacierByteCodeRead8(vm->bc, &offset));
+  GlacierValue value;
+  GLC_RET(glacierStackPop(vm->stack, &value));
+  assert(value.typeId == GLC_TYPEID_INT);
+  if (value.intValue == 0)
+    glacierByteCodeJump(vm->bc, offset);
   return GLC_OK;
 }
 
