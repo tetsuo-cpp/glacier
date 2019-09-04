@@ -332,6 +332,7 @@ static int glacierVMJumpIfFalse(GlacierVM *vm) {
   GlacierValue value;
   GLC_RET(glacierStackPop(vm->stack, &value));
   assert(value.typeId == GLC_TYPEID_INT);
+  assert(value.intValue == 0 || value.intValue == 1);
   if (value.intValue == 0)
     glacierByteCodeJump(vm->bc, offset);
   return GLC_OK;
