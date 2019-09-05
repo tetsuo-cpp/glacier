@@ -157,18 +157,23 @@ static int glacierVMInt(GlacierVM *vm) {
 }
 
 static int glacierVMString(GlacierVM *vm) {
+  GLC_DECL_RET;
   uint8_t length;
   GLC_RET(glacierByteCodeRead8(vm->bc, &length));
   char *stringVal = malloc(sizeof(char) * (length + 1));
   for (int i = 0; i < length; ++i) {
     uint8_t val;
-    GLC_RET(glacierByteCodeRead8(vm->bc, &val));
+    GLC_ERR(glacierByteCodeRead8(vm->bc, &val));
     stringVal[i] = val;
   }
   stringVal[length] = '\0';
-  GLC_RET(glacierStackPush(vm->stack, glacierValueFromString(stringVal)));
+  GLC_ERR(glacierStackPush(vm->stack, glacierValueFromString(stringVal)));
   GLC_LOG_DBG("VM: Pushing a string of %s.\n", stringVal);
   return GLC_OK;
+
+err:
+  free(stringVal);
+  return ret;
 }
 
 static int glacierVMAdd(GlacierVM *vm) {
@@ -334,7 +339,7 @@ static int glacierVMJumpIfFalse(GlacierVM *vm) {
   assert(value.typeId == GLC_TYPEID_INT);
   assert(value.intValue == 0 || value.intValue == 1);
   if (value.intValue == 0)
-    glacierByteCodeJump(vm->bc, offset);
+    GLC_RET(glacierByteCodeJump(vm->bc, offset));
   return GLC_OK;
 }
 
