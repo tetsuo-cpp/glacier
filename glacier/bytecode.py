@@ -116,6 +116,12 @@ class OpCode(enum.Enum):
     - The offset to jump to in bytes (1 byte).
     """
     JUMP_IF_FALSE = 0x13
+    """
+    Jump to a given offset.
+    - The JUMP opcode (1 byte).
+    - The offset to jump to in bytes (1 byte).
+    """
+    JUMP = 0x14
 
 
 class ByteCode:

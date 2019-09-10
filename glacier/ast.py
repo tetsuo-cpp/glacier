@@ -26,18 +26,23 @@ class LetStatement:
 
 
 class IfStatement:
-    def __init__(self, cond, statements):
+    def __init__(self, cond, then_statements, else_statements):
         self.cond = cond
-        self.statements = statements
+        self.then_statements = then_statements
+        self.else_statements = else_statements
 
     def __eq__(self, other):
         if not isinstance(other, IfStatement):
             return False
-        return self.cond == other.cond and self.statements == other.statements
+        return (
+            self.cond == other.cond
+            and self.then_statements == other.then_statements
+            and self.else_statements == other.else_statements
+        )
 
     def __str__(self):
-        return "IfStatement(Cond={0}, Statements={1})".format(
-            self.cond, list_to_string(self.statements)
+        return "IfStatement(Cond={0}, ThenStatements={1}, ElseStatements={2})".format(
+            self.cond, list_to_string(self.then_statements), list_to_string(self.else_statements)
         )
 
 

@@ -87,12 +87,27 @@ class CodeGenerator(ast.ASTWalker):
 
     def _walk_if_statement(self, expr):
         self._walk(expr.cond)
-        offset = self.bc.current_offset()
+
+        # Jump to "else" branch if the cond was false.
+        skip_then_offset = self.bc.current_offset()
         self.bc.write_op(bytecode.OpCode.JUMP_IF_FALSE, [0xFF])
-        for statement in expr.statements:
+
+        for statement in expr.then_statements:
             self._walk(statement)
+
+        # Skip the else branch if we're executing "then".
+        skip_else_offset = self.bc.current_offset()
+        self.bc.write_op(bytecode.OpCode.JUMP, [0xFF])
+
+        # Go back and edit the "else" jump.
         after_then = self.bc.current_offset()
-        self.bc.edit_op(offset, bytecode.OpCode.JUMP_IF_FALSE, [after_then])
+        self.bc.edit_op(skip_then_offset, bytecode.OpCode.JUMP_IF_FALSE, [after_then])
+
+        for statement in expr.else_statements:
+            self._walk(statement)
+
+        after_else = self.bc.current_offset()
+        self.bc.edit_op(skip_else_offset, bytecode.OpCode.JUMP, [after_else])
 
     def _walk_binary_op(self, expr):
         self._walk(expr.lhs)

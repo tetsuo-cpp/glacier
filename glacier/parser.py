@@ -138,10 +138,18 @@ class Parser:
         cond = self._parse_expr()
         self._expect_token(TokenType.R_BRACKET)
         self._expect_token(TokenType.L_BRACE)
-        statements = list()
+
+        then_statements = list()
         while not self._consume_token(TokenType.R_BRACE):
-            statements.append(self._parse_statement())
-        return ast.IfStatement(cond, statements)
+            then_statements.append(self._parse_statement())
+
+        else_statements = list()
+        if self._consume_token(TokenType.ELSE):
+            self._expect_token(TokenType.L_BRACE)
+            while not self._consume_token(TokenType.R_BRACE):
+                else_statements.append(self._parse_statement())
+
+        return ast.IfStatement(cond, then_statements, else_statements)
 
     def _parse_expr_statement(self):
         expr = self._parse_expr()
