@@ -9,34 +9,34 @@ void glacierByteCodeInit(GlacierByteCode *bc, const char *buf, size_t len) {
 }
 
 int glacierByteCodeRead8(GlacierByteCode *bc, uint8_t *val) {
-  if (bc->offset >= bc->len)
+  if (bc->offset + sizeof(uint8_t) > bc->len)
     return GLC_OUT_OF_BUFFER;
   *val = bc->buf[bc->offset];
-  bc->offset += 1;
+  bc->offset += sizeof(uint8_t);
   return GLC_OK;
 }
 
 int glacierByteCodeRead16(GlacierByteCode *bc, uint16_t *val) {
-  if (bc->offset + 1 >= bc->len)
+  if (bc->offset + sizeof(uint16_t) > bc->len)
     return GLC_OUT_OF_BUFFER;
   *val = *((uint16_t *)&bc->buf[bc->offset]);
-  bc->offset += 2;
+  bc->offset += sizeof(uint16_t);
   return GLC_OK;
 }
 
 int glacierByteCodeRead32(GlacierByteCode *bc, uint32_t *val) {
-  if (bc->offset + 3 >= bc->len)
+  if (bc->offset + sizeof(uint32_t) > bc->len)
     return GLC_OUT_OF_BUFFER;
   *val = *((uint32_t *)&bc->buf[bc->offset]);
-  bc->offset += 4;
+  bc->offset += sizeof(uint32_t);
   return GLC_OK;
 }
 
 int glacierByteCodeRead64(GlacierByteCode *bc, uint64_t *val) {
-  if (bc->offset + 7 >= bc->len)
+  if (bc->offset + sizeof(uint64_t) >= bc->len)
     return GLC_OUT_OF_BUFFER;
   *val = *((uint64_t *)&bc->buf[bc->offset]);
-  bc->offset += 8;
+  bc->offset += sizeof(uint64_t);
   return GLC_OK;
 }
 
