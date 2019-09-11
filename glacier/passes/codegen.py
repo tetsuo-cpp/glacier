@@ -1,40 +1,26 @@
 from .. import ast, bytecode, lexer
 
 
-class Frame:
-    def __init__(self, last_id):
-        self.last_id = last_id
-        self.variables = dict()
-
-
-class FrameStack:
+class VariableStore:
     def __init__(self):
-        self.stack = list()
-        self.variable_id = 0
-        self.push_frame()
+        self.clear()
 
-    def push_frame(self):
-        self.stack.append(Frame(self.variable_id))
-        self.variable_id = 0
-
-    def pop_frame(self):
-        self.variable_id = self.stack[-1].last_id
-        self.stack.pop()
+    def clear(self):
+        self.bindings = dict()
+        self.current_id = 0
 
     def register_variable(self, name):
-        top = self.stack[-1]
-        if name in top.variables:
+        if name in self.bindings:
             raise RuntimeError("variable {0} declared twice".format(name))
-        new_id = self.variable_id
-        top.variables[name] = self.variable_id
-        self.variable_id += 1
+        new_id = self.current_id
+        self.bindings[name] = new_id
+        self.current_id += 1
         return new_id
 
     def get_variable(self, name):
-        top = self.stack[-1]
-        if name not in top.variables:
+        if name not in self.bindings:
             raise RuntimeError("reference to unrecognised variable {0}".format(name))
-        return top.variables[name]
+        return self.bindings[name]
 
 
 class CodeGenerator(ast.ASTWalker):
@@ -42,7 +28,7 @@ class CodeGenerator(ast.ASTWalker):
         self.bc = bc
         self.functions = dict()
         self.function_id = 1
-        self.variables = FrameStack()
+        self.variables = VariableStore()
         self.seen_main = False
 
     def _walk_function(self, expr):
@@ -63,13 +49,14 @@ class CodeGenerator(ast.ASTWalker):
         self.function_id += 1
         for s in expr.statements:
             self._walk(s)
+        self.variables.clear()
 
     def _walk_return_statement(self, expr):
         if expr.expr is None:
             self.bc.write_op(bytecode.OpCode.RETURN)
-            return
-        self._walk(expr.expr)
-        self.bc.write_op(bytecode.OpCode.RETURN_VAL)
+        else:
+            self._walk(expr.expr)
+            self.bc.write_op(bytecode.OpCode.RETURN_VAL)
 
     def _walk_number(self, expr):
         self.bc.write_op(bytecode.OpCode.INT, [expr.value])
