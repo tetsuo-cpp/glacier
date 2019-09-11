@@ -32,12 +32,7 @@ class CodeGenerator(ast.ASTWalker):
         self.seen_main = False
 
     def _walk_function(self, expr):
-        if expr.name == "main" and not self.seen_main:
-            # Function id 0 is reserved for main.
-            expr.function_id = 0
-            self.main = True
-        else:
-            expr.function_id = self.function_id
+        expr.function_id = self._allocate_function_id(expr.name)
         self.functions[expr.name] = expr
         expr.offset = self.bc.current_offset()
         args = list()
@@ -46,10 +41,19 @@ class CodeGenerator(ast.ASTWalker):
         for a in expr.args:
             self.variables.register_variable(a[0])
         self.bc.write_op(bytecode.OpCode.FUNCTION_DEF, args)
-        self.function_id += 1
         for s in expr.statements:
             self._walk(s)
         self.variables.clear()
+
+    def _allocate_function_id(self, name):
+        if name in self.functions:
+            raise RuntimeError("duplicate function def {}".format(name))
+        if name == "main":
+            return 0
+        else:
+            new_id = self.function_id
+            self.function_id += 1
+            return new_id
 
     def _walk_return_statement(self, expr):
         if expr.expr is None:
