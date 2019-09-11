@@ -172,7 +172,7 @@ static int glacierVMString(GlacierVM *vm) {
   }
   stringVal[length] = '\0';
   GLC_ERR(glacierStackPush(vm->stack, glacierValueFromString(stringVal)));
-  GLC_LOG_DBG("VM: Pushing a string of %s.\n", stringVal);
+  GLC_LOG_DBG("VM: Pushing a string of \"%s\".\n", stringVal);
   return GLC_OK;
 
 err:
@@ -182,8 +182,8 @@ err:
 
 static int glacierVMAdd(GlacierVM *vm) {
   GlacierValue lhs, rhs;
-  GLC_RET(glacierStackPop(vm->stack, &lhs));
   GLC_RET(glacierStackPop(vm->stack, &rhs));
+  GLC_RET(glacierStackPop(vm->stack, &lhs));
   assert(lhs.typeId == GLC_TYPEID_INT && rhs.typeId == GLC_TYPEID_INT);
   GlacierValue result = glacierValueFromInt(lhs.intValue + rhs.intValue);
   GLC_RET(glacierStackPush(vm->stack, result));
@@ -194,8 +194,8 @@ static int glacierVMAdd(GlacierVM *vm) {
 
 static int glacierVMSubtract(GlacierVM *vm) {
   GlacierValue lhs, rhs;
-  GLC_RET(glacierStackPop(vm->stack, &lhs));
   GLC_RET(glacierStackPop(vm->stack, &rhs));
+  GLC_RET(glacierStackPop(vm->stack, &lhs));
   assert(lhs.typeId == GLC_TYPEID_INT && rhs.typeId == GLC_TYPEID_INT);
   GlacierValue result = glacierValueFromInt(lhs.intValue - rhs.intValue);
   GLC_RET(glacierStackPush(vm->stack, result));
@@ -206,8 +206,8 @@ static int glacierVMSubtract(GlacierVM *vm) {
 
 static int glacierVMMultiply(GlacierVM *vm) {
   GlacierValue lhs, rhs;
-  GLC_RET(glacierStackPop(vm->stack, &lhs));
   GLC_RET(glacierStackPop(vm->stack, &rhs));
+  GLC_RET(glacierStackPop(vm->stack, &lhs));
   assert(lhs.typeId == GLC_TYPEID_INT && rhs.typeId == GLC_TYPEID_INT);
   GlacierValue result = glacierValueFromInt(lhs.intValue * rhs.intValue);
   GLC_RET(glacierStackPush(vm->stack, result));
@@ -218,8 +218,8 @@ static int glacierVMMultiply(GlacierVM *vm) {
 
 static int glacierVMDivide(GlacierVM *vm) {
   GlacierValue lhs, rhs;
-  GLC_RET(glacierStackPop(vm->stack, &lhs));
   GLC_RET(glacierStackPop(vm->stack, &rhs));
+  GLC_RET(glacierStackPop(vm->stack, &lhs));
   assert(lhs.typeId == GLC_TYPEID_INT && rhs.typeId == GLC_TYPEID_INT);
   GlacierValue result = glacierValueFromInt(lhs.intValue / rhs.intValue);
   GLC_RET(glacierStackPush(vm->stack, result));
@@ -230,8 +230,8 @@ static int glacierVMDivide(GlacierVM *vm) {
 
 static int glacierVMEq(GlacierVM *vm) {
   GlacierValue lhs, rhs;
-  GLC_RET(glacierStackPop(vm->stack, &lhs));
   GLC_RET(glacierStackPop(vm->stack, &rhs));
+  GLC_RET(glacierStackPop(vm->stack, &lhs));
   assert(lhs.typeId == GLC_TYPEID_INT && rhs.typeId == GLC_TYPEID_INT);
   GlacierValue result =
       glacierValueFromInt(lhs.intValue == rhs.intValue ? 1 : 0);
