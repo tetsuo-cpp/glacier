@@ -4,7 +4,6 @@
 
 #include <assert.h>
 #include <stdio.h>
-#include <stdlib.h>
 
 static int glacierVMStructDef(GlacierVM *vm);
 static int glacierVMFunctionDef(GlacierVM *vm);
@@ -164,7 +163,8 @@ static int glacierVMString(GlacierVM *vm) {
   GLC_DECL_RET;
   uint8_t length;
   GLC_RET(glacierByteCodeRead8(vm->bc, &length));
-  char *stringVal = malloc(sizeof(char) * (length + 1));
+  char *stringVal;
+  GLC_RET(glacierMAlloc(sizeof(char) * (length + 1), &stringVal));
   for (int i = 0; i < length; ++i) {
     uint8_t val;
     GLC_ERR(glacierByteCodeRead8(vm->bc, &val));
