@@ -41,7 +41,7 @@ int glacierByteCodeRead64(GlacierByteCode *bc, uint64_t *val) {
 }
 
 int glacierByteCodeJump(GlacierByteCode *bc, size_t offset) {
-  if (offset < 0 || offset >= bc->len)
+  if (offset >= bc->len)
     return GLC_OUT_OF_BUFFER;
   bc->offset = offset;
   return GLC_OK;
@@ -50,7 +50,7 @@ int glacierByteCodeJump(GlacierByteCode *bc, size_t offset) {
 bool glacierByteCodeEnd(GlacierByteCode *bc) { return bc->offset >= bc->len; }
 
 int glacierByteCodeTrim(GlacierByteCode *bc) {
-  if (bc->offset < 0 || bc->offset >= bc->len)
+  if (bc->offset >= bc->len)
     return GLC_OUT_OF_BUFFER;
   bc->len -= bc->offset;
   bc->buf += bc->offset;

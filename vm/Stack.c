@@ -85,10 +85,10 @@ int glacierCallStackGet(GlacierCallStack *stack, int id, GlacierValue *value) {
   GlacierCallStackFrame *frame = &stack->frames[headPointer];
   if (id < 0 || id >= MAX_FRAME_BINDINGS)
     return GLC_OUT_OF_BUFFER;
-  int temp = frame->bindings[id];
-  if (temp == -1)
+  GlacierValue *temp = &frame->bindings[id];
+  if (temp->typeId == -1)
     return GLC_ERROR;
-  *value = glacierValueFromInt(temp);
+  *value = *temp;
   return GLC_OK;
 }
 
@@ -108,12 +108,12 @@ int glacierCallStackSet(GlacierCallStack *stack, int id, GlacierValue value) {
   GlacierCallStackFrame *frame = &stack->frames[headPointer];
   if (id < 0 || id >= MAX_FRAME_BINDINGS)
     return GLC_OUT_OF_BUFFER;
-  frame->bindings[id] = value.intValue;
+  frame->bindings[id] = value;
   return GLC_OK;
 }
 
 void glacierCallStackFrameInit(GlacierCallStackFrame *frame, int bcOffset) {
   frame->bcOffset = bcOffset;
   for (int i = 0; i < MAX_FRAME_BINDINGS; ++i)
-    frame->bindings[i] = -1;
+    frame->bindings[i].typeId = -1;
 }

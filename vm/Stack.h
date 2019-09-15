@@ -6,8 +6,8 @@
 
 #include <stdint.h>
 
-#define MAX_STACK_SIZE 1024
-#define MAX_FRAME_BINDINGS 1024
+#define MAX_STACK_SIZE 100
+#define MAX_FRAME_BINDINGS 100
 
 // Switch over the typeId and then use the appropriate union type.
 typedef struct {
@@ -50,8 +50,8 @@ int glacierStackTop(GlacierStack *stack, GlacierValue *value);
 int glacierStackPop(GlacierStack *stack, GlacierValue *value);
 
 typedef struct {
-  int bindings[MAX_FRAME_BINDINGS]; // Id => value mapping.
-  int bcOffset;                     // Bytecode offset to jump back to.
+  GlacierValue bindings[MAX_FRAME_BINDINGS]; // Id => value mapping.
+  int bcOffset;                              // Bytecode offset to jump back to.
 } GlacierCallStackFrame;
 
 typedef struct {
