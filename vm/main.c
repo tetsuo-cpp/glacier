@@ -31,8 +31,11 @@ int main(int argc, char **argv) {
   GlacierCallStack cs;
   glacierCallStackInit(&cs);
 
+  GlacierFunctionTable st;
+  glacierFunctionTableInit(&st);
+
   GlacierVM vm;
-  glacierVMInit(&vm, &bc, &stack, &ft, &cs);
+  glacierVMInit(&vm, &bc, &stack, &ft, &cs, &st);
   int ret = glacierVMRun(&vm);
   if (ret != 0) {
     GLC_LOG_ERR("glaciervm: Terminated unsuccessfully with %s.\n",

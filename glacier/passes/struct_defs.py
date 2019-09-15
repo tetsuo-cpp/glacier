@@ -25,8 +25,8 @@ class StructureDefinitions(ast.ASTWalker):
         self.current_type_id += 1
         self.structs[expr.name] = expr
 
-        # First arg is the number of members.
-        args = [len(expr.members)]
+        # First args are the type id and the number of members.
+        args = [expr.type_id, len(expr.members)]
 
         # The remaining args are the type ids of the members.
         for m in expr.members:

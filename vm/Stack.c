@@ -1,8 +1,6 @@
 #include "Stack.h"
 
-#include "ByteCode.h"
-#include "Util.h"
-
+#include <assert.h>
 #include <stdbool.h>
 
 static inline bool glacierStackIsValidPointer(int pointer) {
@@ -20,6 +18,14 @@ GlacierValue glacierValueFromString(char *value) {
   GlacierValue obj;
   obj.typeId = GLC_TYPEID_STRING;
   obj.stringValue = value;
+  return obj;
+}
+
+GlacierValue glacierValueFromStruct(void *value, int id) {
+  assert(id != GLC_TYPEID_INT && id != GLC_TYPEID_STRING);
+  GlacierValue obj;
+  obj.typeId = id;
+  obj.structValue = value;
   return obj;
 }
 
@@ -72,7 +78,7 @@ int glacierCallStackPop(GlacierCallStack *stack) {
   return GLC_OK;
 }
 
-int glacierCallStackGet(GlacierCallStack *stack, int id, int *value) {
+int glacierCallStackGet(GlacierCallStack *stack, int id, GlacierValue *value) {
   int headPointer = stack->stackPointer - 1;
   if (!glacierStackIsValidPointer(headPointer))
     return GLC_STACK_OVERFLOW;
@@ -82,7 +88,7 @@ int glacierCallStackGet(GlacierCallStack *stack, int id, int *value) {
   int temp = frame->bindings[id];
   if (temp == -1)
     return GLC_ERROR;
-  *value = temp;
+  *value = glacierValueFromInt(temp);
   return GLC_OK;
 }
 
@@ -95,20 +101,19 @@ int glacierCallStackGetByteCodeOffset(GlacierCallStack *stack, int *bcOffset) {
   return GLC_OK;
 }
 
-int glacierCallStackSet(GlacierCallStack *stack, int id, int value) {
+int glacierCallStackSet(GlacierCallStack *stack, int id, GlacierValue value) {
   int headPointer = stack->stackPointer - 1;
   if (!glacierStackIsValidPointer(headPointer))
     return GLC_STACK_OVERFLOW;
   GlacierCallStackFrame *frame = &stack->frames[headPointer];
   if (id < 0 || id >= MAX_FRAME_BINDINGS)
     return GLC_OUT_OF_BUFFER;
-  frame->bindings[id] = value;
+  frame->bindings[id] = value.intValue;
   return GLC_OK;
 }
 
 void glacierCallStackFrameInit(GlacierCallStackFrame *frame, int bcOffset) {
   frame->bcOffset = bcOffset;
-  frame->numBindings = 0;
   for (int i = 0; i < MAX_FRAME_BINDINGS; ++i)
     frame->bindings[i] = -1;
 }

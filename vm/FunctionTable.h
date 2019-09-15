@@ -4,6 +4,7 @@
 // Make this a resizeable vector later.
 #define MAX_FUNCTION_NUMBER 1024
 
+// TODO: Give this a more generic name since we're using it for struct defs now.
 // Index = function id.
 // Value = offset.
 typedef struct {

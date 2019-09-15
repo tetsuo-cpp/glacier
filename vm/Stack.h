@@ -1,6 +1,9 @@
 #ifndef GLACIERVM_STACK_H
 #define GLACIERVM_STACK_H
 
+#include "ByteCode.h"
+#include "Util.h"
+
 #include <stdint.h>
 
 #define MAX_STACK_SIZE 1024
@@ -19,6 +22,22 @@ typedef struct {
 // Stack value constructors.
 GlacierValue glacierValueFromInt(uint64_t value);
 GlacierValue glacierValueFromString(char *value);
+GlacierValue glacierValueFromStruct(void *value, int id);
+
+// Debug logger.
+static inline void glacierValueLog(GlacierValue *value) {
+  switch (value->typeId) {
+  case GLC_TYPEID_INT:
+    GLC_LOG_DBG("(TypeId=int, Value=%llu)", value->intValue);
+    break;
+  case GLC_TYPEID_STRING:
+    GLC_LOG_DBG("(TypeId=string, Value=%s)", value->stringValue);
+    break;
+  default:
+    GLC_LOG_DBG("(TypeId=%llu)", value->typeId);
+    break;
+  }
+}
 
 typedef struct {
   GlacierValue data[MAX_STACK_SIZE];
@@ -32,7 +51,6 @@ int glacierStackPop(GlacierStack *stack, GlacierValue *value);
 
 typedef struct {
   int bindings[MAX_FRAME_BINDINGS]; // Id => value mapping.
-  int numBindings;                  // Number of bindings.
   int bcOffset;                     // Bytecode offset to jump back to.
 } GlacierCallStackFrame;
 
@@ -44,8 +62,8 @@ typedef struct {
 void glacierCallStackInit(GlacierCallStack *stack);
 int glacierCallStackPush(GlacierCallStack *stack, int bcOffset);
 int glacierCallStackPop(GlacierCallStack *stack);
-int glacierCallStackGet(GlacierCallStack *stack, int id, int *value);
-int glacierCallStackSet(GlacierCallStack *stack, int id, int value);
+int glacierCallStackGet(GlacierCallStack *stack, int id, GlacierValue *value);
+int glacierCallStackSet(GlacierCallStack *stack, int id, GlacierValue value);
 int glacierCallStackGetByteCodeOffset(GlacierCallStack *stack, int *bcOffset);
 void glacierCallStackFrameInit(GlacierCallStackFrame *frame, int bcOffset);
 

@@ -23,14 +23,17 @@ static int glacierVMCallFunc(GlacierVM *vm);
 static int glacierVMPrint(GlacierVM *vm);
 static int glacierVMJumpIfFalse(GlacierVM *vm);
 static int glacierVMJump(GlacierVM *vm);
+static int glacierVMStructAlloc(GlacierVM *vm);
 static int glacierVMSetArgs(GlacierVM *vm, int numArgs);
 
 void glacierVMInit(GlacierVM *vm, GlacierByteCode *bc, GlacierStack *stack,
-                   GlacierFunctionTable *ft, GlacierCallStack *cs) {
+                   GlacierFunctionTable *ft, GlacierCallStack *cs,
+                   GlacierFunctionTable *st) {
   vm->bc = bc;
   vm->stack = stack;
   vm->ft = ft;
   vm->cs = cs;
+  vm->st = st;
 }
 
 int glacierVMRun(GlacierVM *vm) {
@@ -55,9 +58,12 @@ int glacierVMRun(GlacierVM *vm) {
 }
 
 static int glacierVMStructDef(GlacierVM *vm) {
-  uint8_t numMembers;
+  uint8_t numMembers, structId;
   GLC_RET(glacierByteCodeRead8(vm->bc, &numMembers));
-  GLC_LOG_DBG("VM: Parsing struct def with %d members.\n", numMembers);
+  GLC_RET(glacierByteCodeRead8(vm->bc, &structId));
+  GLC_LOG_DBG("VM: Parsing struct def with id %d and %d members.\n", structId,
+              numMembers);
+  GLC_RET(glacierFunctionTableSet(vm->st, structId, numMembers));
   for (int i = 0; i < numMembers; ++i) {
     uint8_t typeId;
     GLC_RET(glacierByteCodeRead8(vm->bc, &typeId));
@@ -139,6 +145,9 @@ static int glacierVMFunctionDef(GlacierVM *vm) {
       break;
     case GLC_BYTECODE_JUMP:
       GLC_RET(glacierVMJump(vm));
+      break;
+    case GLC_BYTECODE_STRUCT:
+      GLC_RET(glacierVMStructAlloc(vm));
       break;
     default:
       GLC_LOG_ERR("VM: Parsed unrecognised instruction %d.\n", opCode);
@@ -289,19 +298,24 @@ static int glacierVMSetVar(GlacierVM *vm) {
   GlacierValue val;
   GLC_RET(glacierByteCodeRead8(vm->bc, &varId));
   GLC_RET(glacierStackPop(vm->stack, &val));
-  assert(val.typeId == GLC_TYPEID_INT);
-  GLC_RET(glacierCallStackSet(vm->cs, varId, val.intValue));
-  GLC_LOG_DBG("VM: Just set %d to value %llu.\n", varId, val.intValue);
+  GLC_RET(glacierCallStackSet(vm->cs, varId, val));
+
+  GLC_LOG_DBG("VM: Just set %d to ", varId);
+  glacierValueLog(&val);
+  GLC_LOG_DBG("\n");
   return GLC_OK;
 }
 
 static int glacierVMGetVar(GlacierVM *vm) {
   uint8_t varId;
-  int val;
+  GlacierValue val;
   GLC_RET(glacierByteCodeRead8(vm->bc, &varId));
   GLC_RET(glacierCallStackGet(vm->cs, varId, &val));
-  GLC_RET(glacierStackPush(vm->stack, glacierValueFromInt(val)));
-  GLC_LOG_DBG("VM: Got %d and found value %d.\n", varId, val);
+  GLC_RET(glacierStackPush(vm->stack, val));
+
+  GLC_LOG_DBG("VM: Got %d and got ", varId);
+  glacierValueLog(&val);
+  GLC_LOG_DBG("\n");
   return GLC_OK;
 }
 
@@ -354,13 +368,34 @@ static int glacierVMJump(GlacierVM *vm) {
   return GLC_OK;
 }
 
+static int glacierVMStructAlloc(GlacierVM *vm) {
+  GLC_DECL_RET;
+  uint8_t structId;
+  GLC_RET(glacierByteCodeRead8(vm->bc, &structId));
+  int numMembers;
+  GLC_RET(glacierFunctionTableGet(vm->st, structId, &numMembers));
+  char *structVal;
+  GLC_RET(glacierMAlloc(sizeof(GlacierValue) * numMembers, &structVal));
+  GLC_ERR(
+      glacierStackPush(vm->stack, glacierValueFromStruct(structVal, structId)));
+  GLC_LOG_DBG("VM: Pushing a struct of type id %d.\n", structId);
+  return GLC_OK;
+
+err:
+  free(structVal);
+  return ret;
+}
+
 static int glacierVMSetArgs(GlacierVM *vm, int numArgs) {
   assert(numArgs >= 0);
   GlacierValue val;
   for (int i = 0; i < numArgs; ++i) {
     GLC_RET(glacierStackPop(vm->stack, &val));
-    GLC_RET(glacierCallStackSet(vm->cs, i, val.intValue));
-    GLC_LOG_DBG("VM: Just set arg %d to value %llu.\n", i, val.intValue);
+    GLC_RET(glacierCallStackSet(vm->cs, i, val));
+
+    GLC_LOG_DBG("VM: Just set arg %d to ", i);
+    glacierValueLog(&val);
+    GLC_LOG_DBG("\n");
   }
   return GLC_OK;
 }
