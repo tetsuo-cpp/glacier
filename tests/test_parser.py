@@ -191,6 +191,7 @@ class ParserTestCase(unittest.TestCase):
                     ast.IfStatement(
                         ast.BinaryOp(ast.Number(3), ast.Number(3), Token(TokenType.EQUALS, "==")),
                         [ast.ReturnStatement(ast.String("foo"))],
+                        list(),
                     ),
                     ast.ReturnStatement(ast.String("bar")),
                 ],

@@ -34,6 +34,7 @@ class TokenType(Enum):
     SUBTRACT = 29
     MULTIPLY = 30
     DIVIDE = 31
+    DOT = 32
 
 
 class Token:
@@ -80,6 +81,7 @@ SYMBOLS = {
     "-": TokenType.SUBTRACT,
     "*": TokenType.MULTIPLY,
     "/": TokenType.DIVIDE,
+    ".": TokenType.DOT,
 }
 
 

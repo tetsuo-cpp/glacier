@@ -136,6 +136,22 @@ class LexerTestCase(unittest.TestCase):
         ]
         self._test_lex_impl(buf, tokens)
 
+    def test_dot_operator(self):
+        buf = """
+        print(foo.bar);
+        """
+        tokens = [
+            Token(TokenType.IDENTIFIER, "print"),
+            Token(TokenType.L_BRACKET, "("),
+            Token(TokenType.IDENTIFIER, "foo"),
+            Token(TokenType.DOT, "."),
+            Token(TokenType.IDENTIFIER, "bar"),
+            Token(TokenType.R_BRACKET, ")"),
+            Token(TokenType.SEMICOLON, ";"),
+            Token(TokenType.EOF, str()),
+        ]
+        self._test_lex_impl(buf, tokens)
+
 
 if __name__ == "__main__":
     unittest.main()
