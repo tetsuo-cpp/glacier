@@ -225,6 +225,20 @@ class FunctionCall:
         return "FunctionCall(Name={0}, Args={1})".format(self.name, list_to_string(self.args))
 
 
+class MemberAccess:
+    def __init__(self, expr, member_name):
+        self.expr = expr
+        self.member_name = member_name
+
+    def __eq__(self, other):
+        if not isinstance(other, MemberAccess):
+            return False
+        return self.expr == other.expr and self.member_name == other.member_name
+
+    def __str__(self):
+        return "MemberAccess(Expr={0}, MemberName={1})".format(self.expr, self.member_name)
+
+
 class ASTWalker:
     def walk_ast(self, top_level_exprs):
         for expr in top_level_exprs:
@@ -255,6 +269,8 @@ class ASTWalker:
             self._walk_variable(expr)
         elif isinstance(expr, FunctionCall):
             self._walk_function_call(expr)
+        elif isinstance(expr, MemberAccess):
+            self._walk_member_access(expr)
         else:
             raise RuntimeError("unexpected ast type: Ast=({0})".format(expr))
 
@@ -289,4 +305,7 @@ class ASTWalker:
         pass
 
     def _walk_function_call(self, expr):
+        pass
+
+    def _walk_member_access(self, expr):
         pass

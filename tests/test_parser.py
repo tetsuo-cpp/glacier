@@ -200,6 +200,22 @@ class ParserTestCase(unittest.TestCase):
         ]
         self._test_parse_impl(buf, exprs)
 
+    def test_member_access(self):
+        buf = """
+        fn foo() -> int {
+           return bar.age;
+        }
+        """
+        exprs = [
+            ast.Function(
+                "foo",
+                [],
+                [ast.ReturnStatement(ast.MemberAccess(ast.VariableRef("bar"), "age"))],
+                ("int", ast.Type.INT),
+            )
+        ]
+        self._test_parse_impl(buf, exprs)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -193,13 +193,24 @@ class Parser:
                 return lhs
 
     def _parse_multiplication(self):
-        lhs = self._parse_primary_expr()
+        lhs = self._parse_postfix()
         while True:
             tok = self.cur_tok
             if self._consume_token(TokenType.MULTIPLY) or self._consume_token(TokenType.DIVIDE):
                 lhs = ast.BinaryOp(lhs, self._parse_primary_expr(), tok)
             else:
                 return lhs
+
+    def _parse_postfix(self):
+        expr = self._parse_primary_expr()
+        while True:
+            if self._consume_token(TokenType.DOT):
+                member_name = self.cur_tok.value
+                self._expect_token(TokenType.IDENTIFIER)
+                expr = ast.MemberAccess(expr, member_name)
+            else:
+                break
+        return expr
 
     def _parse_primary_expr(self):
         value = self.cur_tok.value
