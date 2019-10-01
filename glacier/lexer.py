@@ -35,6 +35,7 @@ class TokenType(Enum):
     MULTIPLY = 30
     DIVIDE = 31
     DOT = 32
+    NEW = 33
 
 
 class Token:
@@ -58,6 +59,7 @@ KEYWORDS = {
     "int": TokenType.INT,
     "string": TokenType.STRING,
     "return": TokenType.RETURN,
+    "new": TokenType.NEW,
 }
 
 SYMBOLS = {

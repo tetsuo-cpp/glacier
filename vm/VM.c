@@ -24,6 +24,8 @@ static int glacierVMPrint(GlacierVM *vm);
 static int glacierVMJumpIfFalse(GlacierVM *vm);
 static int glacierVMJump(GlacierVM *vm);
 static int glacierVMStructAlloc(GlacierVM *vm);
+static int glacierVMStructGetMember(GlacierVM *vm);
+static int glacierVMStructSetMember(GlacierVM *vm);
 static int glacierVMSetArgs(GlacierVM *vm, int numArgs);
 
 void glacierVMInit(GlacierVM *vm, GlacierByteCode *bc, GlacierStack *stack,
@@ -149,6 +151,11 @@ static int glacierVMFunctionDef(GlacierVM *vm) {
     case GLC_BYTECODE_STRUCT:
       GLC_RET(glacierVMStructAlloc(vm));
       break;
+    case GLC_BYTECODE_GET_STRUCT_MEMBER:
+      GLC_RET(glacierVMStructGetMember(vm));
+      break;
+    case GLC_BYTECODE_SET_STRUCT_MEMBER:
+      GLC_RET(glacierVMStructSetMember(vm));
     default:
       GLC_LOG_ERR("VM: Parsed unrecognised instruction %d.\n", opCode);
       return GLC_INVALID_OP;
@@ -384,6 +391,36 @@ static int glacierVMStructAlloc(GlacierVM *vm) {
 err:
   free(structVal);
   return ret;
+}
+
+static int glacierVMStructGetMember(GlacierVM *vm) {
+  GlacierValue structVal, memberNumber;
+  GLC_RET(glacierStackPop(vm->stack, &memberNumber));
+  assert(memberNumber.typeId == GLC_TYPEID_INT);
+  GLC_RET(glacierStackPop(vm->stack, &structVal));
+  assert(structVal.typeId != GLC_TYPEID_INT &&
+         structVal.typeId != GLC_TYPEID_STRING);
+
+  // Now reach into the struct data and get the appropriate member.
+  GlacierValue *member = structVal.structValue + memberNumber.intValue;
+  GLC_RET(glacierStackPush(vm->stack, *member));
+  return GLC_OK;
+}
+
+static int glacierVMStructSetMember(GlacierVM *vm) {
+  GlacierValue structVal, memberNumber, setVal;
+  // Nobody knows what type this is.
+  GLC_RET(glacierStackPop(vm->stack, &setVal));
+  GLC_RET(glacierStackPop(vm->stack, &memberNumber));
+  assert(memberNumber.typeId == GLC_TYPEID_INT);
+  GLC_RET(glacierStackPop(vm->stack, &structVal));
+  assert(structVal.typeId != GLC_TYPEID_INT &&
+         structVal.typeId != GLC_TYPEID_STRING);
+
+  // Now reach into the struct data and set the appropriate member.
+  GlacierValue *member = structVal.structValue + memberNumber.intValue;
+  *member = setVal;
+  return GLC_OK;
 }
 
 static int glacierVMSetArgs(GlacierVM *vm, int numArgs) {

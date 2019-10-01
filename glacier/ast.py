@@ -225,6 +225,22 @@ class FunctionCall:
         return "FunctionCall(Name={0}, Args={1})".format(self.name, list_to_string(self.args))
 
 
+class Constructor:
+    def __init__(self, struct_name, params):
+        self.struct_name = struct_name
+        self.params = params
+
+    def __eq__(self, other):
+        if not isinstance(other, Constructor):
+            return False
+        return self.struct_name == other.struct_name and self.params == other.params
+
+    def __str__(self):
+        return "Constructor(StructName={0}, Params={1})".format(
+            self.struct_name, list_to_string(self.params)
+        )
+
+
 class MemberAccess:
     def __init__(self, expr, member_name):
         self.expr = expr

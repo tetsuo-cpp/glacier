@@ -14,6 +14,7 @@ class ParserTestCase(unittest.TestCase):
         tokens = list()
         while True:
             tok = lexer.lex_token()
+            print(tok)
             tokens.append(tok)
             if tok.type == TokenType.EOF:
                 break
@@ -203,7 +204,7 @@ class ParserTestCase(unittest.TestCase):
     def test_member_access(self):
         buf = """
         fn foo() -> int {
-           return bar.age;
+          return bar.age;
         }
         """
         exprs = [
@@ -211,6 +212,29 @@ class ParserTestCase(unittest.TestCase):
                 "foo",
                 [],
                 [ast.ReturnStatement(ast.MemberAccess(ast.VariableRef("bar"), "age"))],
+                ("int", ast.Type.INT),
+            )
+        ]
+        self._test_parse_impl(buf, exprs)
+
+    def test_constructor(self):
+        buf = """
+        fn constructorTest() -> int {
+          let foo = new Foo(name, age);
+          return 0;
+        }
+        """
+        exprs = [
+            ast.Function(
+                "constructorTest",
+                [],
+                [
+                    ast.LetStatement(
+                        "foo",
+                        ast.Constructor("Foo", [ast.VariableRef("name"), ast.VariableRef("age")]),
+                    ),
+                    ast.ReturnStatement(ast.Number(0)),
+                ],
                 ("int", ast.Type.INT),
             )
         ]

@@ -221,6 +221,8 @@ class Parser:
             expr = ast.String(value)
         elif self._consume_token(TokenType.L_PAREN):
             expr = self._parse_array()
+        elif self._consume_token(TokenType.NEW):
+            expr = self._parse_constructor()
         elif self._consume_token(TokenType.IDENTIFIER):
             if self._consume_token(TokenType.L_BRACKET):
                 return self._parse_function_call(value)
@@ -236,6 +238,17 @@ class Parser:
                 self._expect_token(TokenType.COMMA)
             elements.append(self._parse_expr())
         return ast.Array(elements)
+
+    def _parse_constructor(self):
+        params = list()
+        struct_name = self.cur_tok.value
+        self._expect_token(TokenType.IDENTIFIER)
+        self._expect_token(TokenType.L_BRACKET)
+        while not self._consume_token(TokenType.R_BRACKET):
+            if params:
+                self._expect_token(TokenType.COMMA)
+            params.append(self._parse_expr())
+        return ast.Constructor(struct_name, params)
 
     def _parse_function_call(self, name):
         args = list()
