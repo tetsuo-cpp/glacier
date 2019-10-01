@@ -14,7 +14,6 @@ class ParserTestCase(unittest.TestCase):
         tokens = list()
         while True:
             tok = lexer.lex_token()
-            print(tok)
             tokens.append(tok)
             if tok.type == TokenType.EOF:
                 break
