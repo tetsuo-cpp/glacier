@@ -156,6 +156,7 @@ static int glacierVMFunctionDef(GlacierVM *vm) {
       break;
     case GLC_BYTECODE_SET_STRUCT_MEMBER:
       GLC_RET(glacierVMStructSetMember(vm));
+      break;
     default:
       GLC_LOG_ERR("VM: Parsed unrecognised instruction %d.\n", opCode);
       return GLC_INVALID_OP;
