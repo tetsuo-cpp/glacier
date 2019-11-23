@@ -25,7 +25,7 @@ bytecode_path="${test_prefix}.bc"
 source .ve/bin/activate
 echo "$0: Running test $test_name"
 
-python glacierc.py "$source_path" "$bytecode_path" || exit 1
+python glacierc.py "$source_path" -o "$bytecode_path" || exit 1
 
 output_path=$(mktemp)
 expected_path="${test_prefix}.out"
