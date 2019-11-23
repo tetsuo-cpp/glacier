@@ -10,14 +10,15 @@
 #define MAX_FRAME_BINDINGS 100
 
 // Switch over the typeId and then use the appropriate union type.
-typedef struct {
+typedef struct GlacierValue GlacierValue;
+struct GlacierValue {
   int typeId;
   union {
     uint64_t intValue;
     char *stringValue;
-    void *structValue;
+    GlacierValue *structValue;
   };
-} GlacierValue;
+};
 
 // Stack value constructors.
 GlacierValue glacierValueFromInt(uint64_t value);
@@ -34,7 +35,7 @@ static inline void glacierValueLog(GlacierValue *value) {
     GLC_LOG_DBG("(TypeId=string, Value=%s)", value->stringValue);
     break;
   default:
-    GLC_LOG_DBG("(TypeId=%llu)", value->typeId);
+    GLC_LOG_DBG("(TypeId=%d)", value->typeId);
     break;
   }
 }

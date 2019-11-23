@@ -122,6 +122,24 @@ class OpCode(enum.Enum):
     - The offset to jump to in bytes (1 byte).
     """
     JUMP = 0x14
+    """
+    Construct an object with a given struct id.
+    - The STRUCT opcode (1 byte).
+    - The struct id (1 byte).
+    """
+    STRUCT = 0x15
+    """
+    Get a struct member.
+    - The GET_STRUCT_MEMBER opcode (1 byte).
+    - The member index (1 byte).
+    """
+    GET_STRUCT_MEMBER = 0x16
+    """
+    Set a struct member.
+    - The SET_STRUCT_MEMBER opcode (1 byte).
+    - The member index (1 byte).
+    """
+    SET_STRUCT_MEMBER = 0x17
 
 
 class ByteCode:

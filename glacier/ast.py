@@ -283,6 +283,8 @@ class ASTWalker:
             self._walk_array(expr)
         elif isinstance(expr, VariableRef):
             self._walk_variable(expr)
+        elif isinstance(expr, Constructor):
+            self._walk_constructor(expr)
         elif isinstance(expr, FunctionCall):
             self._walk_function_call(expr)
         elif isinstance(expr, MemberAccess):
@@ -318,6 +320,9 @@ class ASTWalker:
         pass
 
     def _walk_variable(self, expr):
+        pass
+
+    def _walk_constructor(self, expr):
         pass
 
     def _walk_function_call(self, expr):

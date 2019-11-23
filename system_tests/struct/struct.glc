@@ -1,0 +1,11 @@
+struct Foo {
+  string name;
+  int age;
+};
+
+fn main() -> int {
+  let bar = new Foo("alex", 24);
+  print(bar.name);
+  print(bar.age);
+  return 0;
+}

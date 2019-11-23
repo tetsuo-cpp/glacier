@@ -382,8 +382,14 @@ static int glacierVMStructAlloc(GlacierVM *vm) {
   GLC_RET(glacierByteCodeRead8(vm->bc, &structId));
   int numMembers;
   GLC_RET(glacierFunctionTableGet(vm->st, structId, &numMembers));
-  char *structVal;
-  GLC_RET(glacierMAlloc(sizeof(GlacierValue) * numMembers, &structVal));
+  GlacierValue *structVal;
+  GLC_RET(
+      glacierMAlloc(sizeof(GlacierValue) * numMembers, (char **)&structVal));
+  for (int i = (numMembers - 1); i >= 0; --i) {
+    GlacierValue memberValue;
+    GLC_ERR(glacierStackPop(vm->stack, &memberValue));
+    structVal[i] = memberValue;
+  }
   GLC_ERR(
       glacierStackPush(vm->stack, glacierValueFromStruct(structVal, structId)));
   GLC_LOG_DBG("VM: Pushing a struct of type id %d.\n", structId);
@@ -395,31 +401,34 @@ err:
 }
 
 static int glacierVMStructGetMember(GlacierVM *vm) {
-  GlacierValue structVal, memberNumber;
-  GLC_RET(glacierStackPop(vm->stack, &memberNumber));
-  assert(memberNumber.typeId == GLC_TYPEID_INT);
+  uint8_t memberNumber;
+  GLC_RET(glacierByteCodeRead8(vm->bc, &memberNumber));
+  GlacierValue structVal;
   GLC_RET(glacierStackPop(vm->stack, &structVal));
   assert(structVal.typeId != GLC_TYPEID_INT &&
          structVal.typeId != GLC_TYPEID_STRING);
 
   // Now reach into the struct data and get the appropriate member.
-  GlacierValue *member = structVal.structValue + memberNumber.intValue;
+  GlacierValue *member = structVal.structValue + memberNumber;
   GLC_RET(glacierStackPush(vm->stack, *member));
+  GLC_LOG_DBG("VM: Pushing struct member of value ");
+  glacierValueLog(member);
+  GLC_LOG_DBG("\n");
   return GLC_OK;
 }
 
 static int glacierVMStructSetMember(GlacierVM *vm) {
-  GlacierValue structVal, memberNumber, setVal;
+  uint8_t memberNumber;
+  GLC_RET(glacierByteCodeRead8(vm->bc, &memberNumber));
+  GlacierValue structVal, setVal;
   // Nobody knows what type this is.
   GLC_RET(glacierStackPop(vm->stack, &setVal));
-  GLC_RET(glacierStackPop(vm->stack, &memberNumber));
-  assert(memberNumber.typeId == GLC_TYPEID_INT);
   GLC_RET(glacierStackPop(vm->stack, &structVal));
   assert(structVal.typeId != GLC_TYPEID_INT &&
          structVal.typeId != GLC_TYPEID_STRING);
 
   // Now reach into the struct data and set the appropriate member.
-  GlacierValue *member = structVal.structValue + memberNumber.intValue;
+  GlacierValue *member = structVal.structValue + memberNumber;
   *member = setVal;
   return GLC_OK;
 }

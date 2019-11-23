@@ -24,8 +24,9 @@ class VariableStore:
 
 
 class CodeGenerator(ast.ASTWalker):
-    def __init__(self, bc):
+    def __init__(self, bc, structs):
         self.bc = bc
+        self.structs = structs
         self.functions = dict()
         self.function_id = 1
         self.variables = VariableStore()
@@ -119,6 +120,16 @@ class CodeGenerator(ast.ASTWalker):
     def _walk_variable(self, expr):
         self.bc.write_op(bytecode.OpCode.GET_VAR, [self.variables.get_variable(expr.name)])
 
+    def _walk_constructor(self, expr):
+        # Get the struct id.
+        if expr.struct_name not in self.structs:
+            raise RuntimeError("unrecognised struct name {0}".format(expr.struct_name))
+        struct_def = self.structs[expr.struct_name]
+        # Codegen each argument to the ctor.
+        for p in expr.params:
+            self._walk(p)
+        self.bc.write_op(bytecode.OpCode.STRUCT, [struct_def.type_id])
+
     def _walk_function_call(self, expr):
         if expr.name not in self.functions and expr.name != "print":
             raise RuntimeError("reference to unrecognised function {0}.".format(expr.name))
@@ -129,3 +140,17 @@ class CodeGenerator(ast.ASTWalker):
             self.bc.write_op(bytecode.OpCode.PRINT)
             return
         self.bc.write_op(bytecode.OpCode.CALL_FUNC, [self.functions[expr.name].function_id])
+
+    def _walk_member_access(self, expr):
+        # Codegen to push the struct to the stack.
+        self._walk(expr.expr)
+        assert isinstance(expr.expr, ast.VariableRef)
+        # Just a temporary hack. I want to check that this works.
+        for _, s in self.structs.items():
+            i = 0
+            for m in s.members:
+                if m.name == expr.member_name:
+                    self.bc.write_op(bytecode.OpCode.GET_STRUCT_MEMBER, [i])
+                    return
+                i += 1
+        raise RuntimeError("couldn't find the right struct")

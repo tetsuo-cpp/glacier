@@ -13,8 +13,8 @@ def _get_type_id(expr):
 
 
 class StructureDefinitions(ast.ASTWalker):
-    def __init__(self, bc):
-        self.structs = dict()
+    def __init__(self, bc, structs):
+        self.structs = structs
         self.bc = bc
 
         # Integer and string occupy 0 and 1.

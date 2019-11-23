@@ -35,7 +35,8 @@ def main():
     print("Successfully parsed {0} top level expressions.".format(len(exprs)))
 
     bc = ByteCode()
-    passes = [StructureDefinitions(bc), CodeGenerator(bc), FunctionTable(bc)]
+    structs = dict()
+    passes = [StructureDefinitions(bc, structs), CodeGenerator(bc, structs), FunctionTable(bc)]
     for p in passes:
         p.walk_ast(exprs)
     print("Successfully generated header {0}.".format(bc.header))

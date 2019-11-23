@@ -1,5 +1,12 @@
 #!/bin/bash
 
+function cleanup {
+    echo "$0: Cleaning up $output_path"
+    rm "$output_path"
+}
+
+trap cleanup EXIT
+
 if [ ! -d .ve/ ]; then
     echo "$0: No .ve/ found. Running setup_env..."
     bash setup_env.sh
@@ -16,7 +23,7 @@ source_path="${test_prefix}.glc"
 bytecode_path="${test_prefix}.bc"
 
 source .ve/bin/activate
-echo "0: Running test $test_name"
+echo "$0: Running test $test_name"
 
 python glacierc.py "$source_path" "$bytecode_path" || exit 1
 
@@ -26,8 +33,11 @@ expected_path="${test_prefix}.out"
 cmp "$output_path" "$expected_path"
 if [ $? -ne 0 ]; then
     echo "$0: Does not match expected output"
+    echo "=== Expected ==="
+    cat "$expected_path"
+    echo "=== Actual ==="
+    cat "$output_path"
     echo "$0: Failed test $test_name"
     exit 1
 fi
-rm "$output_path"
 echo "$0: Passed test $test_name"
