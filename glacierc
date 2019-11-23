@@ -9,16 +9,16 @@ from glacier.lexer import Lexer, TokenType
 from glacier.parser import Parser
 
 
-def print_tokens(tokens):
+def glacierc_print_tokens(tokens):
     print("=== Printing tokens ===")
     for t in tokens:
-        print(tok)
+        print(t)
         if t.type == TokenType.EOF:
             break
     print("=== Printed {} tokens ===".format(len(tokens)))
 
 
-def print_ast(exprs):
+def glacierc_print_ast(exprs):
     print("=== Printing AST ===")
     for e in exprs:
         if e is None:
@@ -27,7 +27,7 @@ def print_ast(exprs):
     print("=== Printed {} top level exprs ===".format(len(exprs)))
 
 
-def print_bc(bc):
+def glacierc_print_bc(bc):
     print("=== Printing bytecode ===")
     print(bc.construct())
     print("=== Printed bytecode ===")
@@ -36,9 +36,9 @@ def print_bc(bc):
 @click.command()
 @click.argument("src", nargs=1)
 @click.option("-o", default="a.bc", help="Write bytecode to <file>")
-@click.option("--print_tokens", default=False, help="Print tokens to stdout")
-@click.option("--print_ast", default=False, help="Print AST to stdout")
-@click.option("--print_bc", default=False, help="Print bytecode to stdout")
+@click.option("--print_tokens", default=False, is_flag=True, help="Print tokens to stdout")
+@click.option("--print_ast", default=False, is_flag=True, help="Print AST to stdout")
+@click.option("--print_bc", default=False, is_flag=True, help="Print bytecode to stdout")
 def glacierc_compile(src, o, print_tokens, print_ast, print_bc):
     with open(src) as f:
         lexer = Lexer(f.read())
@@ -50,7 +50,7 @@ def glacierc_compile(src, o, print_tokens, print_ast, print_bc):
         if tok.type == TokenType.EOF:
             break
     if print_tokens:
-        print_tokens(tokens)
+        glacierc_print_tokens(tokens)
 
     parser = Parser(tokens)
     exprs = list()
@@ -60,7 +60,7 @@ def glacierc_compile(src, o, print_tokens, print_ast, print_bc):
             break
         exprs.append(expr)
     if print_ast:
-        print_ast(exprs)
+        glacierc_print_ast(exprs)
 
     bc = ByteCode()
     structs = dict()
@@ -68,7 +68,7 @@ def glacierc_compile(src, o, print_tokens, print_ast, print_bc):
     for p in passes:
         p.walk_ast(exprs)
     if print_bc:
-        print_bc(bc)
+        glacierc_print_bc(bc)
 
     with open(o, "wb") as f:
         f.write(bc.construct())
