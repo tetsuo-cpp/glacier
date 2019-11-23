@@ -1,5 +1,4 @@
 import click
-import sys
 from glacier.bytecode import ByteCode
 from glacier.passes.codegen import CodeGenerator
 from glacier.passes.struct_defs import StructureDefinitions
