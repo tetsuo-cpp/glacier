@@ -2,9 +2,9 @@ from .. import ast, bytecode
 
 
 def _get_type_id(expr):
-    if expr.type == ast.Type.INT:
+    if expr.type.kind == ast.TypeKind.INT:
         return 0
-    elif expr.type == ast.Type.STRING:
+    elif expr.type.kind == ast.TypeKind.STRING:
         return 1
     else:
         if not hasattr(expr, "type_id"):

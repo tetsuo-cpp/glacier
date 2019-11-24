@@ -52,15 +52,13 @@ class Parser:
         while not self._consume_token(TokenType.R_BRACKET):
             if args:
                 self._expect_token(TokenType.COMMA)
-            arg_type_name = self.cur_tok.value
             arg_type = self._parse_type()
             arg_name = self.cur_tok.value
             self._expect_token(TokenType.IDENTIFIER)
-            args.append((arg_name, arg_type, arg_type_name))
+            args.append((arg_name, arg_type))
 
         # Parse return type.
         self._expect_token(TokenType.ARROW)
-        return_type_name = self.cur_tok.value
         return_type = self._parse_type()
 
         self._expect_token(TokenType.L_BRACE)
@@ -68,7 +66,7 @@ class Parser:
         while not self._consume_token(TokenType.R_BRACE):
             statements.append(self._parse_statement())
 
-        return ast.Function(f_name, args, statements, (return_type_name, return_type))
+        return ast.Function(f_name, args, statements, return_type)
 
     def _parse_structure(self):
         s_name = self.cur_tok.value
@@ -91,22 +89,22 @@ class Parser:
         return ast.Structure(s_name, members, member_functions)
 
     def _parse_member(self):
-        m_type_name = self.cur_tok.value
         m_type = self._parse_type()
         m_name = self.cur_tok.value
         self._expect_token(TokenType.IDENTIFIER)
         self._expect_token(TokenType.SEMICOLON)
-        return ast.Member(m_name, m_type, m_type_name)
+        return ast.Member(m_name, m_type)
 
     def _parse_type(self):
         if self._consume_token(TokenType.INT):
-            return ast.Type.INT
+            return ast.Type(ast.TypeKind.INT)
         elif self._consume_token(TokenType.STRING):
-            return ast.Type.STRING
+            return ast.Type(ast.TypeKind.STRING)
         else:
             # User defined type. Should just look like a regular identifier.
+            identifier = self.cur_tok.value
             self._expect_token(TokenType.IDENTIFIER)
-            return ast.Type.USER
+            return ast.Type(ast.TypeKind.USER, identifier)
 
     def _parse_statement(self):
         if self._consume_token(TokenType.LET):

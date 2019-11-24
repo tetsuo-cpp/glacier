@@ -40,8 +40,8 @@ class ParserTestCase(unittest.TestCase):
             ast.Structure(
                 "Foo",
                 [
-                    ast.Member("name", ast.Type.STRING, "string"),
-                    ast.Member("age", ast.Type.INT, "int"),
+                    ast.Member("name", ast.Type(ast.TypeKind.STRING)),
+                    ast.Member("age", ast.Type(ast.TypeKind.INT)),
                 ],
                 [],
             )
@@ -57,9 +57,9 @@ class ParserTestCase(unittest.TestCase):
         exprs = [
             ast.Function(
                 "fooFunc",
-                [("name", ast.Type.STRING, "string"), ("age", ast.Type.INT, "int")],
+                [("name", ast.Type(ast.TypeKind.STRING)), ("age", ast.Type(ast.TypeKind.INT))],
                 [ast.ReturnStatement(ast.Number(1))],
-                ("int", ast.Type.INT),
+                ast.Type(ast.TypeKind.INT),
             )
         ]
         self._test_parse_impl(buf, exprs)
@@ -78,15 +78,15 @@ class ParserTestCase(unittest.TestCase):
             ast.Structure(
                 "Foo",
                 [
-                    ast.Member("name", ast.Type.STRING, "string"),
-                    ast.Member("age", ast.Type.INT, "int"),
+                    ast.Member("name", ast.Type(ast.TypeKind.STRING)),
+                    ast.Member("age", ast.Type(ast.TypeKind.INT)),
                 ],
                 [
                     ast.Function(
                         "memberFunc",
                         [],
                         [ast.ReturnStatement(ast.VariableRef("age"))],
-                        ("int", ast.Type.INT),
+                        ast.Type(ast.TypeKind.INT),
                     )
                 ],
             )
@@ -105,7 +105,7 @@ class ParserTestCase(unittest.TestCase):
                 "letFunc",
                 [],
                 [ast.LetStatement("x", ast.Number(1)), ast.ReturnStatement(ast.VariableRef("x"))],
-                ("int", ast.Type.INT),
+                ast.Type(ast.TypeKind.INT),
             )
         ]
         self._test_parse_impl(buf, exprs)
@@ -121,7 +121,7 @@ class ParserTestCase(unittest.TestCase):
                 "funcCall",
                 [],
                 [ast.ReturnStatement(ast.FunctionCall("otherFunc", []))],
-                ("int", ast.Type.INT),
+                ast.Type(ast.TypeKind.INT),
             )
         ]
         self._test_parse_impl(buf, exprs)
@@ -153,7 +153,7 @@ class ParserTestCase(unittest.TestCase):
                         )
                     )
                 ],
-                ("int", ast.Type.INT),
+                ast.Type(ast.TypeKind.INT),
             )
         ]
         self._test_parse_impl(buf, exprs)
@@ -169,7 +169,7 @@ class ParserTestCase(unittest.TestCase):
                 "fooString",
                 [],
                 [ast.ReturnStatement(ast.String("string_literal_value"))],
-                ("string", ast.Type.STRING),
+                ast.Type(ast.TypeKind.STRING),
             )
         ]
         self._test_parse_impl(buf, exprs)
@@ -195,7 +195,7 @@ class ParserTestCase(unittest.TestCase):
                     ),
                     ast.ReturnStatement(ast.String("bar")),
                 ],
-                ("string", ast.Type.STRING),
+                ast.Type(ast.TypeKind.STRING),
             )
         ]
         self._test_parse_impl(buf, exprs)
@@ -211,7 +211,7 @@ class ParserTestCase(unittest.TestCase):
                 "foo",
                 [],
                 [ast.ReturnStatement(ast.MemberAccess(ast.VariableRef("bar"), "age"))],
-                ("int", ast.Type.INT),
+                ast.Type(ast.TypeKind.INT),
             )
         ]
         self._test_parse_impl(buf, exprs)
@@ -234,7 +234,7 @@ class ParserTestCase(unittest.TestCase):
                     ),
                     ast.ReturnStatement(ast.Number(0)),
                 ],
-                ("int", ast.Type.INT),
+                ast.Type(ast.TypeKind.INT),
             )
         ]
         self._test_parse_impl(buf, exprs)

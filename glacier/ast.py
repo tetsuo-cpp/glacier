@@ -117,17 +117,25 @@ class Structure:
         )
 
 
-class Type(Enum):
+class TypeKind(Enum):
     INT = 1
     STRING = 2
     USER = 3
 
 
+class Type:
+    def __init__(self, kind, identifier=None):
+        self.kind = kind
+        self.identifier = identifier
+
+    def __eq__(self, other):
+        return self.kind == other.kind and self.identifier == other.identifier
+
+
 class Member:
-    def __init__(self, name, m_type, m_type_name, default_value=None):
+    def __init__(self, name, m_type, default_value=None):
         self.name = name
         self.type = m_type
-        self.type_name = m_type_name
         self.default_value = default_value
 
     def __eq__(self, other):
@@ -136,13 +144,12 @@ class Member:
         return (
             self.name == other.name
             and self.type == other.type
-            and self.type_name == other.type_name
             and self.default_value == other.default_value
         )
 
     def __str__(self):
-        return "Member(Name={0}, Type={1}, TypeName={2}, Default={3})".format(
-            self.name, self.type, self.type_name, self.default_value
+        return "Member(Name={0}, Type={1}, Default={2})".format(
+            self.name, self.type, self.default_value
         )
 
 
