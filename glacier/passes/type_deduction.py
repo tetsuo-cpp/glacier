@@ -1,5 +1,10 @@
 from .. import ast, bytecode, lexer
 
+
+class TypeError(Exception):
+    pass
+
+
 # Just fail with assertions for the time being.
 # In the future, we should begin raising type errors.
 class TypeDeduction(ast.ASTWalker):
