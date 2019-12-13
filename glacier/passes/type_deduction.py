@@ -57,7 +57,7 @@ class TypeDeduction(ast.ASTWalker):
                         expr.name, i, arg.ret_type.kind, param[1].kind
                     )
                 )
-            ++i
+            i += 1
         expr.ret_type = called_func.return_type
 
     def _walk_function(self, expr):
