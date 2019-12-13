@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
 import click
+import sys
 from glacier.bytecode import ByteCode
 from glacier.passes.codegen import CodeGenerator
 from glacier.passes.struct_defs import StructureDefinitions
 from glacier.passes.function_table import FunctionTable
-from glacier.passes.type_deduction import TypeDeduction
+from glacier.passes.type_deduction import TypeDeduction, TypeError
 from glacier.lexer import Lexer, TokenType
 from glacier.parser import Parser
 
@@ -71,8 +72,12 @@ def glacierc_compile(src, o, print_tokens, print_ast, print_bc):
         CodeGenerator(bc, structs),
         FunctionTable(bc),
     ]
-    for p in passes:
-        p.walk_ast(exprs)
+    try:
+        for p in passes:
+            p.walk_ast(exprs)
+    except TypeError as e:
+        print("type error: {}".format(e))
+        sys.exit(1)
     if print_bc:
         glacierc_print_bc(bc)
 

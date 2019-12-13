@@ -16,7 +16,8 @@ class TypeDeduction(ast.ASTWalker):
 
     def _walk_let_statement(self, expr):
         self._walk(expr.rhs)
-        assert hasattr(expr.rhs, "ret_type")
+        if not hasattr(expr.rhs, "ret_type"):
+            raise TypeError("rhs of let statement returns void")
         self.variable_types[expr.name] = expr.rhs.ret_type
         expr.ret_type = expr.rhs.ret_type
 
@@ -30,7 +31,8 @@ class TypeDeduction(ast.ASTWalker):
         expr.ret_type = ast.Type(ast.TypeKind.STRING)
 
     def _walk_variable(self, expr):
-        assert expr.name in self.variable_types
+        if expr.name not in self.variable_types:
+            raise TypeError("reference to unrecognised variable {}".format(expr.name))
         expr.ret_type = self.variable_types[expr.name]
 
     def _walk_constructor(self, expr):
@@ -47,12 +49,20 @@ class TypeDeduction(ast.ASTWalker):
         # Now compare against the function parameter types.
         assert expr.name in self.functions
         called_func = self.functions[expr.name]
+        i = 0
         for arg, param in zip(expr.args, called_func.args):
-            assert param[1] == arg.ret_type
+            if param[1] != arg.ret_type:
+                raise TypeError(
+                    "called function {} with arg {} of type {} when we expected {}".format(
+                        expr.name, i, arg.ret_type.kind, param[1].kind
+                    )
+                )
+            ++i
         expr.ret_type = called_func.return_type
 
     def _walk_function(self, expr):
-        assert expr.name not in self.functions
+        if expr.name in self.functions:
+            raise TypeError("redefinition of function {}".format(expr.name))
         self.functions[expr.name] = expr
         for s in expr.statements:
             self._walk(s)

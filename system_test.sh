@@ -30,9 +30,10 @@ if [[ "$test_prefix" == *_error ]]; then
     ./glacierc "$source_path" -o "$bytecode_path" > "$output_path" && exit 1
     cmp "$output_path" "$expected_path"
     if [ $? -ne 0 ]; then
-        echo "$0: Did not match expected error output"
+        echo "$0: Does not match expected error output"
         exit 1
     fi
+    echo "$0: Passed test $test_name"
     exit 0
 else
     ./glacierc "$source_path" -o "$bytecode_path" || exit 1
