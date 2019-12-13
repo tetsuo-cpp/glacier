@@ -34,9 +34,12 @@ class TypeDeduction(ast.ASTWalker):
         expr.ret_type = self.variable_types[expr.name]
 
     def _walk_constructor(self, expr):
-        expr.ret_type = ast.Type(ast.Type.USER, expr.struct_name)
+        expr.ret_type = ast.Type(ast.TypeKind.USER, expr.struct_name)
 
     def _walk_function_call(self, expr):
+        # I really need to do this properly one day...
+        if expr.name == "print":
+            return
         # Deduce types of each argument.
         for arg in expr.args:
             self._walk(arg)
@@ -46,6 +49,7 @@ class TypeDeduction(ast.ASTWalker):
         called_func = self.functions[expr.name]
         for arg, param in zip(expr.args, called_func.args):
             assert param[1] == arg.ret_type
+        expr.ret_type = called_func.return_type
 
     def _walk_function(self, expr):
         assert expr.name not in self.functions
@@ -57,11 +61,11 @@ class TypeDeduction(ast.ASTWalker):
         # Deduce type of expr.
         self._walk(expr.expr)
         assert hasattr(expr.expr, "ret_type")
-        assert ret_type.identifier in self.structs
+        assert expr.expr.ret_type.identifier in self.structs
 
-        struct_def = self.structs[ret_type.identifier]
+        struct_def = self.structs[expr.expr.ret_type.identifier]
         for member in struct_def.members:
             if member.name == expr.member_name:
-                expr.ret_type = member[1]
+                expr.ret_type = member.type
                 return
         assert False

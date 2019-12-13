@@ -25,9 +25,9 @@ bytecode_path="${test_prefix}.bc"
 source .ve/bin/activate
 echo "$0: Running test $test_name"
 if [[ "$test_prefix" == *_error ]]; then
-    error_output_path=$(mktemp)
+    output_path=$(mktemp)
     expected_path="${test_prefix}.err"
-    ./glacierc "$source_path" -o "$bytecode_path" > "$error_output_path" && exit 1
+    ./glacierc "$source_path" -o "$bytecode_path" > "$output_path" && exit 1
     cmp "$output_path" "$expected_path"
     if [ $? -ne 0 ]; then
         echo "$0: Did not match expected error output"
