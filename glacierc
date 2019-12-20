@@ -78,6 +78,9 @@ def glacierc_compile(src, o, print_tokens, print_ast, print_bc):
     except TypeError as e:
         print("type error: {}".format(e))
         sys.exit(1)
+    except RuntimeError as e:
+        print("error: {}".format(e))
+        sys.exit(1)
     if print_bc:
         glacierc_print_bc(bc)
 
