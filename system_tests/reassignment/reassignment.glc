@@ -1,0 +1,13 @@
+struct Coordinate {
+  int x;
+  int y;
+};
+
+fn main() -> int {
+  let treasurePos = new Coordinate(1, 3);
+  let otherPos = new Coordinate(1, 4);
+  otherPos = treasurePos;
+  print(otherPos.x);
+  print(otherPos.y);
+  return 0;
+}

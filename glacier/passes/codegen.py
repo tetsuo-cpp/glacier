@@ -102,7 +102,9 @@ class CodeGenerator(ast.ASTWalker):
         self.bc.edit_op(skip_else_offset, bytecode.OpCode.JUMP, [after_else])
 
     def _walk_binary_op(self, expr):
-        self._walk(expr.lhs)
+        # If we're assigning to a variable, don't evaluate it.
+        if expr.operator.type != lexer.TokenType.ASSIGN:
+            self._walk(expr.lhs)
         self._walk(expr.rhs)
         if expr.operator.type == lexer.TokenType.ADD:
             self.bc.write_op(bytecode.OpCode.ADD)
@@ -114,6 +116,10 @@ class CodeGenerator(ast.ASTWalker):
             self.bc.write_op(bytecode.OpCode.DIVIDE)
         elif expr.operator.type == lexer.TokenType.EQUALS:
             self.bc.write_op(bytecode.OpCode.EQ)
+        elif expr.operator.type == lexer.TokenType.ASSIGN:
+            if not isinstance(expr.lhs, ast.VariableRef):
+                raise RuntimeError("tried to assign to non-variable ref: {0}".format(expr.lhs))
+            self.bc.write_op(bytecode.OpCode.SET_VAR, [self.variables.get_variable(expr.lhs.name)])
         else:
             raise RuntimeError("invalid token type for binop: {0}".format(expr.operator))
 

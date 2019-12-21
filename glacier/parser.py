@@ -156,7 +156,16 @@ class Parser:
         return ast.ExprStatement(expr)
 
     def _parse_expr(self):
-        return self._parse_equality()
+        return self._parse_assignment()
+
+    def _parse_assignment(self):
+        lhs = self._parse_equality()
+        while True:
+            tok = self.cur_tok
+            if self._consume_token(TokenType.ASSIGN):
+                lhs = ast.BinaryOp(lhs, self._parse_equality(), tok)
+            else:
+                return lhs
 
     def _parse_equality(self):
         lhs = self._parse_relational()
