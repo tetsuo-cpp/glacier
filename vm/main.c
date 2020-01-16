@@ -5,17 +5,17 @@
 #include <stdio.h>
 #include <string.h>
 
-#define BUF_SIZE 1024
+#define GLC_BYTECODE_BUF_LEN 1024
 
 int main(int argc, char **argv) {
   if (argc != 2) {
-    GLC_LOG_ERR("Usage: glaciervm [BYTECODE_FILE]\n");
+    GLC_LOG_ERR("Usage: glaciervm <bytecode_file>\n");
     return -1;
   }
 
-  char buf[BUF_SIZE];
+  char buf[GLC_BYTECODE_BUF_LEN];
   FILE *inputFile = fopen(argv[1], "r");
-  int len = fread(buf, sizeof(char), BUF_SIZE, inputFile);
+  int len = fread(buf, sizeof(char), GLC_BYTECODE_BUF_LEN, inputFile);
   if (ferror(inputFile))
     return -1;
 

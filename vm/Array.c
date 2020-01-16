@@ -2,8 +2,6 @@
 
 #include "Util.h"
 
-#include <string.h>
-
 #define GLC_ARRAY_INIT_LEN 10
 
 static int glacierArrayGrow(GlacierArray *array, size_t len);
