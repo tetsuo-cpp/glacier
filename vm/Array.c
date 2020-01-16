@@ -15,8 +15,14 @@ int glacierArrayInit(GlacierArray *array) {
 }
 
 int glacierArraySet(GlacierArray *array, size_t index, int val) {
-  if (index >= array->len)
-    GLC_RET(glacierArrayGrow(array, array->len * 2));
+  if (index >= array->len) {
+    // Double each time.
+    size_t newLen = array->len * 2;
+    // Unless the index is larger than that.
+    if (newLen < index)
+      newLen = index + 1;
+    GLC_RET(glacierArrayGrow(array, newLen));
+  }
   int *pos = &array->data[index];
   if (*pos != -1 || val < 0)
     return GLC_ERROR;
