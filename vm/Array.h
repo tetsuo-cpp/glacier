@@ -11,5 +11,6 @@ typedef struct {
 int glacierArrayInit(GlacierArray *array);
 int glacierArraySet(GlacierArray *array, size_t index, int val);
 int glacierArrayGet(GlacierArray *array, size_t index, int *val);
+void glacierArrayDestroy(GlacierArray *array);
 
 #endif // GLACIERVM_ARRAY_H

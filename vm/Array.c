@@ -40,6 +40,11 @@ int glacierArrayGet(GlacierArray *array, size_t index, int *val) {
   return GLC_OK;
 }
 
+void glacierArrayDestroy(GlacierArray *array) {
+  free(array->data);
+  array->len = 0;
+}
+
 static int glacierArrayGrow(GlacierArray *array, size_t len) {
   size_t oldLen = array->len;
   GLC_RET(glacierReAlloc(len, (char **)&array->data));

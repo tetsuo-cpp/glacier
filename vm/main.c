@@ -42,5 +42,7 @@ int main(int argc, char **argv) {
                 glacierUtilErrorToString(ret));
     glacierByteCodePrint(&bc, stderr);
   }
+  glacierArrayDestroy(&ft);
+  glacierArrayDestroy(&st);
   return ret;
 }
