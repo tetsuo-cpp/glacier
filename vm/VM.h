@@ -1,21 +1,20 @@
 #ifndef GLACIERVM_VM_H
 #define GLACIERVM_VM_H
 
+#include "Array.h"
 #include "ByteCode.h"
-#include "FunctionTable.h"
 #include "Stack.h"
 
 typedef struct {
   GlacierByteCode *bc;
   GlacierStack *stack;
-  GlacierFunctionTable *ft;
+  GlacierArray *ft;
   GlacierCallStack *cs;
-  GlacierFunctionTable *st;
+  GlacierArray *st;
 } GlacierVM;
 
 void glacierVMInit(GlacierVM *vm, GlacierByteCode *bc, GlacierStack *stack,
-                   GlacierFunctionTable *ft, GlacierCallStack *cs,
-                   GlacierFunctionTable *st);
+                   GlacierArray *ft, GlacierCallStack *cs, GlacierArray *st);
 int glacierVMRun(GlacierVM *vm);
 
 #endif // GLACIERVM_VM_H

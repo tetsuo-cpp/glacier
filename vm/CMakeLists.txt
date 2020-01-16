@@ -2,8 +2,8 @@ set(
   GLACIER_FILES
   ByteCode.c
   ByteCode.h
-  FunctionTable.c
-  FunctionTable.h
+  Array.c
+  Array.h
   Stack.c
   Stack.h
   VM.c

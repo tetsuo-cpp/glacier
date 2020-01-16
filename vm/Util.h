@@ -65,4 +65,12 @@ static inline int glacierMAlloc(size_t size, char **p) {
   return GLC_OK;
 }
 
+static inline int glacierReAlloc(size_t size, char **p) {
+  char *tmp = realloc(*p, size);
+  if (!tmp)
+    return GLC_OOM;
+  *p = tmp;
+  return GLC_OK;
+}
+
 #endif // GLACIERVM_UTIL_H
