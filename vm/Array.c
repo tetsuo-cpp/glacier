@@ -2,12 +2,13 @@
 
 #include "Util.h"
 
-#define GLC_ARRAY_INIT_LEN 10
+#define GLC_ARRAY_INIT_LEN 2
 
 static int glacierArrayGrow(GlacierArray *array, size_t len);
 
 int glacierArrayInit(GlacierArray *array) {
-  GLC_RET(glacierMAlloc(GLC_ARRAY_INIT_LEN, (char **)&array->data));
+  GLC_RET(
+      glacierMAlloc(GLC_ARRAY_INIT_LEN * sizeof(int), (char **)&array->data));
   array->len = GLC_ARRAY_INIT_LEN;
   for (size_t i = 0; i < array->len; ++i)
     array->data[i] = -1;
@@ -19,7 +20,7 @@ int glacierArraySet(GlacierArray *array, size_t index, int val) {
     // Double each time.
     size_t newLen = array->len * 2;
     // Unless the index is larger than that.
-    if (newLen < index)
+    if (newLen < index + 1)
       newLen = index + 1;
     GLC_RET(glacierArrayGrow(array, newLen));
   }
@@ -47,9 +48,9 @@ void glacierArrayDestroy(GlacierArray *array) {
 
 static int glacierArrayGrow(GlacierArray *array, size_t len) {
   size_t oldLen = array->len;
-  GLC_RET(glacierReAlloc(len, (char **)&array->data));
+  GLC_RET(glacierReAlloc(len * sizeof(int), (char **)&array->data));
   // Init new slots to -1.
-  for (size_t i = oldLen - 1; i < len; ++i)
+  for (size_t i = oldLen; i < len; ++i)
     array->data[i] = -1;
   array->len = len;
   return GLC_OK;
