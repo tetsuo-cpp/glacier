@@ -1,3 +1,8 @@
+# add_subdirectory(
+#   "${PROJECT_SOURCE_DIR}/vm/ext/bdwgc"
+#   "ext/bdwgc"
+#   )
+
 set(
   GLACIER_FILES
   ByteCode.c
