@@ -36,6 +36,7 @@ class TokenType(Enum):
     DIVIDE = 31
     DOT = 32
     NEW = 33
+    WHILE = 34
 
 
 class Token:
@@ -60,6 +61,7 @@ KEYWORDS = {
     "string": TokenType.STRING,
     "return": TokenType.RETURN,
     "new": TokenType.NEW,
+    "while": TokenType.WHILE,
 }
 
 SYMBOLS = {

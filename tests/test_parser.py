@@ -239,6 +239,33 @@ class ParserTestCase(unittest.TestCase):
         ]
         self._test_parse_impl(buf, exprs)
 
+    def test_while_loop(self):
+        buf = """
+        fn loopTest(int x) -> int {
+          while (x < 5) {
+            print("blah");
+          }
+          return 0;
+        }
+        """
+        exprs = [
+            ast.Function(
+                "loopTest",
+                [("x", ast.Type(ast.TypeKind.INT))],
+                [
+                    ast.WhileLoop(
+                        ast.BinaryOp(
+                            ast.VariableRef("x"), ast.Number(5), Token(TokenType.LESS_THAN, "<")
+                        ),
+                        [ast.ExprStatement(ast.FunctionCall("print", [ast.String("blah")]))],
+                    ),
+                    ast.ReturnStatement(ast.Number(0)),
+                ],
+                ast.Type(ast.TypeKind.INT),
+            )
+        ]
+        self._test_parse_impl(buf, exprs)
+
 
 if __name__ == "__main__":
     unittest.main()

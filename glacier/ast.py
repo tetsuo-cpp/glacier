@@ -46,6 +46,20 @@ class IfStatement:
         )
 
 
+class WhileLoop:
+    def __init__(self, cond, loop_body):
+        self.cond = cond
+        self.loop_body = loop_body
+
+    def __eq__(self, other):
+        if not isinstance(other, WhileLoop):
+            return False
+        return self.cond == other.cond and self.loop_body == other.loop_body
+
+    def __str__(self):
+        return "WhileLoop(Cond={0}, LoopBody={1})".format(self.cond, list_to_string(self.loop_body))
+
+
 class ExprStatement:
     def __init__(self, expr):
         self.expr = expr
@@ -274,6 +288,8 @@ class ASTWalker:
             self._walk_let_statement(expr)
         elif isinstance(expr, IfStatement):
             self._walk_if_statement(expr)
+        elif isinstance(expr, WhileLoop):
+            self._walk_while_loop(expr)
         elif isinstance(expr, ExprStatement):
             self._walk(expr.expr)
         elif isinstance(expr, BinaryOp):
@@ -306,6 +322,9 @@ class ASTWalker:
         pass
 
     def _walk_if_statement(self, expr):
+        pass
+
+    def _walk_while_loop(self, expr):
         pass
 
     def _walk_binary_op(self, expr):

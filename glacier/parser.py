@@ -113,6 +113,8 @@ class Parser:
             return self._parse_return()
         elif self._consume_token(TokenType.IF):
             return self._parse_if_statement()
+        elif self._consume_token(TokenType.WHILE):
+            return self._parse_while_loop()
         else:
             return self._parse_expr_statement()
 
@@ -148,6 +150,19 @@ class Parser:
                 else_statements.append(self._parse_statement())
 
         return ast.IfStatement(cond, then_statements, else_statements)
+
+    def _parse_while_loop(self):
+        self._expect_token(TokenType.L_BRACKET)
+        cond = self._parse_expr()
+        self._expect_token(TokenType.R_BRACKET)
+        self._expect_token(TokenType.L_BRACE)
+
+        # Parse the contents of the loop.
+        loop_body = list()
+        while not self._consume_token(TokenType.R_BRACE):
+            loop_body.append(self._parse_statement())
+
+        return ast.WhileLoop(cond, loop_body)
 
     def _parse_expr_statement(self):
         expr = self._parse_expr()

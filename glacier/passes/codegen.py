@@ -101,6 +101,9 @@ class CodeGenerator(ast.ASTWalker):
         after_else = self.bc.current_offset()
         self.bc.edit_op(skip_else_offset, bytecode.OpCode.JUMP, [after_else])
 
+    def _walk_while_loop(self, expr):
+        pass
+
     def _walk_binary_op(self, expr):
         # If we're assigning to a variable, don't evaluate it.
         if expr.operator.type != lexer.TokenType.ASSIGN:
