@@ -14,6 +14,7 @@ static int glacierVMSubtract(GlacierVM *vm);
 static int glacierVMMultiply(GlacierVM *vm);
 static int glacierVMDivide(GlacierVM *vm);
 static int glacierVMEq(GlacierVM *vm);
+static int glacierVMLt(GlacierVM *vm);
 static int glacierVMReturnVal(GlacierVM *vm);
 static int glacierVMHeader(GlacierVM *vm);
 static int glacierVMFunctionJmp(GlacierVM *vm);
@@ -117,6 +118,9 @@ static int glacierVMFunctionDef(GlacierVM *vm) {
       break;
     case GLC_BYTECODE_EQ:
       GLC_RET(glacierVMEq(vm));
+      break;
+    case GLC_BYTECODE_LT:
+      GLC_RET(glacierVMLt(vm));
       break;
     case GLC_BYTECODE_RETURN_VAL: {
       int bcOffset;
@@ -254,6 +258,19 @@ static int glacierVMEq(GlacierVM *vm) {
   GLC_RET(glacierStackPush(vm->stack, result));
   GLC_LOG_DBG("VM: Equating %llu and %llu to got %llu.\n", lhs.intValue,
               rhs.intValue, result.intValue);
+  return GLC_OK;
+}
+
+static int glacierVMLt(GlacierVM *vm) {
+  GlacierValue lhs, rhs;
+  GLC_RET(glacierStackPop(vm->stack, &rhs));
+  GLC_RET(glacierStackPop(vm->stack, &lhs));
+  assert(lhs.typeId == GLC_TYPEID_INT && rhs.typeId == GLC_TYPEID_INT);
+  GlacierValue result =
+      glacierValueFromInt(lhs.intValue < rhs.intValue ? 1 : 0);
+  GLC_RET(glacierStackPush(vm->stack, result));
+  GLC_LOG_DBG("VM: Comparing if %llu is less than %llu to got %llu.\n",
+              lhs.intValue, rhs.intValue, result.intValue);
   return GLC_OK;
 }
 

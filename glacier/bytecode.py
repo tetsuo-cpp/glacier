@@ -140,6 +140,12 @@ class OpCode(enum.Enum):
     - The member index (1 byte).
     """
     SET_STRUCT_MEMBER = 0x17
+    """
+    Compare that the sceond integer on the stack is less than the first and place the result on the
+    top of the stack (1 for true, 0 for false).
+    - The LT opcode (1 byte).
+    """
+    LT = 0x18
 
 
 class ByteCode:

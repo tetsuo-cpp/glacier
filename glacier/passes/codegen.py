@@ -102,7 +102,25 @@ class CodeGenerator(ast.ASTWalker):
         self.bc.edit_op(skip_else_offset, bytecode.OpCode.JUMP, [after_else])
 
     def _walk_while_loop(self, expr):
-        pass
+        # Every loop iteration is going to jump back up here.
+        before_loop = self.bc.current_offset()
+
+        # Eval the cond.
+        self._walk(expr.cond)
+
+        # Jump out of the loop if the cond is false.
+        # Come back and edit this when we know what bytecode offset the loop ends at.
+        skip_loop_body = self.bc.current_offset()
+        self.bc.write_op(bytecode.OpCode.JUMP_IF_FALSE, [0xFF])
+
+        for statement in expr.loop_body:
+            self._walk(statement)
+
+        # Jump back to the beginning of the loop and eval the cond again.
+        self.bc.write_op(bytecode.OpCode.JUMP, [before_loop])
+
+        after_loop_body = self.bc.current_offset()
+        self.bc.edit_op(skip_loop_body, bytecode.OpCode.JUMP_IF_FALSE, [after_loop_body])
 
     def _walk_binary_op(self, expr):
         # If we're assigning to a variable, don't evaluate it.
@@ -119,6 +137,8 @@ class CodeGenerator(ast.ASTWalker):
             self.bc.write_op(bytecode.OpCode.DIVIDE)
         elif expr.operator.type == lexer.TokenType.EQUALS:
             self.bc.write_op(bytecode.OpCode.EQ)
+        elif expr.operator.type == lexer.TokenType.LESS_THAN:
+            self.bc.write_op(bytecode.OpCode.LT)
         elif expr.operator.type == lexer.TokenType.ASSIGN:
             if not isinstance(expr.lhs, ast.VariableRef):
                 raise RuntimeError("tried to assign to non-variable ref: {0}".format(expr.lhs))
