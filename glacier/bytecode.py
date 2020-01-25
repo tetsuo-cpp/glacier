@@ -141,7 +141,7 @@ class OpCode(enum.Enum):
     """
     SET_STRUCT_MEMBER = 0x17
     """
-    Compare that the sceond integer on the stack is less than the first and place the result on the
+    Compare that the second integer on the stack is less than the first and place the result on the
     top of the stack (1 for true, 0 for false).
     - The LT opcode (1 byte).
     """
