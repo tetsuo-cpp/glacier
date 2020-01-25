@@ -81,3 +81,4 @@ fn main() -> int {
 * Generate bytecode definitions in C and Python from a definition language.
 * More tests around static typing.
 * Reduce technical debt and general hackiness.
+* Improve compiler errors and diagnostics.
