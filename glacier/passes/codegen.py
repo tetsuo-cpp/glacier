@@ -140,11 +140,31 @@ class CodeGenerator(ast.ASTWalker):
         elif expr.operator.type == lexer.TokenType.LESS_THAN:
             self.bc.write_op(bytecode.OpCode.LT)
         elif expr.operator.type == lexer.TokenType.ASSIGN:
-            if not isinstance(expr.lhs, ast.VariableRef):
-                raise RuntimeError("tried to assign to non-variable ref: {0}".format(expr.lhs))
-            self.bc.write_op(bytecode.OpCode.SET_VAR, [self.variables.get_variable(expr.lhs.name)])
+            self._walk_assignment(expr)
         else:
             raise RuntimeError("invalid token type for binop: {0}".format(expr.operator))
+
+    def _walk_assignment(self, expr):
+        assert expr.operator.type == lexer.TokenType.ASSIGN
+        if isinstance(expr.lhs, ast.VariableRef):
+            self.bc.write_op(bytecode.OpCode.SET_VAR, [self.variables.get_variable(expr.lhs.name)])
+        elif isinstance(expr.lhs, ast.MemberAccess):
+            self._walk(expr.lhs.expr)
+            # We've already done type deduction so we can do this properly later.
+            for _, s in self.structs.items():
+                i = 0
+                for m in s.members:
+                    if m.name == expr.lhs.member_name:
+                        self.bc.write_op(bytecode.OpCode.SET_STRUCT_MEMBER, [i])
+                        return
+                    i += 1
+            raise RuntimeError("couldn't find the right struct")
+        else:
+            raise RuntimeError(
+                "lhs of an assignment must be either a variable ref or a struct member access: {}".format(
+                    expr
+                )
+            )
 
     def _walk_variable(self, expr):
         self.bc.write_op(bytecode.OpCode.GET_VAR, [self.variables.get_variable(expr.name)])

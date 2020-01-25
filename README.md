@@ -72,7 +72,6 @@ fn main() -> int {
 ## TODO
 * Default arguments in constructors.
 * Methods on structs.
-* Assigning to struct members.
 * Integrate Boehm GC.
 * Make object stack resizeable.
 * Vectors.
