@@ -41,7 +41,7 @@ fn main() -> int {
 
   printNum(num); // 10
   printNum(1); // 1
-  printNum("hello world"); // Type error.
+  printNum("hello world"); // Compiler error.
 
   // Using structs.
   // Provide all arguments.
@@ -58,13 +58,13 @@ fn main() -> int {
   let vec = [8, 2]<int>;
   print(vec[0]); // 8
   push(vec, 6);
-  push(vec, "foo"); // Type error.
+  push(vec, "foo"); // Compiler error.
   pop(vec);
 
   let map = { "foo": 21, "bar": 9 }<string, int>;
   print(map["foo"]); // 21
   insert(map, "foobar", 3);
-  insert(map, 1, 2); // Type error.
+  insert(map, 1, 2); // Compiler error.
 
   return 0;
 }
