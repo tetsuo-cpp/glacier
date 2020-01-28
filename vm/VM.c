@@ -401,10 +401,10 @@ static int glacierVMStructAlloc(GlacierVM *vm) {
   GlacierValue *structVal;
   GLC_RET(
       glacierMAlloc(sizeof(GlacierValue) * numMembers, (char **)&structVal));
-  for (int i = (numMembers - 1); i >= 0; --i) {
+  for (int i = 0; i < numMembers; ++i) {
     GlacierValue memberValue;
     GLC_ERR(glacierStackPop(vm->stack, &memberValue));
-    structVal[i] = memberValue;
+    structVal[numMembers - i - 1] = memberValue;
   }
   GLC_ERR(
       glacierStackPush(vm->stack, glacierValueFromStruct(structVal, structId)));
@@ -452,7 +452,7 @@ static int glacierVMSetArgs(GlacierVM *vm, int numArgs) {
   GlacierValue val;
   for (int i = 0; i < numArgs; ++i) {
     GLC_RET(glacierStackPop(vm->stack, &val));
-    GLC_RET(glacierCallStackSet(vm->cs, i, val));
+    GLC_RET(glacierCallStackSet(vm->cs, numArgs - i - 1, val));
 
     GLC_LOG_DBG("VM: Just set arg %d to ", i);
     glacierValueLog(&val);
