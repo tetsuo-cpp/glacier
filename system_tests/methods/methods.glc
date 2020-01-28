@@ -1,0 +1,16 @@
+struct Person {
+  int age;
+
+  fn growOlder() -> int {
+    this.age = this.age + 1;
+    return 0;
+  }
+};
+
+fn main() -> int {
+  let alex = new Person(24);
+  print(alex.age);
+  alex.growOlder();
+  print(alex.age);
+  return 0;
+}
