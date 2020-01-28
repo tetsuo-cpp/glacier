@@ -42,7 +42,7 @@ class Parser:
                 "unexpected token: Got=({0}), Expected=({1})".format(self.cur_tok.type, token_type)
             )
 
-    def _parse_function(self):
+    def _parse_function(self, this=None):
         f_name = self.cur_tok.value
         self._expect_token(TokenType.IDENTIFIER)
         self._expect_token(TokenType.L_BRACKET)
@@ -66,6 +66,9 @@ class Parser:
         while not self._consume_token(TokenType.R_BRACE):
             statements.append(self._parse_statement())
 
+        if this is not None:
+            args.insert(0, this)
+
         return ast.Function(f_name, args, statements, return_type)
 
     def _parse_structure(self):
@@ -82,7 +85,9 @@ class Parser:
 
         member_functions = list()
         while self._consume_token(TokenType.FUNCTION):
-            member_functions.append(self._parse_function())
+            member_functions.append(
+                self._parse_function(("this", ast.Type(ast.TypeKind.USER, s_name)))
+            )
 
         self._expect_token(TokenType.R_BRACE)
         self._expect_token(TokenType.SEMICOLON)
@@ -229,7 +234,10 @@ class Parser:
             if self._consume_token(TokenType.DOT):
                 member_name = self.cur_tok.value
                 self._expect_token(TokenType.IDENTIFIER)
-                expr = ast.MemberAccess(expr, member_name)
+                if self._consume_token(TokenType.L_BRACKET):
+                    expr = self._parse_function_call(member_name, expr)
+                else:
+                    expr = ast.MemberAccess(expr, member_name)
             else:
                 break
         return expr
@@ -272,10 +280,12 @@ class Parser:
             params.append(self._parse_expr())
         return ast.Constructor(struct_name, params)
 
-    def _parse_function_call(self, name):
+    def _parse_function_call(self, name, this=None):
         args = list()
         while not self._consume_token(TokenType.R_BRACKET):
             if args:
                 self._expect_token(TokenType.COMMA)
             args.append(self._parse_expr())
+        if this is not None:
+            args.insert(0, this)
         return ast.FunctionCall(name, args)

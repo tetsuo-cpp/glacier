@@ -61,8 +61,8 @@ int glacierVMRun(GlacierVM *vm) {
 
 static int glacierVMStructDef(GlacierVM *vm) {
   uint8_t numMembers, structId;
-  GLC_RET(glacierByteCodeRead8(vm->bc, &numMembers));
   GLC_RET(glacierByteCodeRead8(vm->bc, &structId));
+  GLC_RET(glacierByteCodeRead8(vm->bc, &numMembers));
   GLC_LOG_DBG("VM: Parsing struct def with id %d and %d members.\n", structId,
               numMembers);
   GLC_RET(glacierArraySet(vm->st, structId, numMembers));
@@ -438,10 +438,8 @@ static int glacierVMStructSetMember(GlacierVM *vm) {
   GLC_RET(glacierByteCodeRead8(vm->bc, &memberNumber));
   GlacierValue structVal, setVal;
   // Nobody knows what type this is.
-  GLC_RET(glacierStackPop(vm->stack, &setVal));
   GLC_RET(glacierStackPop(vm->stack, &structVal));
-  assert(structVal.typeId != GLC_TYPEID_INT &&
-         structVal.typeId != GLC_TYPEID_STRING);
+  GLC_RET(glacierStackPop(vm->stack, &setVal));
 
   // Now reach into the struct data and set the appropriate member.
   GlacierValue *member = structVal.structValue + memberNumber;

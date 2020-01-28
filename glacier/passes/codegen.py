@@ -32,6 +32,10 @@ class CodeGenerator(ast.ASTWalker):
         self.variables = VariableStore()
         self.seen_main = False
 
+    def _walk_structure(self, expr):
+        for mf in expr.member_functions:
+            self._walk(mf)
+
     def _walk_function(self, expr):
         expr.function_id = self._allocate_function_id(expr.name)
         self.functions[expr.name] = expr

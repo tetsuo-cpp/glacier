@@ -99,11 +99,11 @@ def print_string(reader):
     print("STRING ({})".format(reader.index - 1))
     op = reader.expect_op()
     print("  StringLength: {}".format(op))
-    string = str().zfill(op)
+    string = list()
     for i in range(0, op):
         char = reader.expect_op()
-        string[i] = char
-    print("  StringValue: {}".format(string))
+        string.append(chr(char))
+    print("  StringValue: {}".format(str().join(string)))
 
 
 def print_subtract(reader):

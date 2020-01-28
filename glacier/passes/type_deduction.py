@@ -60,6 +60,10 @@ class TypeDeduction(ast.ASTWalker):
             i += 1
         expr.ret_type = called_func.return_type
 
+    def _walk_structure(self, expr):
+        for mf in expr.member_functions:
+            self._walk(mf)
+
     def _walk_function(self, expr):
         if expr.name in self.functions:
             raise TypeError("redefinition of function {}".format(expr.name))

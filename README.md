@@ -71,7 +71,6 @@ fn main() -> int {
 ```
 ## TODO
 * Default arguments in constructors.
-* Methods on structs.
 * Integrate Boehm GC.
 * Make object stack resizeable.
 * Vectors.
@@ -82,4 +81,3 @@ fn main() -> int {
 * More tests around static typing.
 * Reduce technical debt and general hackiness.
 * Improve compiler errors and diagnostics.
-* Add bytecode disassembler tool.
