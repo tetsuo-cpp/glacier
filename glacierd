@@ -1,0 +1,240 @@
+#!/usr/bin/env python
+
+import click
+import sys
+from glacier.bytecode import OpCode
+
+
+class MalformedByteCodeError(Exception):
+    pass
+
+
+class ByteCodeReader:
+    def __init__(self, bc):
+        self.bc = bc
+        self.index = 0
+
+    def read_op(self):
+        if self.index >= len(self.bc):
+            return None
+        op = self.bc[self.index]
+        self.index += 1
+        return op
+
+    def expect_op(self):
+        op = self.read_op()
+        if op is None:
+            raise MalformedByteCodeError("unexpected end of bytecode")
+        return op
+
+
+def print_struct_def(reader):
+    print("STRUCT_DEF ({})".format(reader.index - 1))
+    op = reader.expect_op()
+    print("  TypeId: {}".format(op))
+    op = reader.expect_op()
+    print("  NumMembers: {}".format(op))
+    for i in range(0, op):
+        op = reader.expect_op()
+        print("    MemberTypeId{}: {}".format(i, op))
+
+
+def print_function_jmp(reader):
+    print("FUNCTION_JMP ({})".format(reader.index - 1))
+    op = reader.expect_op()
+    print("  TypeId: {}".format(op))
+    op = reader.expect_op()
+    print("  Offset: {}".format(op))
+
+
+def print_header_end(reader):
+    print("HEADER_END ({})".format(reader.index - 1))
+
+
+def print_function_def(reader):
+    print("FUNCTION_DEF ({})".format(reader.index - 1))
+    op = reader.expect_op()
+    print("  FunctionId: {}".format(op))
+    op = reader.expect_op()
+    print("  NumberOfArgs: {}".format(op))
+
+
+def print_set_var(reader):
+    print("SET_VAR ({})".format(reader.index - 1))
+    op = reader.expect_op()
+    print("  VariableId: {}".format(op))
+
+
+def print_get_var(reader):
+    print("GET_VAR ({})".format(reader.index - 1))
+    op = reader.expect_op()
+    print("  VariableId: {}".format(op))
+
+
+def print_call_func(reader):
+    print("CALL_FUNC ({})".format(reader.index - 1))
+    op = reader.expect_op()
+    print("  FunctionId: {}".format(op))
+
+
+def print_return(reader):
+    print("RETURN ({})".format(reader.index - 1))
+
+
+def print_return_val(reader):
+    print("RETURN_VAL ({})".format(reader.index - 1))
+
+
+def print_add(reader):
+    print("ADD ({})".format(reader.index - 1))
+
+
+def print_int(reader):
+    print("INT ({})".format(reader.index - 1))
+    op = reader.expect_op()
+    print("  IntValue: {}".format(op))
+
+
+def print_string(reader):
+    print("STRING ({})".format(reader.index - 1))
+    op = reader.expect_op()
+    print("  StringLength: {}".format(op))
+    string = str().zfill(op)
+    for i in range(0, op):
+        char = reader.expect_op()
+        string[i] = char
+    print("  StringValue: {}".format(string))
+
+
+def print_subtract(reader):
+    print("SUBTRACT ({})".format(reader.index - 1))
+
+
+def print_multiply(reader):
+    print("MULTIPLY ({})".format(reader.index - 1))
+
+
+def print_divide(reader):
+    print("DIVIDE ({})".format(reader.index - 1))
+
+
+def print_print(reader):
+    print("PRINT ({})".format(reader.index - 1))
+
+
+def print_eq(reader):
+    print("EQ ({})".format(reader.index - 1))
+
+
+def print_jump_if_true(reader):
+    print("JUMP_IF_TRUE ({})".format(reader.index - 1))
+    op = reader.expect_op()
+    print("  Offset: {}".format(op))
+
+
+def print_jump_if_false(reader):
+    print("JUMP_IF_FALSE ({})".format(reader.index - 1))
+    op = reader.expect_op()
+    print("  Offset: {}".format(op))
+
+
+def print_jump(reader):
+    print("JUMP ({})".format(reader.index - 1))
+    op = reader.expect_op()
+    print("  Offset: {}".format(op))
+
+
+def print_struct(reader):
+    print("STRUCT ({})".format(reader.index - 1))
+    op = reader.expect_op()
+    print("  StructId: {}".format(op))
+
+
+def print_get_struct_member(reader):
+    print("GET_STRUCT_MEMBER ({})".format(reader.index - 1))
+    op = reader.expect_op()
+    print("  MemberIndex: {}".format(op))
+
+
+def print_set_struct_member(reader):
+    print("SET_STRUCT_MEMBER ({})".format(reader.index - 1))
+    op = reader.expect_op()
+    print("  MemberIndex: {}".format(op))
+
+
+def print_lt(reader):
+    print("LT ({})".format(reader.index - 1))
+
+
+def print_op(reader, op):
+    if op == OpCode.STRUCT_DEF.value:
+        print_struct_def(reader)
+    elif op == OpCode.FUNCTION_JMP.value:
+        print_function_jmp(reader)
+    elif op == OpCode.HEADER_END.value:
+        print_header_end(reader)
+    elif op == OpCode.FUNCTION_DEF.value:
+        print_function_def(reader)
+    elif op == OpCode.GET_VAR.value:
+        print_get_var(reader)
+    elif op == OpCode.SET_VAR.value:
+        print_set_var(reader)
+    elif op == OpCode.CALL_FUNC.value:
+        print_call_func(reader)
+    elif op == OpCode.RETURN.value:
+        print_return(reader)
+    elif op == OpCode.RETURN_VAL.value:
+        print_return_val(reader)
+    elif op == OpCode.ADD.value:
+        print_add(reader)
+    elif op == OpCode.INT.value:
+        print_int(reader)
+    elif op == OpCode.STRING.value:
+        print_string(reader)
+    elif op == OpCode.SUBTRACT.value:
+        print_subtract(reader)
+    elif op == OpCode.MULTIPLY.value:
+        print_multiply(reader)
+    elif op == OpCode.DIVIDE.value:
+        print_divide(reader)
+    elif op == OpCode.PRINT.value:
+        print_print(reader)
+    elif op == OpCode.EQ.value:
+        print_eq(reader)
+    elif op == OpCode.JUMP_IF_TRUE.value:
+        print_jump_if_true(reader)
+    elif op == OpCode.JUMP_IF_FALSE.value:
+        print_jump_if_false(reader)
+    elif op == OpCode.JUMP.value:
+        print_jump(reader)
+    elif op == OpCode.STRUCT.value:
+        print_struct(reader)
+    elif op == OpCode.GET_STRUCT_MEMBER.value:
+        print_get_struct_member(reader)
+    elif op == OpCode.SET_STRUCT_MEMBER.value:
+        print_set_struct_member(reader)
+    elif op == OpCode.LT.value:
+        print_lt(reader)
+    else:
+        raise MalformedByteCodeError("unrecognised op: {}".format(op))
+
+
+@click.command()
+@click.argument("src", nargs=1)
+def glacierd_disassemble(src):
+    with open(src, "rb") as f:
+        bc = f.read()
+    reader = ByteCodeReader(bc)
+    try:
+        while True:
+            op = reader.read_op()
+            if op is None:
+                break
+            print_op(reader, op)
+    except MalformedByteCodeError as e:
+        print("malformed bytecode error: {}".format(e))
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    glacierd_disassemble()
