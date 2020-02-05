@@ -270,7 +270,11 @@ class Parser:
             if elements:
                 self._expect_token(TokenType.COMMA)
             elements.append(self._parse_expr())
-        return ast.Array(elements)
+        # Need a type decl for let exprs to work.
+        self._expect_token(TokenType.LESS_THAN)
+        container_type = self._parse_type()
+        self._expect_token(TokenType.GREATER_THAN)
+        return ast.Array(elements, container_type)
 
     def _parse_constructor(self):
         params = list()

@@ -207,16 +207,19 @@ class String:
 
 
 class Array:
-    def __init__(self, elements):
+    def __init__(self, elements, container_type):
         self.elements = elements
+        self.container_type = container_type
 
     def __eq__(self, other):
         if not isinstance(other, Array):
             return False
-        return self.elements == other.elements
+        return self.elements == other.elements and self.container_type == other.container_type
 
     def __str__(self):
-        return "Array(Elements={0})".format(list_to_string(self.elements))
+        return "Array(Elements={0}, ContainerType={1})".format(
+            list_to_string(self.elements), self.container_type
+        )
 
 
 class VariableRef:
@@ -274,6 +277,20 @@ class MemberAccess:
 
     def __str__(self):
         return "MemberAccess(Expr={0}, MemberName={1})".format(self.expr, self.member_name)
+
+
+class ArrayAccess:
+    def __init__(self, expr, array_index):
+        self.expr = expr
+        self.array_index = array_index
+
+    def __eq__(self, other):
+        if not isinstance(other, ArrayAccess):
+            return False
+        return self.expr == other.expr and self.array_index == other.array_index
+
+    def __str__(self):
+        return "ArrayAccess(Expr={0}, ArrayIndex={1})".format(self.expr, self.array_index)
 
 
 class ASTWalker:
