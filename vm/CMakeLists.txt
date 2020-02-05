@@ -13,6 +13,8 @@ set(
   Stack.h
   VM.c
   VM.h
+  ds/Vector.c
+  ds/Vector.h
   )
 
 add_library(glaciervm_lib ${GLACIER_FILES})
