@@ -70,7 +70,6 @@ fn main() -> int {
 }
 ```
 ## TODO
-* Default arguments in constructors.
 * Integrate Boehm GC.
 * Make object stack resizeable.
 * Vectors.

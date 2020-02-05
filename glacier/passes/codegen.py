@@ -179,8 +179,13 @@ class CodeGenerator(ast.ASTWalker):
             raise RuntimeError("unrecognised struct name {0}".format(expr.struct_name))
         struct_def = self.structs[expr.struct_name]
         # Codegen each argument to the ctor.
-        for p in expr.params:
-            self._walk(p)
+        for i in range(0, len(struct_def.members)):
+            if i < len(expr.params):
+                self._walk(expr.params[i])
+            else:
+                default_value = struct_def.members[i].default_value
+                assert default_value is not None
+                self._walk(default_value)
         self.bc.write_op(bytecode.OpCode.STRUCT, [struct_def.type_id])
 
     def _walk_function_call(self, expr):

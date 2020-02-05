@@ -97,8 +97,11 @@ class Parser:
         m_type = self._parse_type()
         m_name = self.cur_tok.value
         self._expect_token(TokenType.IDENTIFIER)
+        default_value = None
+        if self._consume_token(TokenType.ASSIGN):
+            default_value = self._parse_primary_expr()
         self._expect_token(TokenType.SEMICOLON)
-        return ast.Member(m_name, m_type)
+        return ast.Member(m_name, m_type, default_value)
 
     def _parse_type(self):
         if self._consume_token(TokenType.INT):
