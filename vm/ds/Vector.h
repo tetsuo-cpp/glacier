@@ -9,9 +9,11 @@ typedef struct {
   size_t capacity;
 } GlacierVector;
 
-void glacierVectorInit(GlacierVector *vector);
-int glacierVectorPush(GlacierVector *vector, GlacierValue *value);
+int glacierVectorInit(GlacierVector *vector);
+int glacierVectorPush(GlacierVector *vector, GlacierValue value);
 int glacierVectorPop(GlacierVector *vector);
+int glacierVectorSet(GlacierVector *vector, size_t index, GlacierValue val);
+int glacierVectorGet(GlacierVector *vector, size_t index, GlacierValue *val);
 void glacierVectorDestroy(GlacierVector *vector);
 
 #endif // GLACIERVM_VECTOR_H

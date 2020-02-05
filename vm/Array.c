@@ -43,6 +43,7 @@ int glacierArrayGet(GlacierArray *array, size_t index, int *val) {
 
 void glacierArrayDestroy(GlacierArray *array) {
   free(array->data);
+  array->data = NULL;
   array->len = 0;
 }
 
