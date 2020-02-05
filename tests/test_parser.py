@@ -84,7 +84,7 @@ class ParserTestCase(unittest.TestCase):
                 [
                     ast.Function(
                         "memberFunc",
-                        [],
+                        [("this", ast.Type(ast.TypeKind.USER, "Foo"))],
                         [ast.ReturnStatement(ast.VariableRef("age"))],
                         ast.Type(ast.TypeKind.INT),
                     )
