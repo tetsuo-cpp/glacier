@@ -241,6 +241,10 @@ class Parser:
                     expr = self._parse_function_call(member_name, expr)
                 else:
                     expr = ast.MemberAccess(expr, member_name)
+            if self._consume_token(TokenType.L_PAREN):
+                index = self._parse_expr()
+                self._expect_token(TokenType.R_PAREN)
+                expr = ast.ArrayAccess(expr, index)
             else:
                 break
         return expr

@@ -134,16 +134,24 @@ class Structure:
 class TypeKind(Enum):
     INT = 1
     STRING = 2
-    USER = 3
+    VECTOR = 3
+    MAP = 4
+    USER = 5
 
 
 class Type:
-    def __init__(self, kind, identifier=None):
+    def __init__(self, kind, identifier=None, container_type=None):
         self.kind = kind
         self.identifier = identifier
+        # Only used for vectors and maps.
+        self.container_type = container_type
 
     def __eq__(self, other):
-        return self.kind == other.kind and self.identifier == other.identifier
+        return (
+            self.kind == other.kind
+            and self.identifier == other.identifier
+            and self.container_type == other.container_type
+        )
 
 
 class Member:
@@ -321,6 +329,8 @@ class ASTWalker:
             self._walk_string(expr)
         elif isinstance(expr, Array):
             self._walk_array(expr)
+        elif isinstance(expr, ArrayAccess):
+            self._walk_array_access(expr)
         elif isinstance(expr, VariableRef):
             self._walk_variable(expr)
         elif isinstance(expr, Constructor):
@@ -360,6 +370,9 @@ class ASTWalker:
         pass
 
     def _walk_array(self, expr):
+        pass
+
+    def _walk_array_access(self, expr):
         pass
 
     def _walk_variable(self, expr):
