@@ -108,6 +108,11 @@ class Parser:
             return ast.Type(ast.TypeKind.INT)
         elif self._consume_token(TokenType.STRING):
             return ast.Type(ast.TypeKind.STRING)
+        elif self._consume_token(TokenType.VECTOR):
+            self._expect_token(TokenType.LESS_THAN)
+            container_type = self._parse_type()
+            self._expect_token(TokenType.GREATER_THAN)
+            return ast.Type(ast.TypeKind.VECTOR, None, container_type)
         else:
             # User defined type. Should just look like a regular identifier.
             identifier = self.cur_tok.value

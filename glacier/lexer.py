@@ -37,6 +37,7 @@ class TokenType(Enum):
     DOT = 32
     NEW = 33
     WHILE = 34
+    VECTOR = 35
 
 
 class Token:
@@ -62,6 +63,7 @@ KEYWORDS = {
     "return": TokenType.RETURN,
     "new": TokenType.NEW,
     "while": TokenType.WHILE,
+    "vector": TokenType.VECTOR,
 }
 
 SYMBOLS = {
