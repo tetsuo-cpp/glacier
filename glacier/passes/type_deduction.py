@@ -32,18 +32,18 @@ class TypeDeduction(ast.ASTWalker):
 
     def _walk_array(self, expr):
         expr.ret_type = ast.Type(ast.TypeKind.VECTOR, None, expr.container_type)
+        for e in expr.elements:
+            self._walk(e)
+            if e.ret_type != expr.container_type:
+                raise TypeError(
+                    "found element of type {} in array with container type {}".format(
+                        e.ret_type.kind, expr.container_type.kind
+                    )
+                )
 
     def _walk_array_access(self, expr):
         self._walk(expr.expr)
         expr.ret_type = expr.expr.container_type
-        for e in expr.elements:
-            self._walk(e)
-            if e.ret_type != expr.ret_type:
-                raise TypeError(
-                    "found element of type {} in array with container type {}".format(
-                        e.ret_type, expr.ret_type
-                    )
-                )
 
     def _walk_variable(self, expr):
         if expr.name not in self.variable_types:

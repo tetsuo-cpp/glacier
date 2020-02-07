@@ -1,0 +1,4 @@
+fn main() -> int {
+  let vec = [1, 2, "hi"]<int>;
+  return 0;
+}
