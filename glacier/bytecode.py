@@ -153,6 +153,12 @@ class OpCode(enum.Enum):
     - The size of the vector (1 byte).
     """
     VEC = 0x19
+    """
+    Access an element from a vector on the stack. This opcode expects the element index to be at the
+    top of the stack followed by the vector itself.
+    - The VEC_ACCESS opcode (1 byte).
+    """
+    VEC_ACCESS = 0x1A
 
 
 class ByteCode:

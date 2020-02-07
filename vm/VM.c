@@ -29,6 +29,7 @@ static int glacierVMStructGetMember(GlacierVM *vm);
 static int glacierVMStructSetMember(GlacierVM *vm);
 static int glacierVMSetArgs(GlacierVM *vm, int numArgs);
 static int glacierVMVector(GlacierVM *vm);
+static int glacierVMVectorAccess(GlacierVM *vm);
 
 void glacierVMInit(GlacierVM *vm, GlacierByteCode *bc, GlacierStack *stack,
                    GlacierArray *ft, GlacierCallStack *cs, GlacierArray *st) {
@@ -163,6 +164,9 @@ static int glacierVMFunctionDef(GlacierVM *vm) {
       break;
     case GLC_BYTECODE_VEC:
       GLC_RET(glacierVMVector(vm));
+      break;
+    case GLC_BYTECODE_VEC_ACCESS:
+      GLC_RET(glacierVMVectorAccess(vm));
       break;
     default:
       GLC_LOG_ERR("VM: Parsed unrecognised instruction %d.\n", opCode);
@@ -482,4 +486,17 @@ static int glacierVMVector(GlacierVM *vm) {
 err:
   glacierVectorDestroy(&vector);
   return ret;
+}
+
+static int glacierVMVectorAccess(GlacierVM *vm) {
+  GlacierValue index, vector, element;
+  GLC_RET(glacierStackPop(vm->stack, &index));
+  GLC_RET(glacierStackPop(vm->stack, &vector));
+  assert(index.typeId == GLC_TYPEID_INT);
+  assert(vector.typeId == GLC_TYPEID_VECTOR);
+  uint64_t i = index.intValue;
+  GlacierVector *v = &vector.vectorValue;
+  GLC_RET(glacierVectorGet(v, i, &element));
+  GLC_RET(glacierStackPush(vm->stack, element));
+  return GLC_OK;
 }
