@@ -146,6 +146,13 @@ class OpCode(enum.Enum):
     - The LT opcode (1 byte).
     """
     LT = 0x18
+    """
+    Create a vector, populate it with the elements currently on the stack and then place the vector
+    itself on the stack.
+    - The VEC opcode (1 byte).
+    - The size of the vector (1 byte).
+    """
+    VEC = 0x19
 
 
 class ByteCode:

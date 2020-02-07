@@ -76,6 +76,14 @@ class CodeGenerator(ast.ASTWalker):
         args.extend(bytes(expr.value, "utf-8"))
         self.bc.write_op(bytecode.OpCode.STRING, args)
 
+    def _walk_array(self, expr):
+        for e in expr.elements:
+            self._walk(e)
+        self.bc.write_op(bytecode.OpCode.VEC, [len(expr.elements)])
+
+    def _walk_array_access(self, expr):
+        pass
+
     def _walk_let_statement(self, expr):
         self._walk(expr.rhs)
         variable_id = self.variables.register_variable(expr.name)

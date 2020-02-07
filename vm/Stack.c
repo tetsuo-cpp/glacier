@@ -21,6 +21,13 @@ GlacierValue glacierValueFromString(char *value) {
   return obj;
 }
 
+GlacierValue glacierValueFromVector(GlacierVector value) {
+  GlacierValue obj;
+  obj.typeId = GLC_TYPEID_VECTOR;
+  obj.vectorValue = value;
+  return obj;
+}
+
 GlacierValue glacierValueFromStruct(void *value, int id) {
   assert(id != GLC_TYPEID_INT && id != GLC_TYPEID_STRING);
   GlacierValue obj;

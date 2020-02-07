@@ -1,7 +1,9 @@
 #ifndef GLACIERVM_VECTOR_H
 #define GLACIERVM_VECTOR_H
 
-#include "../Stack.h"
+#include <stdlib.h>
+
+typedef struct GlacierValue GlacierValue;
 
 typedef struct {
   GlacierValue *data;

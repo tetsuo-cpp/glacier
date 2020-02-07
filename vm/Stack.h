@@ -3,6 +3,7 @@
 
 #include "ByteCode.h"
 #include "Util.h"
+#include "ds/Vector.h"
 
 #include <stdint.h>
 
@@ -16,6 +17,7 @@ struct GlacierValue {
   union {
     uint64_t intValue;
     char *stringValue;
+    GlacierVector vectorValue;
     GlacierValue *structValue;
   };
 };
@@ -23,6 +25,7 @@ struct GlacierValue {
 // Stack value constructors.
 GlacierValue glacierValueFromInt(uint64_t value);
 GlacierValue glacierValueFromString(char *value);
+GlacierValue glacierValueFromVector(GlacierVector vector);
 GlacierValue glacierValueFromStruct(void *value, int id);
 
 // Debug logger.

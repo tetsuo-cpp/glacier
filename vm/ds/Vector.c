@@ -1,10 +1,13 @@
 #include "Vector.h"
 
+#include "../Stack.h"
+#include "../Util.h"
+
 #define GLC_VECTOR_INIT_CAPACITY 2
 
 int glacierVectorInit(GlacierVector *vector) {
   GLC_RET(glacierMAlloc(GLC_VECTOR_INIT_CAPACITY * sizeof(GlacierValue),
-                        (char **)vector->data));
+                        (char **)&vector->data));
   vector->len = 0;
   vector->capacity = GLC_VECTOR_INIT_CAPACITY;
   return GLC_OK;

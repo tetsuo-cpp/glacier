@@ -30,9 +30,11 @@
 #define GLC_BYTECODE_GET_STRUCT_MEMBER 0x16
 #define GLC_BYTECODE_SET_STRUCT_MEMBER 0x17
 #define GLC_BYTECODE_LT 0x18
+#define GLC_BYTECODE_VEC 0x19
 
 #define GLC_TYPEID_INT 0x00
 #define GLC_TYPEID_STRING 0x01
+#define GLC_TYPEID_VECTOR 0x02
 
 typedef struct {
   const char *buf;
