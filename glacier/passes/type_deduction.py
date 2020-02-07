@@ -30,7 +30,7 @@ class TypeDeduction(ast.ASTWalker):
     def _walk_string(self, expr):
         expr.ret_type = ast.Type(ast.TypeKind.STRING)
 
-    def _walk_array(self, expr):
+    def _walk_vector(self, expr):
         expr.ret_type = ast.Type(ast.TypeKind.VECTOR, None, expr.container_type)
         for e in expr.elements:
             self._walk(e)
@@ -41,7 +41,7 @@ class TypeDeduction(ast.ASTWalker):
                     )
                 )
 
-    def _walk_array_access(self, expr):
+    def _walk_vector_access(self, expr):
         self._walk(expr.expr)
         expr.ret_type = expr.expr.container_type
 

@@ -214,18 +214,18 @@ class String:
         return "String(Value={0})".format(self.value)
 
 
-class Array:
+class Vector:
     def __init__(self, elements, container_type):
         self.elements = elements
         self.container_type = container_type
 
     def __eq__(self, other):
-        if not isinstance(other, Array):
+        if not isinstance(other, Vector):
             return False
         return self.elements == other.elements and self.container_type == other.container_type
 
     def __str__(self):
-        return "Array(Elements={0}, ContainerType={1})".format(
+        return "Vector(Elements={0}, ContainerType={1})".format(
             list_to_string(self.elements), self.container_type
         )
 
@@ -287,18 +287,18 @@ class MemberAccess:
         return "MemberAccess(Expr={0}, MemberName={1})".format(self.expr, self.member_name)
 
 
-class ArrayAccess:
-    def __init__(self, expr, array_index):
+class VectorAccess:
+    def __init__(self, expr, vector_index):
         self.expr = expr
-        self.array_index = array_index
+        self.vector_index = vector_index
 
     def __eq__(self, other):
-        if not isinstance(other, ArrayAccess):
+        if not isinstance(other, VectorAccess):
             return False
-        return self.expr == other.expr and self.array_index == other.array_index
+        return self.expr == other.expr and self.vector_index == other.vector_index
 
     def __str__(self):
-        return "ArrayAccess(Expr={0}, ArrayIndex={1})".format(self.expr, self.array_index)
+        return "VectorAccess(Expr={0}, VectorIndex={1})".format(self.expr, self.vector_index)
 
 
 class ASTWalker:
@@ -327,10 +327,10 @@ class ASTWalker:
             self._walk_number(expr)
         elif isinstance(expr, String):
             self._walk_string(expr)
-        elif isinstance(expr, Array):
-            self._walk_array(expr)
-        elif isinstance(expr, ArrayAccess):
-            self._walk_array_access(expr)
+        elif isinstance(expr, Vector):
+            self._walk_vector(expr)
+        elif isinstance(expr, VectorAccess):
+            self._walk_vector_access(expr)
         elif isinstance(expr, VariableRef):
             self._walk_variable(expr)
         elif isinstance(expr, Constructor):
@@ -369,10 +369,10 @@ class ASTWalker:
     def _walk_string(self, expr):
         pass
 
-    def _walk_array(self, expr):
+    def _walk_vector(self, expr):
         pass
 
-    def _walk_array_access(self, expr):
+    def _walk_vector_access(self, expr):
         pass
 
     def _walk_variable(self, expr):

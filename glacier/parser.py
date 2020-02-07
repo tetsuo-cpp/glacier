@@ -249,7 +249,7 @@ class Parser:
             if self._consume_token(TokenType.L_PAREN):
                 index = self._parse_expr()
                 self._expect_token(TokenType.R_PAREN)
-                expr = ast.ArrayAccess(expr, index)
+                expr = ast.VectorAccess(expr, index)
             else:
                 break
         return expr
@@ -262,7 +262,7 @@ class Parser:
         elif self._consume_token(TokenType.STRING_LITERAL):
             expr = ast.String(value)
         elif self._consume_token(TokenType.L_PAREN):
-            expr = self._parse_array()
+            expr = self._parse_vector()
         elif self._consume_token(TokenType.NEW):
             expr = self._parse_constructor()
         elif self._consume_token(TokenType.IDENTIFIER):
@@ -273,7 +273,7 @@ class Parser:
             raise RuntimeError("unrecognised primary expression: Token=({0})".format(self.cur_tok))
         return expr
 
-    def _parse_array(self):
+    def _parse_vector(self):
         elements = list()
         while not self._consume_token(TokenType.R_PAREN):
             if elements:
@@ -283,7 +283,7 @@ class Parser:
         self._expect_token(TokenType.LESS_THAN)
         container_type = self._parse_type()
         self._expect_token(TokenType.GREATER_THAN)
-        return ast.Array(elements, container_type)
+        return ast.Vector(elements, container_type)
 
     def _parse_constructor(self):
         params = list()

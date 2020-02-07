@@ -76,16 +76,16 @@ class CodeGenerator(ast.ASTWalker):
         args.extend(bytes(expr.value, "utf-8"))
         self.bc.write_op(bytecode.OpCode.STRING, args)
 
-    def _walk_array(self, expr):
+    def _walk_vector(self, expr):
         for e in reversed(expr.elements):
             self._walk(e)
         self.bc.write_op(bytecode.OpCode.VEC, [len(expr.elements)])
 
-    def _walk_array_access(self, expr):
+    def _walk_vector_access(self, expr):
         # Walk the vector itself.
         self._walk(expr.expr)
         # Now push the index to the stack.
-        self._walk(expr.array_index)
+        self._walk(expr.vector_index)
         self.bc.write_op(bytecode.OpCode.VEC_ACCESS)
 
     def _walk_let_statement(self, expr):
