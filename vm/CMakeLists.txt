@@ -15,6 +15,8 @@ set(
   VM.h
   ds/Vector.c
   ds/Vector.h
+  ds/Map.c
+  ds/Map.h
   )
 
 add_library(glaciervm_lib ${GLACIER_FILES})
