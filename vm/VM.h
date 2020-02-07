@@ -8,13 +8,14 @@
 typedef struct {
   GlacierByteCode *bc;
   GlacierStack *stack;
-  GlacierTable *ft;
+  GlacierTable *functionTable;
   GlacierCallStack *cs;
-  GlacierTable *st;
+  GlacierTable *symbolTable;
 } GlacierVM;
 
 void glacierVMInit(GlacierVM *vm, GlacierByteCode *bc, GlacierStack *stack,
-                   GlacierTable *ft, GlacierCallStack *cs, GlacierTable *st);
+                   GlacierTable *functionTable, GlacierCallStack *cs,
+                   GlacierTable *symbolTable);
 int glacierVMRun(GlacierVM *vm);
 
 #endif // GLACIERVM_VM_H

@@ -22,8 +22,8 @@ int main(int argc, char **argv) {
   GlacierByteCode bc;
   glacierByteCodeInit(&bc, buf, len);
 
-  GlacierTable ft;
-  glacierTableInit(&ft);
+  GlacierTable functionTable;
+  glacierTableInit(&functionTable);
 
   GlacierStack stack;
   glacierStackInit(&stack);
@@ -31,18 +31,18 @@ int main(int argc, char **argv) {
   GlacierCallStack cs;
   glacierCallStackInit(&cs);
 
-  GlacierTable st;
-  glacierTableInit(&st);
+  GlacierTable symbolTable;
+  glacierTableInit(&symbolTable);
 
   GlacierVM vm;
-  glacierVMInit(&vm, &bc, &stack, &ft, &cs, &st);
+  glacierVMInit(&vm, &bc, &stack, &functionTable, &cs, &symbolTable);
   int ret = glacierVMRun(&vm);
   if (ret != 0) {
     GLC_LOG_ERR("glaciervm: Terminated unsuccessfully with %s.\n",
                 glacierUtilErrorToString(ret));
     glacierByteCodePrint(&bc, stderr);
   }
-  glacierTableDestroy(&ft);
-  glacierTableDestroy(&st);
+  glacierTableDestroy(&functionTable);
+  glacierTableDestroy(&symbolTable);
   return ret;
 }
