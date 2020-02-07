@@ -22,8 +22,8 @@ int main(int argc, char **argv) {
   GlacierByteCode bc;
   glacierByteCodeInit(&bc, buf, len);
 
-  GlacierArray ft;
-  glacierArrayInit(&ft);
+  GlacierTable ft;
+  glacierTableInit(&ft);
 
   GlacierStack stack;
   glacierStackInit(&stack);
@@ -31,8 +31,8 @@ int main(int argc, char **argv) {
   GlacierCallStack cs;
   glacierCallStackInit(&cs);
 
-  GlacierArray st;
-  glacierArrayInit(&st);
+  GlacierTable st;
+  glacierTableInit(&st);
 
   GlacierVM vm;
   glacierVMInit(&vm, &bc, &stack, &ft, &cs, &st);
@@ -42,7 +42,7 @@ int main(int argc, char **argv) {
                 glacierUtilErrorToString(ret));
     glacierByteCodePrint(&bc, stderr);
   }
-  glacierArrayDestroy(&ft);
-  glacierArrayDestroy(&st);
+  glacierTableDestroy(&ft);
+  glacierTableDestroy(&st);
   return ret;
 }

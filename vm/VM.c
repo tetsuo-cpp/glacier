@@ -32,7 +32,7 @@ static int glacierVMVector(GlacierVM *vm);
 static int glacierVMVectorAccess(GlacierVM *vm);
 
 void glacierVMInit(GlacierVM *vm, GlacierByteCode *bc, GlacierStack *stack,
-                   GlacierArray *ft, GlacierCallStack *cs, GlacierArray *st) {
+                   GlacierTable *ft, GlacierCallStack *cs, GlacierTable *st) {
   vm->bc = bc;
   vm->stack = stack;
   vm->ft = ft;
@@ -50,7 +50,7 @@ int glacierVMRun(GlacierVM *vm) {
 
   // Jump to main.
   int mainOffset;
-  GLC_RET(glacierArrayGet(vm->ft, 0, &mainOffset));
+  GLC_RET(glacierTableGet(vm->ft, 0, &mainOffset));
   GLC_RET(glacierByteCodeJump(vm->bc, mainOffset));
   GLC_RET(glacierCallStackPush(vm->cs, -1));
 
@@ -67,7 +67,7 @@ static int glacierVMStructDef(GlacierVM *vm) {
   GLC_RET(glacierByteCodeRead8(vm->bc, &numMembers));
   GLC_LOG_DBG("VM: Parsing struct def with id %d and %d members.\n", structId,
               numMembers);
-  GLC_RET(glacierArraySet(vm->st, structId, numMembers));
+  GLC_RET(glacierTableSet(vm->st, structId, numMembers));
   for (int i = 0; i < numMembers; ++i) {
     uint8_t typeId;
     GLC_RET(glacierByteCodeRead8(vm->bc, &typeId));
@@ -320,7 +320,7 @@ static int glacierVMFunctionJmp(GlacierVM *vm) {
   uint8_t functionId, offset;
   GLC_RET(glacierByteCodeRead8(vm->bc, &functionId));
   GLC_RET(glacierByteCodeRead8(vm->bc, &offset));
-  GLC_RET(glacierArraySet(vm->ft, functionId, offset));
+  GLC_RET(glacierTableSet(vm->ft, functionId, offset));
   GLC_LOG_DBG("VM: Jump func for id %d at offset %d.\n", functionId, offset);
   return GLC_OK;
 }
@@ -355,7 +355,7 @@ static int glacierVMCallFunc(GlacierVM *vm) {
   uint8_t functionId;
   int functionOffset;
   GLC_RET(glacierByteCodeRead8(vm->bc, &functionId));
-  GLC_RET(glacierArrayGet(vm->ft, functionId, &functionOffset));
+  GLC_RET(glacierTableGet(vm->ft, functionId, &functionOffset));
 
   // We need to jump back here after the function call is done.
   GLC_RET(glacierCallStackPush(vm->cs, vm->bc->offset));
@@ -405,7 +405,7 @@ static int glacierVMStructAlloc(GlacierVM *vm) {
   uint8_t structId;
   GLC_RET(glacierByteCodeRead8(vm->bc, &structId));
   int numMembers;
-  GLC_RET(glacierArrayGet(vm->st, structId, &numMembers));
+  GLC_RET(glacierTableGet(vm->st, structId, &numMembers));
   GlacierValue *structVal;
   GLC_RET(
       glacierMAlloc(sizeof(GlacierValue) * numMembers, (char **)&structVal));
