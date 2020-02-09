@@ -26,6 +26,7 @@
 #define GLC_OUT_OF_BUFFER -3
 #define GLC_STACK_OVERFLOW -4
 #define GLC_OOM -5
+#define GLC_KEY_MISS -6
 
 #ifdef LOG_DBG
 #define GLC_LOG_DBG(format, ...) printf(format, ##__VA_ARGS__)
@@ -51,6 +52,8 @@ static inline const char *glacierUtilErrorToString(int error) {
     return "GLC_STACK_OVERFLOW";
   case GLC_OOM:
     return "GLC_OOM";
+  case GLC_KEY_MISS:
+    return "GLC_KEY_MISS";
   default:
     return "UNKNOWN";
   }
@@ -59,6 +62,15 @@ static inline const char *glacierUtilErrorToString(int error) {
 static inline int glacierMAlloc(size_t size, char **p) {
   *p = NULL;
   char *tmp = malloc(size);
+  if (!tmp)
+    return GLC_OOM;
+  *p = tmp;
+  return GLC_OK;
+}
+
+static inline int glacierCAlloc(size_t count, size_t size, char **p) {
+  *p = NULL;
+  char *tmp = calloc(count, size);
   if (!tmp)
     return GLC_OOM;
   *p = tmp;
