@@ -159,6 +159,13 @@ class OpCode(enum.Enum):
     - The VEC_ACCESS opcode (1 byte).
     """
     VEC_ACCESS = 0x1A
+    """
+    Create a map, populate it with the keys and values currently on the stack and then place the
+    map on the stack.
+    - The MAP opcode (1 byte).
+    - The size of the map (1 byte).
+    """
+    MAP = 0x1B
 
 
 class ByteCode:

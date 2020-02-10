@@ -1,0 +1,4 @@
+fn main() -> int {
+  let m = {"foo": "fooVal", "bar": "barVal", "fooBar": "fooBarVal"}<string, string>;
+  return 0;
+}

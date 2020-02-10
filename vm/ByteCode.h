@@ -32,10 +32,12 @@
 #define GLC_BYTECODE_LT 0x18
 #define GLC_BYTECODE_VEC 0x19
 #define GLC_BYTECODE_VEC_ACCESS 0x1A
+#define GLC_BYTECODE_MAP 0x1B
 
 #define GLC_TYPEID_INT 0x00
 #define GLC_TYPEID_STRING 0x01
 #define GLC_TYPEID_VECTOR 0x02
+#define GLC_TYPEID_MAP 0x03
 
 typedef struct {
   const char *buf;

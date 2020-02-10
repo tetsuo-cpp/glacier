@@ -41,6 +41,24 @@ class TypeDeduction(ast.ASTWalker):
                     )
                 )
 
+    def _walk_map(self, expr):
+        expr.ret_type = ast.Type(ast.TypeKind.MAP, None, expr.container_types)
+        for (key, value) in expr.elements:
+            self._walk(key)
+            self._walk(value)
+            if key.ret_type != expr.container_types[0]:
+                raise TypeError(
+                    "found key of type {} in map with key type {}".format(
+                        key.ret_type.kind, expr.container_types[0].kind
+                    )
+                )
+            if value.ret_type != expr.container_types[1]:
+                raise TypeError(
+                    "found value of type {} in map with value type {}".format(
+                        key.ret_type.kind, expr.container_types[1].kind
+                    )
+                )
+
     def _walk_vector_access(self, expr):
         self._walk(expr.expr)
         expr.ret_type = expr.expr.container_type

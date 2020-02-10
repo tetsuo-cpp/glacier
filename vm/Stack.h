@@ -3,6 +3,7 @@
 
 #include "ByteCode.h"
 #include "Util.h"
+#include "ds/Map.h"
 #include "ds/Vector.h"
 
 #include <stdint.h>
@@ -18,6 +19,7 @@ struct GlacierValue {
     uint64_t intValue;
     char *stringValue;
     GlacierVector vectorValue;
+    GlacierMap mapValue;
     GlacierValue *structValue;
   };
 };
@@ -26,6 +28,7 @@ struct GlacierValue {
 GlacierValue glacierValueFromInt(uint64_t value);
 GlacierValue glacierValueFromString(char *value);
 GlacierValue glacierValueFromVector(GlacierVector vector);
+GlacierValue glacierValueFromMap(GlacierMap map);
 GlacierValue glacierValueFromStruct(void *value, int id);
 
 // Debug logger.

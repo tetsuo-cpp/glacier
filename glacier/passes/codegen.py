@@ -81,6 +81,12 @@ class CodeGenerator(ast.ASTWalker):
             self._walk(e)
         self.bc.write_op(bytecode.OpCode.VEC, [len(expr.elements)])
 
+    def _walk_map(self, expr):
+        for (key, value) in expr.elements:
+            self._walk(key)
+            self._walk(value)
+        self.bc.write_op(bytecode.OpCode.MAP, [len(expr.elements)])
+
     def _walk_vector_access(self, expr):
         # Walk the vector itself.
         self._walk(expr.expr)

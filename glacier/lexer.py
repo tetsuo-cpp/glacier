@@ -38,6 +38,8 @@ class TokenType(Enum):
     NEW = 33
     WHILE = 34
     VECTOR = 35
+    MAP = 36
+    COLON = 37
 
 
 class Token:
@@ -64,6 +66,7 @@ KEYWORDS = {
     "new": TokenType.NEW,
     "while": TokenType.WHILE,
     "vector": TokenType.VECTOR,
+    "map": TokenType.MAP,
 }
 
 SYMBOLS = {
@@ -88,6 +91,7 @@ SYMBOLS = {
     "*": TokenType.MULTIPLY,
     "/": TokenType.DIVIDE,
     ".": TokenType.DOT,
+    ":": TokenType.COLON,
 }
 
 

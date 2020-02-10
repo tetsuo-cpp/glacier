@@ -230,6 +230,22 @@ class Vector:
         )
 
 
+class Map:
+    def __init__(self, elements, container_types):
+        self.elements = elements
+        self.container_types = container_types
+
+    def __eq__(self, other):
+        if not isinstance(other, Map):
+            return False
+        return self.elements == other.elements and self.container_types == other.container_types
+
+    def __str__(self):
+        return "Map(Elements={0}, ContainerType={1})".format(
+            list_to_string(self.elements), self.container_types
+        )
+
+
 class VariableRef:
     def __init__(self, name):
         self.name = name
@@ -329,6 +345,8 @@ class ASTWalker:
             self._walk_string(expr)
         elif isinstance(expr, Vector):
             self._walk_vector(expr)
+        elif isinstance(expr, Map):
+            self._walk_map(expr)
         elif isinstance(expr, VectorAccess):
             self._walk_vector_access(expr)
         elif isinstance(expr, VariableRef):
@@ -370,6 +388,9 @@ class ASTWalker:
         pass
 
     def _walk_vector(self, expr):
+        pass
+
+    def _walk_map(self, expr):
         pass
 
     def _walk_vector_access(self, expr):

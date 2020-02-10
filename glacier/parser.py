@@ -263,6 +263,8 @@ class Parser:
             expr = ast.String(value)
         elif self._consume_token(TokenType.L_PAREN):
             expr = self._parse_vector()
+        elif self._consume_token(TokenType.L_BRACE):
+            expr = self._parse_map()
         elif self._consume_token(TokenType.NEW):
             expr = self._parse_constructor()
         elif self._consume_token(TokenType.IDENTIFIER):
@@ -284,6 +286,24 @@ class Parser:
         container_type = self._parse_type()
         self._expect_token(TokenType.GREATER_THAN)
         return ast.Vector(elements, container_type)
+
+    def _parse_map(self):
+        elements = list()
+        while not self._consume_token(TokenType.R_BRACE):
+            if elements:
+                self._expect_token(TokenType.COMMA)
+            key_expr = self._parse_expr()
+            self._expect_token(TokenType.COLON)
+            val_expr = self._parse_expr()
+            # The elements are a list of tuples.
+            elements.append((key_expr, val_expr))
+        # Need a type decl for let exprs to work.
+        self._expect_token(TokenType.LESS_THAN)
+        key_type = self._parse_type()
+        self._expect_token(TokenType.COMMA)
+        value_type = self._parse_type()
+        self._expect_token(TokenType.GREATER_THAN)
+        return ast.Map(elements, (key_type, value_type))
 
     def _parse_constructor(self):
         params = list()
