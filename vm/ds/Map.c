@@ -72,9 +72,7 @@ size_t glacierMapHash(GlacierValue value) {
 
 int glacierMapRebuild(GlacierMap *map) {
   int ret = GLC_OK;
-  GlacierMap newMap;
-  newMap.buckets = NULL;
-  newMap.numBuckets = map->numBuckets * 2;
+  GlacierMap newMap = {.buckets = NULL, .numBuckets = map->numBuckets * 2};
   GLC_RET(glacierCAlloc(newMap.numBuckets, sizeof(GlacierMapNode),
                         (char **)&newMap.buckets));
   for (size_t i = 0; i < map->numBuckets; ++i) {
@@ -87,6 +85,7 @@ int glacierMapRebuild(GlacierMap *map) {
   glacierMapDestroy(map);
   *map = newMap;
 err:
-  glacierMapDestroy(&newMap);
+  if (ret != GLC_OK)
+    glacierMapDestroy(&newMap);
   return ret;
 }
