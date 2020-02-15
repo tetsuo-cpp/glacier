@@ -3,6 +3,7 @@
 #include "../Stack.h"
 
 #include <assert.h>
+#include <string.h>
 
 struct GlacierMapNode {
   GlacierValue key;
@@ -16,6 +17,7 @@ struct GlacierMapNode {
 
 static size_t glacierMapHash(GlacierValue value);
 static int glacierMapRebuild(GlacierMap *map);
+static bool glacierMapKeyEq(GlacierValue lhs, GlacierValue rhs);
 
 int glacierMapInit(GlacierMap *map) {
   GLC_RET(glacierCAlloc(GLC_MAP_INIT_BUCKET_LEN, sizeof(GlacierMapNode),
@@ -53,10 +55,13 @@ int glacierMapGet(GlacierMap *map, GlacierValue key, GlacierValue *value) {
   if (index >= map->numBuckets)
     return GLC_KEY_MISS;
   GlacierMapNode *node = &map->buckets[index];
-  if (!node->set)
-    return GLC_KEY_MISS;
-  *value = node->value;
-  return GLC_OK;
+  for (; node != NULL; node = node->next) {
+    if (node->set && glacierMapKeyEq(node->key, key)) {
+      *value = node->value;
+      return GLC_OK;
+    }
+  }
+  return GLC_KEY_MISS;
 }
 
 void glacierMapDestroy(GlacierMap *map) {
@@ -88,4 +93,17 @@ err:
   if (ret != GLC_OK)
     glacierMapDestroy(&newMap);
   return ret;
+}
+
+bool glacierMapKeyEq(GlacierValue lhs, GlacierValue rhs) {
+  if (lhs.typeId != rhs.typeId)
+    return false;
+  if (lhs.typeId == GLC_TYPEID_INT)
+    return lhs.intValue == rhs.intValue;
+  else if (lhs.typeId == GLC_TYPEID_STRING) {
+    return (strcmp(lhs.stringValue, rhs.stringValue) == 0);
+  } else {
+    assert(!"Can only use int or string keys for a map");
+    return false;
+  }
 }

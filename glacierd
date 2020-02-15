@@ -166,6 +166,19 @@ def print_lt(reader):
     print("LT ({})".format(reader.index - 1))
 
 
+# TODO: Implement these new ops for the disassembler.
+def print_vec(reader):
+    pass
+
+
+def print_index(reader):
+    pass
+
+
+def print_map(reader):
+    pass
+
+
 def print_op(reader, op):
     if op == OpCode.STRUCT_DEF.value:
         print_struct_def(reader)
@@ -215,6 +228,12 @@ def print_op(reader, op):
         print_set_struct_member(reader)
     elif op == OpCode.LT.value:
         print_lt(reader)
+    elif op == OpCode.VEC.value:
+        print_vec(reader)
+    elif op == OpCode.INDEX.value:
+        print_index(reader)
+    elif op == OpCode.MAP.value:
+        print_map(reader)
     else:
         raise MalformedByteCodeError("unrecognised op: {}".format(op))
 

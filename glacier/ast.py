@@ -6,6 +6,19 @@ def list_to_string(l):
     for element in l:
         if len(s) != 1:
             s += ", "
+        if isinstance(element, tuple):
+            s += tuple_to_string(element)
+        else:
+            s += str(element)
+    s += "]"
+    return s
+
+
+def tuple_to_string(p):
+    s = "("
+    for element in p:
+        if len(s) != 1:
+            s += ", "
         s += str(element)
     s += "]"
     return s
@@ -153,6 +166,11 @@ class Type:
             and self.container_type == other.container_type
         )
 
+    def __str__(self):
+        return "(Kind={}, Identifier={}, ContainerType={})".format(
+            self.kind, self.identifier, self.container_type
+        )
+
 
 class Member:
     def __init__(self, name, m_type, default_value=None):
@@ -242,7 +260,7 @@ class Map:
 
     def __str__(self):
         return "Map(Elements={0}, ContainerType={1})".format(
-            list_to_string(self.elements), self.container_types
+            list_to_string(self.elements), tuple_to_string(self.container_types)
         )
 
 
@@ -303,18 +321,18 @@ class MemberAccess:
         return "MemberAccess(Expr={0}, MemberName={1})".format(self.expr, self.member_name)
 
 
-class VectorAccess:
-    def __init__(self, expr, vector_index):
+class Index:
+    def __init__(self, expr, index):
         self.expr = expr
-        self.vector_index = vector_index
+        self.index = index
 
     def __eq__(self, other):
-        if not isinstance(other, VectorAccess):
+        if not isinstance(other, Index):
             return False
-        return self.expr == other.expr and self.vector_index == other.vector_index
+        return self.expr == other.expr and self.index == other.index
 
     def __str__(self):
-        return "VectorAccess(Expr={0}, VectorIndex={1})".format(self.expr, self.vector_index)
+        return "Index(Expr={0}, Index={1})".format(self.expr, self.index)
 
 
 class ASTWalker:
@@ -347,8 +365,8 @@ class ASTWalker:
             self._walk_vector(expr)
         elif isinstance(expr, Map):
             self._walk_map(expr)
-        elif isinstance(expr, VectorAccess):
-            self._walk_vector_access(expr)
+        elif isinstance(expr, Index):
+            self._walk_index(expr)
         elif isinstance(expr, VariableRef):
             self._walk_variable(expr)
         elif isinstance(expr, Constructor):
@@ -393,7 +411,7 @@ class ASTWalker:
     def _walk_map(self, expr):
         pass
 
-    def _walk_vector_access(self, expr):
+    def _walk_index(self, expr):
         pass
 
     def _walk_variable(self, expr):

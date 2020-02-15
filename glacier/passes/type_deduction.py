@@ -55,13 +55,19 @@ class TypeDeduction(ast.ASTWalker):
             if value.ret_type != expr.container_types[1]:
                 raise TypeError(
                     "found value of type {} in map with value type {}".format(
-                        key.ret_type.kind, expr.container_types[1].kind
+                        value.ret_type.kind, expr.container_types[1].kind
                     )
                 )
 
-    def _walk_vector_access(self, expr):
+    def _walk_index(self, expr):
         self._walk(expr.expr)
-        expr.ret_type = expr.expr.container_type
+        self._walk(expr.index)
+        # If it's a map, then choose the value type.
+        if isinstance(expr.expr.ret_type.container_type, tuple):
+            assert len(expr.expr.ret_type.container_type) == 2
+            expr.ret_type = expr.expr.ret_type.container_type[1]
+        else:
+            expr.ret_type = expr.expr.ret_type.container_type
 
     def _walk_variable(self, expr):
         if expr.name not in self.variable_types:
@@ -72,12 +78,12 @@ class TypeDeduction(ast.ASTWalker):
         expr.ret_type = ast.Type(ast.TypeKind.USER, expr.struct_name)
 
     def _walk_function_call(self, expr):
-        # I really need to do this properly one day...
-        if expr.name == "print":
-            return
         # Deduce types of each argument.
         for arg in expr.args:
             self._walk(arg)
+        # I really need to do this properly one day...
+        if expr.name == "print":
+            return
 
         # Now compare against the function parameter types.
         assert expr.name in self.functions

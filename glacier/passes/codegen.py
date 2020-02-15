@@ -1,3 +1,4 @@
+import pdb
 from .. import ast, bytecode, lexer
 
 
@@ -87,12 +88,16 @@ class CodeGenerator(ast.ASTWalker):
             self._walk(value)
         self.bc.write_op(bytecode.OpCode.MAP, [len(expr.elements)])
 
-    def _walk_vector_access(self, expr):
-        # Walk the vector itself.
+    def _walk_index(self, expr):
+        # Walk the expr.
         self._walk(expr.expr)
         # Now push the index to the stack.
-        self._walk(expr.vector_index)
-        self.bc.write_op(bytecode.OpCode.VEC_ACCESS)
+        self._walk(expr.index)
+        if expr.expr.ret_type.kind == ast.TypeKind.VECTOR:
+            self.bc.write_op(bytecode.OpCode.VEC_ACCESS)
+        else:
+            assert expr.expr.ret_type.kind == ast.TypeKind.MAP
+            self.bc.write_op(bytecode.OpCode.MAP_ACCESS)
 
     def _walk_let_statement(self, expr):
         self._walk(expr.rhs)

@@ -1,4 +1,7 @@
 fn main() -> int {
   let m = {"foo": "fooVal", "bar": "barVal", "fooBar": "fooBarVal"}<string, string>;
+  print(m["foo"]);
+  print(m["bar"]);
+  print(m["fooBar"]);
   return 0;
 }

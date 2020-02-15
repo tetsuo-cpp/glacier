@@ -249,7 +249,7 @@ class Parser:
             if self._consume_token(TokenType.L_PAREN):
                 index = self._parse_expr()
                 self._expect_token(TokenType.R_PAREN)
-                expr = ast.VectorAccess(expr, index)
+                expr = ast.Index(expr, index)
             else:
                 break
         return expr

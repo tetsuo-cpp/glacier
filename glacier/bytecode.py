@@ -166,6 +166,11 @@ class OpCode(enum.Enum):
     - The size of the map (1 byte).
     """
     MAP = 0x1B
+    """
+    Access an element from a map on the stack. This opcode expects the key to be at the top of the
+    stack followed by the map itself.
+    """
+    MAP_ACCESS = 0x1C
 
 
 class ByteCode:
