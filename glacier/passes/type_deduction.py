@@ -5,8 +5,6 @@ class TypeError(Exception):
     pass
 
 
-# Just fail with assertions for the time being.
-# In the future, we should begin raising type errors.
 class TypeDeduction(ast.ASTWalker):
     def __init__(self, bc, structs):
         self.bc = bc
@@ -20,6 +18,18 @@ class TypeDeduction(ast.ASTWalker):
             raise TypeError("rhs of let statement returns void")
         self.variable_types[expr.name] = expr.rhs.ret_type
         expr.ret_type = expr.rhs.ret_type
+
+    def _walk_if_statement(self, expr):
+        self._walk(expr.cond)
+        for statement in expr.then_statements:
+            self._walk(statement)
+        for statement in expr.else_statements:
+            self._walk(statement)
+
+    def _walk_while_loop(self, expr):
+        self._walk(expr.cond)
+        for statement in expr.loop_body:
+            self._walk(statement)
 
     def _walk_binary_op(self, expr):
         expr.ret_type = ast.Type(ast.TypeKind.INT)
@@ -106,6 +116,8 @@ class TypeDeduction(ast.ASTWalker):
     def _walk_function(self, expr):
         if expr.name in self.functions:
             raise TypeError("redefinition of function {}".format(expr.name))
+        for arg in expr.args:
+            self.variable_types[arg[0]] = arg[1]
         self.functions[expr.name] = expr
         for s in expr.statements:
             self._walk(s)

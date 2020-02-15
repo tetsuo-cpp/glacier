@@ -166,7 +166,7 @@ def print_lt(reader):
     print("LT ({})".format(reader.index - 1))
 
 
-# TODO: Implement these new ops for the disassembler.
+# FIXME: Implement these new ops for the disassembler.
 def print_vec(reader):
     pass
 

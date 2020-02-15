@@ -100,9 +100,9 @@ bool glacierMapKeyEq(GlacierValue lhs, GlacierValue rhs) {
     return false;
   if (lhs.typeId == GLC_TYPEID_INT)
     return lhs.intValue == rhs.intValue;
-  else if (lhs.typeId == GLC_TYPEID_STRING) {
+  else if (lhs.typeId == GLC_TYPEID_STRING)
     return (strcmp(lhs.stringValue, rhs.stringValue) == 0);
-  } else {
+  else {
     assert(!"Can only use int or string keys for a map");
     return false;
   }

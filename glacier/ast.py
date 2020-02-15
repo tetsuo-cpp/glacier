@@ -20,7 +20,7 @@ def tuple_to_string(p):
         if len(s) != 1:
             s += ", "
         s += str(element)
-    s += "]"
+    s += ")"
     return s
 
 
