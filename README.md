@@ -70,9 +70,7 @@ fn main() -> int {
 }
 ```
 ## TODO
-* Integrate Boehm GC.
 * Make object stack resizeable.
-* Maps.
 * Built-in functions (push, insert, etc).
 * More sensible bytecode format (at the moment all arguments are 1 byte).
 * Generate bytecode definitions in C and Python from a definition language.
