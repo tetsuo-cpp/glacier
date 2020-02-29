@@ -23,6 +23,8 @@ set(
   GLACIER_FILES
   ByteCode.c
   ByteCode.h
+  GC.c
+  GC.h
   Table.c
   Table.h
   Stack.c

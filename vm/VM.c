@@ -1,5 +1,6 @@
 #include "VM.h"
 
+#include "GC.h"
 #include "Util.h"
 
 #include <assert.h>
@@ -201,7 +202,7 @@ static int glacierVMString(GlacierVM *vm) {
   uint8_t length;
   GLC_RET(glacierByteCodeRead8(vm->bc, &length));
   char *stringVal;
-  GLC_RET(glacierMAlloc(sizeof(char) * (length + 1), &stringVal));
+  GLC_RET(glacierGCAlloc(sizeof(char) * (length + 1), &stringVal));
   for (int i = 0; i < length; ++i) {
     uint8_t val;
     GLC_ERR(glacierByteCodeRead8(vm->bc, &val));
@@ -213,7 +214,7 @@ static int glacierVMString(GlacierVM *vm) {
   return GLC_OK;
 
 err:
-  free(stringVal);
+  glacierGCFree((char **)&stringVal);
   return ret;
 }
 
@@ -417,7 +418,7 @@ static int glacierVMStructAlloc(GlacierVM *vm) {
   GLC_RET(glacierTableGet(vm->symbolTable, structId, &numMembers));
   GlacierValue *structVal;
   GLC_RET(
-      glacierMAlloc(sizeof(GlacierValue) * numMembers, (char **)&structVal));
+      glacierGCAlloc(sizeof(GlacierValue) * numMembers, (char **)&structVal));
   for (int i = 0; i < numMembers; ++i) {
     GlacierValue memberValue;
     GLC_ERR(glacierStackPop(vm->stack, &memberValue));
@@ -429,7 +430,7 @@ static int glacierVMStructAlloc(GlacierVM *vm) {
   return GLC_OK;
 
 err:
-  free(structVal);
+  glacierGCFree((char **)&structVal);
   return ret;
 }
 

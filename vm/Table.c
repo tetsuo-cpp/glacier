@@ -1,5 +1,6 @@
 #include "Table.h"
 
+#include "GC.h"
 #include "Util.h"
 
 #define GLC_TABLE_INIT_LEN 2
@@ -8,7 +9,7 @@ static int glacierTableGrow(GlacierTable *table, size_t len);
 
 int glacierTableInit(GlacierTable *table) {
   GLC_RET(
-      glacierMAlloc(GLC_TABLE_INIT_LEN * sizeof(int), (char **)&table->data));
+      glacierGCAlloc(GLC_TABLE_INIT_LEN * sizeof(int), (char **)&table->data));
   table->len = GLC_TABLE_INIT_LEN;
   for (size_t i = 0; i < table->len; ++i)
     table->data[i] = -1;
@@ -42,14 +43,14 @@ int glacierTableGet(GlacierTable *table, size_t index, int *val) {
 }
 
 void glacierTableDestroy(GlacierTable *table) {
-  free(table->data);
+  glacierGCFree((char **)&table->data);
   table->data = NULL;
   table->len = 0;
 }
 
 static int glacierTableGrow(GlacierTable *table, size_t len) {
   size_t oldLen = table->len;
-  GLC_RET(glacierReAlloc(len * sizeof(int), (char **)&table->data));
+  GLC_RET(glacierGCReAlloc(len * sizeof(int), (char **)&table->data));
   // Init new slots to -1.
   for (size_t i = oldLen; i < len; ++i)
     table->data[i] = -1;

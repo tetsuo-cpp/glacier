@@ -1,13 +1,14 @@
 #include "Vector.h"
 
+#include "../GC.h"
 #include "../Stack.h"
 #include "../Util.h"
 
 #define GLC_VECTOR_INIT_CAPACITY 2
 
 int glacierVectorInit(GlacierVector *vector) {
-  GLC_RET(glacierMAlloc(GLC_VECTOR_INIT_CAPACITY * sizeof(GlacierValue),
-                        (char **)&vector->data));
+  GLC_RET(glacierGCAlloc(GLC_VECTOR_INIT_CAPACITY * sizeof(GlacierValue),
+                         (char **)&vector->data));
   vector->len = 0;
   vector->capacity = GLC_VECTOR_INIT_CAPACITY;
   return GLC_OK;
@@ -16,8 +17,8 @@ int glacierVectorInit(GlacierVector *vector) {
 int glacierVectorPush(GlacierVector *vector, GlacierValue value) {
   if (vector->len == vector->capacity) {
     size_t newCapacity = vector->capacity * 2;
-    GLC_RET(glacierReAlloc(newCapacity * sizeof(GlacierValue),
-                           (char **)&vector->data));
+    GLC_RET(glacierGCReAlloc(newCapacity * sizeof(GlacierValue),
+                             (char **)&vector->data));
     vector->capacity = newCapacity;
   }
   vector->data[vector->len++] = value;
@@ -46,8 +47,7 @@ int glacierVectorGet(GlacierVector *vector, size_t index, GlacierValue *val) {
 }
 
 void glacierVectorDestroy(GlacierVector *vector) {
-  free(vector->data);
-  vector->data = NULL;
+  glacierGCFree((char **)&vector->data);
   vector->len = 0;
   vector->capacity = 0;
 }

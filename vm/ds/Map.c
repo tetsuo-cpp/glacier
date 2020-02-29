@@ -1,5 +1,6 @@
 #include "Map.h"
 
+#include "../GC.h"
 #include "../Stack.h"
 
 #include <assert.h>
@@ -20,8 +21,8 @@ static int glacierMapRebuild(GlacierMap *map);
 static bool glacierMapKeyEq(GlacierValue lhs, GlacierValue rhs);
 
 int glacierMapInit(GlacierMap *map) {
-  GLC_RET(glacierCAlloc(GLC_MAP_INIT_BUCKET_LEN, sizeof(GlacierMapNode),
-                        (char **)&map->buckets));
+  GLC_RET(glacierGCAlloc(GLC_MAP_INIT_BUCKET_LEN * sizeof(GlacierMapNode),
+                         (char **)&map->buckets));
   map->numBuckets = GLC_MAP_INIT_BUCKET_LEN;
   return GLC_OK;
 }
@@ -35,7 +36,7 @@ int glacierMapSet(GlacierMap *map, GlacierValue key, GlacierValue value) {
     while (current->next != NULL)
       current = current->next, ++depth;
     assert(current->set);
-    GLC_RET(glacierMAlloc(sizeof(GlacierMapNode), (char **)&current->next));
+    GLC_RET(glacierGCAlloc(sizeof(GlacierMapNode), (char **)&current->next));
     node = current->next;
   }
   if (depth >= GLC_MAP_MAX_DEPTH) {
@@ -65,7 +66,7 @@ int glacierMapGet(GlacierMap *map, GlacierValue key, GlacierValue *value) {
 }
 
 void glacierMapDestroy(GlacierMap *map) {
-  free(map->buckets);
+  glacierGCFree((char **)&map->buckets);
   map->numBuckets = 0;
 }
 
@@ -78,8 +79,8 @@ size_t glacierMapHash(GlacierValue value) {
 int glacierMapRebuild(GlacierMap *map) {
   int ret = GLC_OK;
   GlacierMap newMap = {.buckets = NULL, .numBuckets = map->numBuckets * 2};
-  GLC_RET(glacierCAlloc(newMap.numBuckets, sizeof(GlacierMapNode),
-                        (char **)&newMap.buckets));
+  GLC_RET(glacierGCAlloc(newMap.numBuckets * sizeof(GlacierMapNode),
+                         (char **)&newMap.buckets));
   for (size_t i = 0; i < map->numBuckets; ++i) {
     GlacierMapNode *current = &map->buckets[i];
     while (current != NULL && current->set) {
