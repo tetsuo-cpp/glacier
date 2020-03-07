@@ -1,0 +1,13 @@
+fn voidFunc(int x) -> void {
+  if (x == 1) {
+    print(x);
+    return;
+  }
+  print("This is a void function.");
+}
+
+fn main() -> int {
+  voidFunc(1);
+  voidFunc(2);
+  return 0;
+}
