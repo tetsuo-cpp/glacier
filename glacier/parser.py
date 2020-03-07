@@ -113,6 +113,13 @@ class Parser:
             container_type = self._parse_type()
             self._expect_token(TokenType.GREATER_THAN)
             return ast.Type(ast.TypeKind.VECTOR, None, container_type)
+        elif self._consume_token(TokenType.MAP):
+            self._expect_token(TokenType.LESS_THAN)
+            container_type = self._parse_type()
+            self._expect_token(TokenType.GREATER_THAN)
+            return ast.Type(ast.TypeKind.MAP, None, container_type)
+        elif self._consume_token(TokenType.VOID):
+            return ast.Type(ast.TypeKind.VOID)
         else:
             # User defined type. Should just look like a regular identifier.
             identifier = self.cur_tok.value
@@ -141,6 +148,9 @@ class Parser:
         return ast.LetStatement(v_name, v_expr)
 
     def _parse_return(self):
+        if self._consume_token(TokenType.SEMICOLON):
+            # Returning void.
+            return ast.ReturnStatement(None)
         expr = self._parse_expr()
         while not self._consume_token(TokenType.SEMICOLON):
             self._next_token()

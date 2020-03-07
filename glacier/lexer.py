@@ -40,6 +40,7 @@ class TokenType(Enum):
     VECTOR = 35
     MAP = 36
     COLON = 37
+    VOID = 38
 
 
 class Token:
@@ -67,6 +68,7 @@ KEYWORDS = {
     "while": TokenType.WHILE,
     "vector": TokenType.VECTOR,
     "map": TokenType.MAP,
+    "void": TokenType.VOID,
 }
 
 SYMBOLS = {

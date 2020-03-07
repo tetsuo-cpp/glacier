@@ -149,7 +149,8 @@ class TypeKind(Enum):
     STRING = 2
     VECTOR = 3
     MAP = 4
-    USER = 5
+    VOID = 5
+    USER = 6
 
 
 class Type:
