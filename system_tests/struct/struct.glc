@@ -3,9 +3,8 @@ struct Foo {
   int age;
 };
 
-fn main() -> int {
+fn main() -> void {
   let bar = new Foo("alex", 24);
   print(bar.name);
   print(bar.age);
-  return 0;
 }

@@ -1,5 +1,4 @@
-fn main() -> int {
+fn main() -> void {
   print(1 == 1);
   print(2 == 3);
-  return 0;
 }

@@ -1,12 +1,11 @@
-fn printVec(vector<int> ints, vector<string> strings) -> int {
+fn printVec(vector<int> ints, vector<string> strings) -> void {
   print(ints[0]);
   print(strings[0]);
   print(ints[1]);
   print(strings[1]);
-  return 0;
 }
 
-fn main() -> int {
+fn main() -> void {
   let vec = [1, 2, 3]<int>;
   print(vec[0]);
   print(vec[1]);
@@ -15,5 +14,4 @@ fn main() -> int {
   print(vec2[0]);
   print(vec2[1]);
   printVec(vec, vec2);
-  return 0;
 }

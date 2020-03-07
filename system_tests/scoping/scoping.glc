@@ -1,12 +1,10 @@
-fn printPair(int x, int y) -> int {
+fn printPair(int x, int y) -> void {
   print(x);
   print(y);
-  return 0;
 }
 
-fn main() -> int {
+fn main() -> void {
   let x = 1;
   let y = 2;
   printPair(y, x);
-  return 0;
 }

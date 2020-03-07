@@ -2,7 +2,6 @@ fn stringFunc() -> string {
   return "blah";
 }
 
-fn main() -> int {
+fn main() -> void {
   print(stringFunc());
-  return 0;
 }

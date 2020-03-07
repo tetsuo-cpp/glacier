@@ -2,8 +2,7 @@ fn add(int x, int y) -> int {
   return x + y;
 }
 
-fn main() -> int {
+fn main() -> void {
   print(add(3, 4));
   print(add(1, 13));
-  return 0;
 }

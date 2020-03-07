@@ -2,19 +2,17 @@ struct Person {
   string name = "Default";
   int age = 100;
 
-  fn printDetails() -> int {
+  fn printDetails() -> void {
     print(this.name);
     print(this.age);
-    return 0;
   }
 };
 
-fn main() -> int {
+fn main() -> void {
   let person = new Person("Michelle", 26);
   person.printDetails();
   let person2 = new Person("Alex");
   person2.printDetails();
   let person3 = new Person();
   person3.printDetails();
-  return 0;
 }

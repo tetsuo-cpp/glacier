@@ -8,8 +8,6 @@ fn fibonacci(int x) -> int {
   return fibonacci(x - 1) + fibonacci(x - 2);
 }
 
-fn main() -> int {
-  let x = fibonacci(15);
-  print(x);
-  return 0;
+fn main() -> void {
+  print(fibonacci(15));
 }

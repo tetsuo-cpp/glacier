@@ -2,9 +2,8 @@ fn foo(int bar) -> int {
   return bar;
 }
 
-fn main() -> int {
+fn main() -> void {
   let x = "blah";
   foo(x);
   print(1);
-  return 0;
 }

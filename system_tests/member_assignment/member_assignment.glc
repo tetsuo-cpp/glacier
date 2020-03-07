@@ -3,15 +3,13 @@ struct Pet {
   string owner;
 };
 
-fn adopt(Pet pet, string newOwner) -> int {
+fn adopt(Pet pet, string newOwner) -> void {
   pet.owner = newOwner;
-  return 0;
 }
 
-fn main() -> int {
+fn main() -> void {
   let pet = new Pet("Spike", "Alex");
   print(pet.owner);
   adopt(pet, "Michelle");
   print(pet.owner);
-  return 0;
 }

@@ -1,4 +1,4 @@
-fn main() -> int {
+fn main() -> void {
   let x = 4;
   if (x == 4) {
     print("should see this");
@@ -10,5 +10,4 @@ fn main() -> int {
   } else {
     print("and should be seeing this");
   }
-  return 0;
 }

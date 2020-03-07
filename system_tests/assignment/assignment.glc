@@ -3,12 +3,11 @@ struct Foo {
   int age;
 };
 
-fn main() -> int {
+fn main() -> void {
   let x = new Foo("alex", 24);
   print(x.name);
   print(x.age);
   let y = x;
   print(y.name);
   print(y.age);
-  return 0;
 }

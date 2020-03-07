@@ -11,8 +11,7 @@ fn fooFunc2() -> int {
   return 8 * fooFunc();
 }
 
-fn main() -> int {
+fn main() -> void {
   let x = 10;
   print(fooFunc2() * x);
-  return 0;
 }
