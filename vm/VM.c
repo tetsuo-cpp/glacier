@@ -128,9 +128,11 @@ static int glacierVMFunctionDef(GlacierVM *vm) {
     case GLC_BYTECODE_LT:
       GLC_RET(glacierVMLt(vm));
       break;
+    case GLC_BYTECODE_RETURN:
     case GLC_BYTECODE_RETURN_VAL: {
       int bcOffset;
-      GLC_RET(glacierVMReturnVal(vm));
+      if (opCode == GLC_BYTECODE_RETURN_VAL)
+        GLC_RET(glacierVMReturnVal(vm));
       GLC_RET(glacierCallStackGetByteCodeOffset(vm->cs, &bcOffset));
       GLC_RET(glacierCallStackPop(vm->cs));
       if (vm->cs->stackPointer != 0)

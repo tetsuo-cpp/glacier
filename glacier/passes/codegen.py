@@ -49,6 +49,10 @@ class CodeGenerator(ast.ASTWalker):
         for s in expr.statements:
             self._walk(s)
         self.variables.clear()
+        # For functions returning void, there's an implicit return at the end of the function.
+        assert expr.return_type is not None
+        if expr.return_type.kind:
+            self.bc.write_op(bytecode.OpCode.RETURN)
 
     def _allocate_function_id(self, name):
         if name in self.functions:
