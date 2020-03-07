@@ -1,7 +1,6 @@
 from .. import ast, bytecode, lexer
 
 
-# FIXME: Bindings associated with a function should get cleared when returning out of a function.
 class VariableStore:
     def __init__(self):
         self.clear()
