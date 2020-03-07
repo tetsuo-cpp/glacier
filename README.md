@@ -30,9 +30,8 @@ $ bash system_test_all.sh
 ```
 ## Hello World!
 ```
-fn main() -> int {
+fn main() -> void {
   print("Hello World!");
-  return 0;
 }
 ```
 ## Features
@@ -40,7 +39,7 @@ This is not an exhaustive list. The examples under the `system_tests/` directory
 ### Control flow
 Glacier supports conditionals and loops.
 ```
-fn main() -> int {
+fn main() -> void {
   // Print numbers from 0-9.
   let count = 0;
   while (count < 10) {
@@ -51,7 +50,6 @@ fn main() -> int {
     }
     count = count + 1;
   }
-  return 0;
 }
 ```
 ### Types and data structures
@@ -67,10 +65,9 @@ fn bar(int num) -> int {
   ...
 }
 
-fn main() -> int {
+fn main() -> void {
   let foo = "Hello World!";
   bar(foo); // Compilation error. We tried to pass a string into a function taking an int arg.
-  return 0;
 }
 ```
 ### Type inference
@@ -80,11 +77,10 @@ fn createMap(int num) -> map<int, string> {
   ...
 }
 
-fn main() -> int {
+fn main() -> void {
   let integerType = 1;
   let stringType = "Hello World!";
   let mapType = createMap(10);
-  return 0;
 }
 ```
 ### Structs
@@ -98,13 +94,12 @@ struct Doubler {
   }
 };
 
-fn main() -> int {
+fn main() -> void {
   let doubler = new Doubler(2);
   print(doubler.num); // 2
   doubler.double();
   print(doubler.num); // 4
   let vectorOfDoublers = [doubler, new Doubler(10)]<Doubler>;
-  return 0;
 }
 ```
 Glacier also supports default arguments for struct constructors.
@@ -114,11 +109,10 @@ struct Person {
   int age = 24;
 };
 
-fn main() -> int {
+fn main() -> void {
   let person1 = new Person(); // Alex, 24
   let person2 = new Person("Michelle"); // Michelle, 24
   let person3 = new Person("Michelle", 26); // Michelle, 26
-  return 0;
 }
 ```
 ### Disassembler
