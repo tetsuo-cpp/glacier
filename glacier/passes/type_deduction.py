@@ -1,4 +1,4 @@
-from .. import ast, bytecode, lexer
+from .. import ast
 
 
 class TypeError(Exception):
@@ -11,6 +11,7 @@ class TypeDeduction(ast.ASTWalker):
         self.structs = structs
         self.variable_types = dict()
         self.functions = dict()
+        self.current_function = None
 
     def _walk_let_statement(self, expr):
         self._walk(expr.rhs)
@@ -109,6 +110,25 @@ class TypeDeduction(ast.ASTWalker):
             i += 1
         expr.ret_type = called_func.return_type
 
+    def _walk_return_statement(self, expr):
+        # Special case for void functions.
+        if expr.expr is None:
+            if self.current_function.return_type.kind != ast.TypeKind.VOID:
+                raise TypeError(
+                    "empty return in function of type {}".format(
+                        self.current_function.return_type.kind
+                    )
+                )
+            return
+        self._walk(expr.expr)
+        assert self.current_function is not None
+        if expr.expr.ret_type != self.current_function.return_type:
+            raise TypeError(
+                "returning type {} in function of type {}".format(
+                    expr.expr.ret_type.kind, self.current_function.return_type.kind
+                )
+            )
+
     def _walk_structure(self, expr):
         for mf in expr.member_functions:
             self._walk(mf)
@@ -119,6 +139,7 @@ class TypeDeduction(ast.ASTWalker):
         for arg in expr.args:
             self.variable_types[arg[0]] = arg[1]
         self.functions[expr.name] = expr
+        self.current_function = expr
         for s in expr.statements:
             self._walk(s)
 

@@ -1,0 +1,7 @@
+fn funcReturningInt() -> int {
+  return "wrong_return_type";
+}
+
+fn main() -> void {
+  let intValue = funcReturningInt();
+}
