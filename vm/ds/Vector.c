@@ -7,6 +7,7 @@
 #define GLC_VECTOR_INIT_CAPACITY 2
 
 int glacierVectorInit(GlacierVector *vector) {
+  vector->data = NULL;
   GLC_RET(glacierGCAlloc(GLC_VECTOR_INIT_CAPACITY * sizeof(GlacierValue),
                          (char **)&vector->data));
   vector->len = 0;
@@ -47,7 +48,8 @@ int glacierVectorGet(GlacierVector *vector, size_t index, GlacierValue *val) {
 }
 
 void glacierVectorDestroy(GlacierVector *vector) {
-  glacierGCFree((char **)&vector->data);
+  if (vector->data)
+    glacierGCFree((char **)&vector->data);
   vector->len = 0;
   vector->capacity = 0;
 }

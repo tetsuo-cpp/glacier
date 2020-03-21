@@ -18,8 +18,8 @@ struct GlacierValue {
   union {
     uint64_t intValue;
     char *stringValue;
-    GlacierVector vectorValue;
-    GlacierMap mapValue;
+    GlacierVector *vectorValue;
+    GlacierMap *mapValue;
     GlacierValue *structValue;
   };
 };
@@ -27,8 +27,8 @@ struct GlacierValue {
 // Stack value constructors.
 GlacierValue glacierValueFromInt(uint64_t value);
 GlacierValue glacierValueFromString(char *value);
-GlacierValue glacierValueFromVector(GlacierVector vector);
-GlacierValue glacierValueFromMap(GlacierMap map);
+GlacierValue glacierValueFromVector(GlacierVector *vector);
+GlacierValue glacierValueFromMap(GlacierMap *map);
 GlacierValue glacierValueFromStruct(void *value, int id);
 
 // Debug logger.

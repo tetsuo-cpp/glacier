@@ -1,0 +1,6 @@
+fn main() -> void {
+  let vec = [1, 2, 3]<int>;
+  print(vec[2]);
+  push(vec, 4);
+  print(vec[3]);
+}

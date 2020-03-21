@@ -21,6 +21,7 @@ static int glacierMapRebuild(GlacierMap *map);
 static bool glacierMapKeyEq(GlacierValue lhs, GlacierValue rhs);
 
 int glacierMapInit(GlacierMap *map) {
+  map->buckets = NULL;
   GLC_RET(glacierGCAlloc(GLC_MAP_INIT_BUCKET_LEN * sizeof(GlacierMapNode),
                          (char **)&map->buckets));
   map->numBuckets = GLC_MAP_INIT_BUCKET_LEN;
@@ -66,7 +67,8 @@ int glacierMapGet(GlacierMap *map, GlacierValue key, GlacierValue *value) {
 }
 
 void glacierMapDestroy(GlacierMap *map) {
-  glacierGCFree((char **)&map->buckets);
+  if (map->buckets)
+    glacierGCFree((char **)&map->buckets);
   map->numBuckets = 0;
 }
 

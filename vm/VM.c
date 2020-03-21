@@ -33,6 +33,7 @@ static int glacierVMVector(GlacierVM *vm);
 static int glacierVMVectorAccess(GlacierVM *vm);
 static int glacierVMMap(GlacierVM *vm);
 static int glacierVMMapAccess(GlacierVM *vm);
+static int glacierVMVectorPush(GlacierVM *vm);
 
 void glacierVMInit(GlacierVM *vm, GlacierByteCode *bc, GlacierStack *stack,
                    GlacierTable *functionTable, GlacierCallStack *cs,
@@ -179,6 +180,9 @@ static int glacierVMFunctionDef(GlacierVM *vm) {
       break;
     case GLC_BYTECODE_MAP_ACCESS:
       GLC_RET(glacierVMMapAccess(vm));
+      break;
+    case GLC_BYTECODE_VEC_PUSH:
+      GLC_RET(glacierVMVectorPush(vm));
       break;
     default:
       GLC_LOG_ERR("VM: Parsed unrecognised instruction %d.\n", opCode);
@@ -485,18 +489,20 @@ static int glacierVMVector(GlacierVM *vm) {
   int ret;
   uint8_t numElements;
   GLC_RET(glacierByteCodeRead8(vm->bc, &numElements));
-  GlacierVector vector;
-  GLC_RET(glacierVectorInit(&vector));
+  GlacierVector *vector;
+  GLC_RET(glacierGCAlloc(sizeof(GlacierVector), (char **)&vector));
+  GLC_ERR(glacierVectorInit(vector));
   for (int i = 0; i < numElements; ++i) {
     GlacierValue element;
     GLC_ERR(glacierStackPop(vm->stack, &element));
-    GLC_ERR(glacierVectorPush(&vector, element));
+    GLC_ERR(glacierVectorPush(vector, element));
   }
   GlacierValue vectorVal = glacierValueFromVector(vector);
   GLC_ERR(glacierStackPush(vm->stack, vectorVal));
   return GLC_OK;
 err:
-  glacierVectorDestroy(&vector);
+  glacierVectorDestroy(vector);
+  glacierGCFree((char **)&vector);
   return ret;
 }
 
@@ -507,7 +513,7 @@ static int glacierVMVectorAccess(GlacierVM *vm) {
   assert(index.typeId == GLC_TYPEID_INT);
   assert(vector.typeId == GLC_TYPEID_VECTOR);
   uint64_t i = index.intValue;
-  GlacierVector *v = &vector.vectorValue;
+  GlacierVector *v = vector.vectorValue;
   GLC_RET(glacierVectorGet(v, i, &element));
   GLC_RET(glacierStackPush(vm->stack, element));
   return GLC_OK;
@@ -516,20 +522,23 @@ static int glacierVMVectorAccess(GlacierVM *vm) {
 static int glacierVMMap(GlacierVM *vm) {
   uint8_t numElements;
   GLC_RET(glacierByteCodeRead8(vm->bc, &numElements));
-  GlacierMap map;
+  GlacierMap *map;
+  GLC_RET(glacierGCAlloc(sizeof(GlacierMap), (char **)&map));
   int ret = GLC_OK;
-  GLC_RET(glacierMapInit(&map));
+  GLC_ERR(glacierMapInit(map));
   for (size_t i = 0; i < numElements; ++i) {
     GlacierValue key, value;
     GLC_ERR(glacierStackPop(vm->stack, &value));
     GLC_ERR(glacierStackPop(vm->stack, &key));
-    GLC_ERR(glacierMapSet(&map, key, value));
+    GLC_ERR(glacierMapSet(map, key, value));
   }
   GlacierValue mapVal = glacierValueFromMap(map);
   GLC_ERR(glacierStackPush(vm->stack, mapVal));
 err:
-  if (ret != GLC_OK)
-    glacierMapDestroy(&map);
+  if (ret != GLC_OK) {
+    glacierMapDestroy(map);
+    glacierGCFree((char **)&map);
+  }
   return ret;
 }
 
@@ -539,9 +548,19 @@ static int glacierVMMapAccess(GlacierVM *vm) {
   assert(key.typeId == GLC_TYPEID_INT || key.typeId == GLC_TYPEID_STRING);
   GLC_RET(glacierStackPop(vm->stack, &map));
   assert(map.typeId == GLC_TYPEID_MAP);
-  GlacierMap *m = &map.mapValue;
+  GlacierMap *m = map.mapValue;
   GlacierValue value;
   GLC_RET(glacierMapGet(m, key, &value));
   GLC_RET(glacierStackPush(vm->stack, value));
+  return GLC_OK;
+}
+
+static int glacierVMVectorPush(GlacierVM *vm) {
+  GlacierValue element, vector;
+  GLC_RET(glacierStackPop(vm->stack, &element));
+  GLC_RET(glacierStackPop(vm->stack, &vector));
+  assert(vector.typeId == GLC_TYPEID_VECTOR);
+  GlacierVector *v = vector.vectorValue;
+  GLC_RET(glacierVectorPush(v, element));
   return GLC_OK;
 }

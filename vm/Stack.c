@@ -21,14 +21,14 @@ GlacierValue glacierValueFromString(char *value) {
   return obj;
 }
 
-GlacierValue glacierValueFromVector(GlacierVector value) {
+GlacierValue glacierValueFromVector(GlacierVector *value) {
   GlacierValue obj;
   obj.typeId = GLC_TYPEID_VECTOR;
   obj.vectorValue = value;
   return obj;
 }
 
-GlacierValue glacierValueFromMap(GlacierMap value) {
+GlacierValue glacierValueFromMap(GlacierMap *value) {
   GlacierValue obj;
   obj.typeId = GLC_TYPEID_MAP;
   obj.mapValue = value;

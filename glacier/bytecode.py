@@ -171,6 +171,11 @@ class OpCode(enum.Enum):
     stack followed by the map itself.
     """
     MAP_ACCESS = 0x1C
+    """
+    Push an element onto a vector. This opcode expects the new element to be at the top of the
+    stack followed by the vector itself.
+    """
+    VEC_PUSH = 0x1D
 
 
 class ByteCode:
