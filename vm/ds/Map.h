@@ -9,6 +9,7 @@ typedef struct GlacierMapNode GlacierMapNode;
 typedef struct {
   GlacierMapNode *buckets;
   size_t numBuckets;
+  void *clHashKey;
 } GlacierMap;
 
 int glacierMapInit(GlacierMap *map);

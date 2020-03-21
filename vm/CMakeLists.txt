@@ -32,7 +32,7 @@ ExternalProject_Add(
   BUILD_IN_SOURCE 1
   )
 
-set(GLACIER_CLHASH_OBJ ${CMAKE_CURRENT_SOURCE_DIR}/ext/clhash/clhash.o)
+set(GLACIER_CLHASH_OBJ ${GLACIER_CLHASH_DIR}/clhash.o)
 
 set(
   GLACIER_FILES

@@ -18,7 +18,7 @@ struct GlacierMapNode {
 #define GLC_MAP_INIT_BUCKET_LEN 2
 #define GLC_MAP_MAX_DEPTH 3
 
-static size_t glacierMapHash(GlacierValue value);
+static size_t glacierMapHash(void *clHashKey, GlacierValue value);
 static int glacierMapRebuild(GlacierMap *map);
 static bool glacierMapKeyEq(GlacierValue lhs, GlacierValue rhs);
 
@@ -27,11 +27,14 @@ int glacierMapInit(GlacierMap *map) {
   GLC_RET(glacierGCAlloc(GLC_MAP_INIT_BUCKET_LEN * sizeof(GlacierMapNode),
                          (char **)&map->buckets));
   map->numBuckets = GLC_MAP_INIT_BUCKET_LEN;
+  // Seed this properly later.
+  map->clHashKey = get_random_key_for_clhash(UINT64_C(0x23a23cf5033c3c81),
+                                             UINT64_C(0xb3816f6a2c68e530));
   return GLC_OK;
 }
 
 int glacierMapSet(GlacierMap *map, GlacierValue key, GlacierValue value) {
-  size_t index = glacierMapHash(key) % map->numBuckets;
+  size_t index = glacierMapHash(map->clHashKey, key) % map->numBuckets;
   GlacierMapNode *node = &map->buckets[index];
   unsigned int depth = 0;
   if (node->set) {
@@ -55,7 +58,7 @@ int glacierMapSet(GlacierMap *map, GlacierValue key, GlacierValue value) {
 }
 
 int glacierMapGet(GlacierMap *map, GlacierValue key, GlacierValue *value) {
-  size_t index = glacierMapHash(key) % map->numBuckets;
+  size_t index = glacierMapHash(map->clHashKey, key) % map->numBuckets;
   if (index >= map->numBuckets)
     return GLC_KEY_MISS;
   GlacierMapNode *node = &map->buckets[index];
@@ -72,11 +75,19 @@ void glacierMapDestroy(GlacierMap *map) {
   if (map->buckets)
     glacierGCFree((char **)&map->buckets);
   map->numBuckets = 0;
+  free(map->clHashKey);
+  map->clHashKey = NULL;
 }
 
-// Maybe use City hash later.
-size_t glacierMapHash(GlacierValue value) {
-  (void)value;
+size_t glacierMapHash(void *clHashKey, GlacierValue value) {
+  switch (value.typeId) {
+  case GLC_TYPEID_INT:
+    return clhash(clHashKey, (char *)&value.intValue, 8);
+  case GLC_TYPEID_STRING:
+    return clhash(clHashKey, value.stringValue, strlen(value.stringValue));
+  default:
+    assert(!"unsupported hash key");
+  }
   return 0;
 }
 
