@@ -24,9 +24,10 @@ class VariableStore:
 
 
 class CodeGenerator(ast.ASTWalker):
-    def __init__(self, bc, structs):
+    def __init__(self, bc, structs, intrinsics):
         self.bc = bc
         self.structs = structs
+        self.intrinsics = intrinsics
         self.functions = dict()
         self.function_id = 1
         self.variables = VariableStore()
@@ -215,14 +216,13 @@ class CodeGenerator(ast.ASTWalker):
         self.bc.write_op(bytecode.OpCode.STRUCT, [struct_def.type_id])
 
     def _walk_function_call(self, expr):
-        if expr.name not in self.functions and expr.name != "print":
+        if self.intrinsics.is_intrinsic(expr.name):
+            self.intrinsics.codegen(expr, self)
+            return
+        if expr.name not in self.functions:
             raise RuntimeError("reference to unrecognised function {0}.".format(expr.name))
         for arg in expr.args:
             self._walk(arg)
-        # Probably go check some builtins array. For now let's just add a conditional for print.
-        if expr.name == "print":
-            self.bc.write_op(bytecode.OpCode.PRINT)
-            return
         self.bc.write_op(bytecode.OpCode.CALL_FUNC, [self.functions[expr.name].function_id])
 
     def _walk_member_access(self, expr):

@@ -6,9 +6,10 @@ class TypeError(Exception):
 
 
 class TypeDeduction(ast.ASTWalker):
-    def __init__(self, bc, structs):
+    def __init__(self, bc, structs, intrinsics):
         self.bc = bc
         self.structs = structs
+        self.intrinsics = intrinsics
         self.variable_types = dict()
         self.functions = dict()
         self.current_function = None
@@ -89,13 +90,12 @@ class TypeDeduction(ast.ASTWalker):
         expr.ret_type = ast.Type(ast.TypeKind.USER, expr.struct_name)
 
     def _walk_function_call(self, expr):
+        if self.intrinsics.is_intrinsic(expr.name):
+            self.intrinsics.type_check(expr, self)
+            return
         # Deduce types of each argument.
         for arg in expr.args:
             self._walk(arg)
-        # I really need to do this properly one day...
-        if expr.name == "print":
-            return
-
         # Now compare against the function parameter types.
         assert expr.name in self.functions
         called_func = self.functions[expr.name]

@@ -4,6 +4,7 @@ import click
 import sys
 from glacier.bytecode import ByteCode
 from glacier.passes.codegen import CodeGenerator
+from glacier.passes.intrinsics import Intrinsics
 from glacier.passes.struct_defs import StructureDefinitions
 from glacier.passes.function_table import FunctionTable
 from glacier.passes.type_deduction import TypeDeduction, TypeError
@@ -66,10 +67,11 @@ def glacierc_compile(src, o, print_tokens, print_ast, print_bc):
 
     bc = ByteCode()
     structs = dict()
+    intrinsics = Intrinsics()
     passes = [
         StructureDefinitions(bc, structs),
-        TypeDeduction(bc, structs),
-        CodeGenerator(bc, structs),
+        TypeDeduction(bc, structs, intrinsics),
+        CodeGenerator(bc, structs, intrinsics),
         FunctionTable(bc),
     ]
     try:
