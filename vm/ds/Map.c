@@ -3,6 +3,8 @@
 #include "../GC.h"
 #include "../Stack.h"
 
+#include <clhash.h>
+
 #include <assert.h>
 #include <string.h>
 

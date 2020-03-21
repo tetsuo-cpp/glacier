@@ -1,3 +1,6 @@
 [submodule "vm/ext/bdwgc"]
 	path = vm/ext/bdwgc
 	url = git@github.com:ivmai/bdwgc.git
+[submodule "vm/ext/clhash"]
+	path = vm/ext/clhash
+	url = git@github.com:lemire/clhash.git
