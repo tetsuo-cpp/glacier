@@ -10,13 +10,19 @@ class InstrinsicFunction:
 
 
 def _print_type_check(type_check, expr):
-    assert len(expr.args) == 1
+    if len(expr.args) != 1:
+        raise TypeError('The "print" builtin takes 1 argument')
     print_arg = expr.args[0]
     type_check._walk(print_arg)
-    assert (
-        print_arg.ret_type.kind == ast.TypeKind.INT
-        or print_arg.ret_type.kind == ast.TypeKind.STRING
-    )
+    if (
+        print_arg.ret_type.kind != ast.TypeKind.INT
+        and print_arg.ret_type.kind != ast.TypeKind.STRING
+    ):
+        raise TypeError(
+            'The "print" builtin can take either int or string arguments, got {}'.format(
+                print_arg.ret_type.kind
+            )
+        )
 
 
 def _print_codegen(codegen, expr):
