@@ -176,6 +176,10 @@ class OpCode(enum.Enum):
     stack followed by the vector itself.
     """
     VEC_PUSH = 0x1D
+    """
+    Get the length of a vector. The opcode expects the vector to be at the top of the stack.
+    """
+    VEC_LEN = 0x1E
 
 
 class ByteCode:

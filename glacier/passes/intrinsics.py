@@ -2,7 +2,7 @@ from glacier.bytecode import OpCode
 from .. import ast
 
 
-class InstrinsicFunction:
+class IntrinsicFunction:
     def __init__(self, name, codegen, type_check):
         self.name = name
         self.codegen = codegen
@@ -58,9 +58,28 @@ def _push_codegen(codegen, expr):
     codegen.bc.write_op(OpCode.VEC_PUSH)
 
 
+def _len_type_check(type_check, expr):
+    if len(expr.args) != 1:
+        raise TypeError('The "len" builtin takes 1 argument')
+    len_arg = expr.args[0]
+    type_check._walk(len_arg)
+    if len_arg.ret_type.kind != ast.TypeKind.VECTOR:
+        raise TypeError(
+            'The "len" builtin takes a vector argument, got {}'.format(len_arg.ret_type.kind)
+        )
+    expr.ret_type = ast.Type(ast.TypeKind.INT)
+
+
+def _len_codegen(codegen, expr):
+    assert len(expr.args) == 1
+    codegen._walk(expr.args[0])
+    codegen.bc.write_op(OpCode.VEC_LEN)
+
+
 INTRINSICS = [
-    InstrinsicFunction("print", _print_codegen, _print_type_check),
-    InstrinsicFunction("push", _push_codegen, _push_type_check),
+    IntrinsicFunction("print", _print_codegen, _print_type_check),
+    IntrinsicFunction("push", _push_codegen, _push_type_check),
+    IntrinsicFunction("len", _len_codegen, _len_type_check),
 ]
 
 
