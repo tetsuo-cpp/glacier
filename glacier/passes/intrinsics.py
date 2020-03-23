@@ -103,7 +103,19 @@ def _insert_type_check(type_check, expr):
     value_arg = expr.args[2]
     if map_arg.ret_type.kind != ast.TypeKind.MAP:
         raise TypeError('First argument to the "insert" builtin must be map')
-    # TODO: Check key and value types here.
+    desired_key_arg, desired_value_arg = map_arg.ret_type.container_type
+    if desired_key_arg.kind != key_arg.ret_type.kind:
+        raise TypeError(
+            'Supplied key of wrong type to "insert", expected {} but got {}'.format(
+                desired_key_arg.kind, key_arg.ret_type.kind
+            )
+        )
+    if desired_value_arg.kind != value_arg.ret_type.kind:
+        raise TypeError(
+            'Supplied value of wrong type to "insert", expected {} but got {}'.format(
+                desired_value_arg.kind, value_arg.ret_type.kind
+            )
+        )
 
 
 def _insert_codegen(codegen, expr):
