@@ -180,6 +180,10 @@ class OpCode(enum.Enum):
     Get the length of a vector. The opcode expects the vector to be at the top of the stack.
     """
     VEC_LEN = 0x1E
+    """
+    Pop an element off a vector. This opcode expects the vector to be at the top of the stack.
+    """
+    VEC_POP = 0x1F
 
 
 class ByteCode:

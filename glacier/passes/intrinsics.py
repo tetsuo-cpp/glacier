@@ -76,10 +76,28 @@ def _len_codegen(codegen, expr):
     codegen.bc.write_op(OpCode.VEC_LEN)
 
 
+def _pop_type_check(type_check, expr):
+    if len(expr.args) != 1:
+        raise TypeError('The "pop" builtin takes 1 argument')
+    pop_arg = expr.args[0]
+    type_check._walk(pop_arg)
+    if pop_arg.ret_type.kind != ast.TypeKind.VECTOR:
+        raise TypeError(
+            'The "pop" builtin takes a vector argument, got {}'.format(pop_arg.ret_type.kind)
+        )
+
+
+def _pop_codegen(codegen, expr):
+    assert len(expr.args) == 1
+    codegen._walk(expr.args[0])
+    codegen.bc.write_op(OpCode.VEC_POP)
+
+
 INTRINSICS = [
     IntrinsicFunction("print", _print_codegen, _print_type_check),
     IntrinsicFunction("push", _push_codegen, _push_type_check),
     IntrinsicFunction("len", _len_codegen, _len_type_check),
+    IntrinsicFunction("pop", _pop_codegen, _pop_type_check),
 ]
 
 
