@@ -184,6 +184,11 @@ class OpCode(enum.Enum):
     Pop an element off a vector. This opcode expects the vector to be at the top of the stack.
     """
     VEC_POP = 0x1F
+    """
+    Insert an element into a map. This opcode expects the value to be at the top of the stack,
+    followed by the key and then the map itself that we're inserting into.
+    """
+    MAP_INSERT = 0x20
 
 
 class ByteCode:

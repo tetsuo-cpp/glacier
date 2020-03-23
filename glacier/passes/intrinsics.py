@@ -93,11 +93,32 @@ def _pop_codegen(codegen, expr):
     codegen.bc.write_op(OpCode.VEC_POP)
 
 
+def _insert_type_check(type_check, expr):
+    if len(expr.args) != 3:
+        raise TypeError('The "insert" builtin takes 3 arguments: a map, a key and a value')
+    for arg in expr.args:
+        type_check._walk(arg)
+    map_arg = expr.args[0]
+    key_arg = expr.args[1]
+    value_arg = expr.args[2]
+    if map_arg.ret_type.kind != ast.TypeKind.MAP:
+        raise TypeError('First argument to the "insert" builtin must be map')
+    # TODO: Check key and value types here.
+
+
+def _insert_codegen(codegen, expr):
+    assert len(expr.args) == 3
+    for arg in expr.args:
+        codegen._walk(arg)
+    codegen.bc.write_op(OpCode.MAP_INSERT)
+
+
 INTRINSICS = [
     IntrinsicFunction("print", _print_codegen, _print_type_check),
     IntrinsicFunction("push", _push_codegen, _push_type_check),
     IntrinsicFunction("len", _len_codegen, _len_type_check),
     IntrinsicFunction("pop", _pop_codegen, _pop_type_check),
+    IntrinsicFunction("insert", _insert_codegen, _insert_type_check),
 ]
 
 
