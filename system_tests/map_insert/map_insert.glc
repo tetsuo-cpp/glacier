@@ -1,0 +1,7 @@
+fn main() -> void {
+  let m = {"Alex": 24, "Michelle": 26}<string, int>;
+  insert(m, "Motoko", 54);
+  print(m["Alex"]);
+  print(m["Michelle"]);
+  print(m["Motoko"]);
+}
