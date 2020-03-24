@@ -1,4 +1,5 @@
 from glacier.bytecode import OpCode
+from glacier.passes.type_deduction import TypeError
 from .. import ast
 
 

@@ -1,0 +1,4 @@
+fn main() -> void {
+  let m = {1: 1001, 2: 1002, 3: 1003}<int, int>;
+  insert(m, 1, "foo");
+}
