@@ -137,7 +137,6 @@ FUNCTION_JMP (11)
 ```
 ## TODO
 * Make object stack resizeable.
-* Built-in functions (push, insert, etc).
 * More sensible bytecode format (at the moment all arguments are 1 byte).
 * Generate bytecode definitions in C and Python from a definition language.
 * More tests around static typing.

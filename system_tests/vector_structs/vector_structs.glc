@@ -1,0 +1,18 @@
+struct Doubler {
+  int num;
+  fn double() -> int {
+    this.num = this.num * 2;
+    return this.num;
+  }
+};
+
+fn main() -> void {
+  let doubler = new Doubler(2);
+  let vectorOfDoublers = [doubler, new Doubler(10)]<Doubler>;
+  let i = 0;
+  while (i < len(vectorOfDoublers)) {
+    let v = vectorOfDoublers[i];
+    print(v.double());
+    i = i + 1;
+  }
+}
