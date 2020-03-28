@@ -2,14 +2,14 @@
 
 import click
 import sys
-from glacier.bytecode import ByteCode
-from glacier.passes.codegen import CodeGenerator
-from glacier.passes.intrinsics import Intrinsics
-from glacier.passes.struct_defs import StructureDefinitions
-from glacier.passes.function_table import FunctionTable
-from glacier.passes.type_deduction import TypeDeduction, TypeError
-from glacier.lexer import Lexer, TokenType
-from glacier.parser import Parser
+from compiler.bytecode import ByteCode
+from compiler.passes.codegen import CodeGenerator
+from compiler.passes.intrinsics import Intrinsics
+from compiler.passes.struct_defs import StructureDefinitions
+from compiler.passes.function_table import FunctionTable
+from compiler.passes.type_deduction import TypeDeduction, TypeError
+from compiler.lexer import Lexer, TokenType
+from compiler.parser import Parser
 
 
 def glacierc_print_tokens(tokens):

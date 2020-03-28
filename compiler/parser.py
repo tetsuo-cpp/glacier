@@ -1,5 +1,5 @@
-import glacier.ast as ast
-from glacier.lexer import TokenType
+import compiler.ast as ast
+from compiler.lexer import TokenType
 
 
 class Parser:

@@ -2,7 +2,7 @@
 
 import click
 import sys
-from glacier.bytecode import OpCode
+from compiler.bytecode import OpCode
 
 
 class MalformedByteCodeError(Exception):

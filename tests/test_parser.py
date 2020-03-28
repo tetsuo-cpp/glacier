@@ -1,7 +1,7 @@
-import glacier.ast as ast
+import compiler.ast as ast
 import unittest
-from glacier.lexer import Lexer, TokenType, Token
-from glacier.parser import Parser
+from compiler.lexer import Lexer, TokenType, Token
+from compiler.parser import Parser
 
 
 class ParserTestCase(unittest.TestCase):
