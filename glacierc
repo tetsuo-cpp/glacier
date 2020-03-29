@@ -7,7 +7,7 @@ from compiler.passes.codegen import CodeGenerator
 from compiler.passes.intrinsics import Intrinsics
 from compiler.passes.struct_defs import StructureDefinitions
 from compiler.passes.function_table import FunctionTable
-from compiler.passes.type_deduction import TypeDeduction, TypeError
+from compiler.passes.type_check import TypeChecker, TypeError
 from compiler.lexer import Lexer, TokenType
 from compiler.parser import Parser
 
@@ -70,7 +70,7 @@ def glacierc_compile(src, o, print_tokens, print_ast, print_bc):
     intrinsics = Intrinsics()
     passes = [
         StructureDefinitions(bc, structs),
-        TypeDeduction(bc, structs, intrinsics),
+        TypeChecker(bc, structs, intrinsics),
         CodeGenerator(bc, structs, intrinsics),
         FunctionTable(bc),
     ]

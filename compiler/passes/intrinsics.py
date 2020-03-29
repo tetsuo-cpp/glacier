@@ -1,5 +1,5 @@
 from compiler.bytecode import OpCode
-from compiler.passes.type_deduction import TypeError
+from compiler.passes.type_check import TypeError
 from .. import ast
 
 

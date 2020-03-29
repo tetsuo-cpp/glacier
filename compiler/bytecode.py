@@ -92,103 +92,103 @@ class OpCode(enum.Enum):
     The end of the header portion of the bytecode.
     - The HEADER_END opcode (1 byte).
     """
-    HEADER_END = 0x0F
+    HEADER_END = 0x0E
     """
     Print an integer at the top of the stack.
     - The PRINT opcode (1 byte).
     """
-    PRINT = 0x10
+    PRINT = 0x0F
     """
     Compare equality of two integers at the top of the stack and place the result on the top of the
     stack (1 for true, 0 for false).
     - The EQ opcode (1 byte).
     """
-    EQ = 0x11
+    EQ = 0x10
     """
     Jump to a given offset if the top of the stack is 1.
     - The JUMP_IF_TRUE opcode (1 byte).
     - The offset to jump to in bytes (1 byte).
     """
-    JUMP_IF_TRUE = 0x12
+    JUMP_IF_TRUE = 0x11
     """
     Jump to a given offset if the top of the stack is 0.
     - The JUMP_IF_FALSE opcode (1 byte).
     - The offset to jump to in bytes (1 byte).
     """
-    JUMP_IF_FALSE = 0x13
+    JUMP_IF_FALSE = 0x12
     """
     Jump to a given offset.
     - The JUMP opcode (1 byte).
     - The offset to jump to in bytes (1 byte).
     """
-    JUMP = 0x14
+    JUMP = 0x13
     """
     Construct an object with a given struct id.
     - The STRUCT opcode (1 byte).
     - The struct id (1 byte).
     """
-    STRUCT = 0x15
+    STRUCT = 0x14
     """
     Get a struct member.
     - The GET_STRUCT_MEMBER opcode (1 byte).
     - The member index (1 byte).
     """
-    GET_STRUCT_MEMBER = 0x16
+    GET_STRUCT_MEMBER = 0x15
     """
     Set a struct member.
     - The SET_STRUCT_MEMBER opcode (1 byte).
     - The member index (1 byte).
     """
-    SET_STRUCT_MEMBER = 0x17
+    SET_STRUCT_MEMBER = 0x16
     """
     Compare that the second integer on the stack is less than the first and place the result on the
     top of the stack (1 for true, 0 for false).
     - The LT opcode (1 byte).
     """
-    LT = 0x18
+    LT = 0x17
     """
     Create a vector, populate it with the elements currently on the stack and then place the vector
     itself on the stack.
     - The VEC opcode (1 byte).
     - The size of the vector (1 byte).
     """
-    VEC = 0x19
+    VEC = 0x18
     """
     Access an element from a vector on the stack. This opcode expects the element index to be at the
     top of the stack followed by the vector itself.
     - The VEC_ACCESS opcode (1 byte).
     """
-    VEC_ACCESS = 0x1A
+    VEC_ACCESS = 0x19
     """
     Create a map, populate it with the keys and values currently on the stack and then place the
     map on the stack.
     - The MAP opcode (1 byte).
     - The size of the map (1 byte).
     """
-    MAP = 0x1B
+    MAP = 0x1A
     """
     Access an element from a map on the stack. This opcode expects the key to be at the top of the
     stack followed by the map itself.
     """
-    MAP_ACCESS = 0x1C
+    MAP_ACCESS = 0x1B
     """
     Push an element onto a vector. This opcode expects the new element to be at the top of the
     stack followed by the vector itself.
     """
-    VEC_PUSH = 0x1D
+    VEC_PUSH = 0x1C
     """
     Get the length of a vector. The opcode expects the vector to be at the top of the stack.
     """
-    VEC_LEN = 0x1E
+    VEC_LEN = 0x1D
     """
     Pop an element off a vector. This opcode expects the vector to be at the top of the stack.
     """
-    VEC_POP = 0x1F
+    VEC_POP = 0x1E
     """
     Insert an element into a map. This opcode expects the value to be at the top of the stack,
     followed by the key and then the map itself that we're inserting into.
     """
-    MAP_INSERT = 0x20
+    MAP_INSERT = 0x1F
 
 
 class ByteCode:

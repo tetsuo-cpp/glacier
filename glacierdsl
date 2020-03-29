@@ -1,0 +1,77 @@
+#!/usr/bin/env python
+
+from dsl import ops, gen_vm
+
+GLACIER_OPS = [
+    ops.GlacierVMOp(
+        "struct_def",
+        [
+            ops.GlacierVMArg("type_id", ops.GlacierVMArgSize.BIT_32),
+            ops.GlacierVMEnumeratedArg("member_id", ops.GlacierVMArgSize.BIT_8),
+        ],
+    ),
+    ops.GlacierVMOp(
+        "function_def",
+        [
+            ops.GlacierVMArg("function_id", ops.GlacierVMArgSize.BIT_64),
+            ops.GlacierVMArg("num_args", ops.GlacierVMArgSize.BIT_8),
+        ],
+    ),
+    ops.GlacierVMOp("set_var", [ops.GlacierVMArg("variable_id", ops.GlacierVMArgSize.BIT_8)]),
+    ops.GlacierVMOp("get_var", [ops.GlacierVMArg("variable_id", ops.GlacierVMArgSize.BIT_8)]),
+    ops.GlacierVMOp("call_func", [ops.GlacierVMArg("function_id", ops.GlacierVMArgSize.BIT_64)]),
+    ops.GlacierVMOp("return", []),
+    ops.GlacierVMOp("return_val", []),
+    ops.GlacierVMOp("add", []),
+    ops.GlacierVMOp("int", [ops.GlacierVMArg("value", ops.GlacierVMArgSize.BIT_64)]),
+    ops.GlacierVMOp("string", [ops.GlacierVMEnumeratedArg("bytes", ops.GlacierVMArgSize.BIT_8)]),
+    ops.GlacierVMOp("subtract", []),
+    ops.GlacierVMOp("multiply", []),
+    ops.GlacierVMOp("divide", []),
+    ops.GlacierVMOp(
+        "function_jmp",
+        [
+            ops.GlacierVMArg("function_id", ops.GlacierVMArgSize.BIT_64),
+            ops.GlacierVMArg("offset", ops.GlacierVMArgSize.BIT_32),
+        ],
+    ),
+    ops.GlacierVMOp("header_end", []),
+    ops.GlacierVMOp("print", []),
+    ops.GlacierVMOp("eq", []),
+    ops.GlacierVMOp("jump_if_true", [ops.GlacierVMArg("offset", ops.GlacierVMArgSize.BIT_32)]),
+    ops.GlacierVMOp("jump_if_false", [ops.GlacierVMArg("offset", ops.GlacierVMArgSize.BIT_32)]),
+    ops.GlacierVMOp("jump", [ops.GlacierVMArg("offset", ops.GlacierVMArgSize.BIT_32)]),
+    ops.GlacierVMOp("struct", [ops.GlacierVMArg("struct_id", ops.GlacierVMArgSize.BIT_16)]),
+    ops.GlacierVMOp(
+        "get_struct_member", [ops.GlacierVMArg("member_index", ops.GlacierVMArgSize.BIT_8)]
+    ),
+    ops.GlacierVMOp(
+        "set_struct_member", [ops.GlacierVMArg("member_index", ops.GlacierVMArgSize.BIT_8)]
+    ),
+    ops.GlacierVMOp("lt", []),
+    ops.GlacierVMOp("vec", [ops.GlacierVMArg("size", ops.GlacierVMArgSize.BIT_8)]),
+    ops.GlacierVMOp("vec_access", []),
+    ops.GlacierVMOp("map", [ops.GlacierVMArg("size", ops.GlacierVMArgSize.BIT_8)]),
+    ops.GlacierVMOp("map_access", []),
+    ops.GlacierVMOp("vec_push", []),
+    ops.GlacierVMOp("vec_len", []),
+    ops.GlacierVMOp("vec_pop", []),
+    ops.GlacierVMOp("map_insert", []),
+]
+
+GLACIER_VM_SOURCE = "vm/Ops.h"
+
+
+def generate_vm():
+    vm_source = gen_vm.gen_vm(GLACIER_OPS)
+    with open(GLACIER_VM_SOURCE, "w") as f:
+        f.write(vm_source)
+    print("glacierdsl: Generated VM sources.")
+
+
+def glacierdsl():
+    generate_vm()
+
+
+if __name__ == "__main__":
+    glacierdsl()

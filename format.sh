@@ -9,7 +9,9 @@ fi
 source .ve/bin/activate
 black --line-length=100 glacierc
 black --line-length=100 glacierd
+black --line-length=100 glacierdsl
 black --line-length=100 compiler/
+black --line-length=100 dsl/
 black --line-length=100 tests/
 
 # Format C files with Clang Format.

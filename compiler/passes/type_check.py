@@ -5,7 +5,7 @@ class TypeError(Exception):
     pass
 
 
-class TypeDeduction(ast.ASTWalker):
+class TypeChecker(ast.ASTWalker):
     def __init__(self, bc, structs, intrinsics):
         self.bc = bc
         self.structs = structs
