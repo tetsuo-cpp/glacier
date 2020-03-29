@@ -40,6 +40,7 @@ set(
   ByteCode.h
   GC.c
   GC.h
+  Ops.h
   Table.c
   Table.h
   Stack.c

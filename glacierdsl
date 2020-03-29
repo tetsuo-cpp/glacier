@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from dsl import ops, gen_vm
+from dsl import ops, gen_compiler, gen_vm
 
 GLACIER_OPS = [
     ops.GlacierVMOp(
@@ -60,6 +60,7 @@ GLACIER_OPS = [
 ]
 
 GLACIER_VM_SOURCE = "vm/Ops.h"
+GLACIER_COMPILER_SOURCE = "compiler/ops.py"
 
 
 def generate_vm():
@@ -69,8 +70,16 @@ def generate_vm():
     print("glacierdsl: Generated VM sources.")
 
 
+def generate_compiler():
+    compiler_source = gen_compiler.gen_compiler(GLACIER_OPS)
+    with open(GLACIER_COMPILER_SOURCE, "w") as f:
+        f.write(compiler_source)
+    print("glacierdsl: Generated compiler sources.")
+
+
 def glacierdsl():
     generate_vm()
+    generate_compiler()
 
 
 if __name__ == "__main__":

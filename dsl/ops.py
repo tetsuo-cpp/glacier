@@ -1,6 +1,7 @@
 import enum
 
 
+# FIXME: Use this in the DSL generation.
 class GlacierVMArgSize(enum.Enum):
     BIT_8 = enum.auto()
     BIT_16 = enum.auto()
