@@ -50,7 +50,7 @@ def _gen_op(op):
 
     # Create the class.
     op_source = """
-class GlacierOp{0}:
+class {0}:
     {1}
     {2}
 """.format(

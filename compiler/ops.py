@@ -3,7 +3,7 @@
 from compiler import bytecode
 
 
-class GlacierOpStructDef:
+class StructDef:
     def __init__(self, type_id, member_id):
         self.type_id = type_id
         self.member_id = member_id
@@ -16,7 +16,7 @@ class GlacierOpStructDef:
         bc.write_op(bytecode.OpCode.STRUCT_DEF, args)
 
 
-class GlacierOpFunctionDef:
+class FunctionDef:
     def __init__(self, function_id, num_args):
         self.function_id = function_id
         self.num_args = num_args
@@ -28,7 +28,7 @@ class GlacierOpFunctionDef:
         bc.write_op(bytecode.OpCode.FUNCTION_DEF, args)
 
 
-class GlacierOpSetVar:
+class SetVar:
     def __init__(self, variable_id):
         self.variable_id = variable_id
 
@@ -38,7 +38,7 @@ class GlacierOpSetVar:
         bc.write_op(bytecode.OpCode.SET_VAR, args)
 
 
-class GlacierOpGetVar:
+class GetVar:
     def __init__(self, variable_id):
         self.variable_id = variable_id
 
@@ -48,7 +48,7 @@ class GlacierOpGetVar:
         bc.write_op(bytecode.OpCode.GET_VAR, args)
 
 
-class GlacierOpCallFunc:
+class CallFunc:
     def __init__(self, function_id):
         self.function_id = function_id
 
@@ -58,7 +58,7 @@ class GlacierOpCallFunc:
         bc.write_op(bytecode.OpCode.CALL_FUNC, args)
 
 
-class GlacierOpReturn:
+class Return:
     def __init__(self):
         pass
 
@@ -67,7 +67,7 @@ class GlacierOpReturn:
         bc.write_op(bytecode.OpCode.RETURN, args)
 
 
-class GlacierOpReturnVal:
+class ReturnVal:
     def __init__(self):
         pass
 
@@ -76,7 +76,7 @@ class GlacierOpReturnVal:
         bc.write_op(bytecode.OpCode.RETURN_VAL, args)
 
 
-class GlacierOpAdd:
+class Add:
     def __init__(self):
         pass
 
@@ -85,7 +85,7 @@ class GlacierOpAdd:
         bc.write_op(bytecode.OpCode.ADD, args)
 
 
-class GlacierOpInt:
+class Int:
     def __init__(self, value):
         self.value = value
 
@@ -95,7 +95,7 @@ class GlacierOpInt:
         bc.write_op(bytecode.OpCode.INT, args)
 
 
-class GlacierOpString:
+class String:
     def __init__(self, bytes):
         self.bytes = bytes
 
@@ -106,7 +106,7 @@ class GlacierOpString:
         bc.write_op(bytecode.OpCode.STRING, args)
 
 
-class GlacierOpSubtract:
+class Subtract:
     def __init__(self):
         pass
 
@@ -115,7 +115,7 @@ class GlacierOpSubtract:
         bc.write_op(bytecode.OpCode.SUBTRACT, args)
 
 
-class GlacierOpMultiply:
+class Multiply:
     def __init__(self):
         pass
 
@@ -124,7 +124,7 @@ class GlacierOpMultiply:
         bc.write_op(bytecode.OpCode.MULTIPLY, args)
 
 
-class GlacierOpDivide:
+class Divide:
     def __init__(self):
         pass
 
@@ -133,7 +133,7 @@ class GlacierOpDivide:
         bc.write_op(bytecode.OpCode.DIVIDE, args)
 
 
-class GlacierOpFunctionJmp:
+class FunctionJmp:
     def __init__(self, function_id, offset):
         self.function_id = function_id
         self.offset = offset
@@ -145,7 +145,7 @@ class GlacierOpFunctionJmp:
         bc.write_op(bytecode.OpCode.FUNCTION_JMP, args)
 
 
-class GlacierOpHeaderEnd:
+class HeaderEnd:
     def __init__(self):
         pass
 
@@ -154,7 +154,7 @@ class GlacierOpHeaderEnd:
         bc.write_op(bytecode.OpCode.HEADER_END, args)
 
 
-class GlacierOpPrint:
+class Print:
     def __init__(self):
         pass
 
@@ -163,7 +163,7 @@ class GlacierOpPrint:
         bc.write_op(bytecode.OpCode.PRINT, args)
 
 
-class GlacierOpEq:
+class Eq:
     def __init__(self):
         pass
 
@@ -172,7 +172,7 @@ class GlacierOpEq:
         bc.write_op(bytecode.OpCode.EQ, args)
 
 
-class GlacierOpJumpIfTrue:
+class JumpIfTrue:
     def __init__(self, offset):
         self.offset = offset
 
@@ -182,7 +182,7 @@ class GlacierOpJumpIfTrue:
         bc.write_op(bytecode.OpCode.JUMP_IF_TRUE, args)
 
 
-class GlacierOpJumpIfFalse:
+class JumpIfFalse:
     def __init__(self, offset):
         self.offset = offset
 
@@ -192,7 +192,7 @@ class GlacierOpJumpIfFalse:
         bc.write_op(bytecode.OpCode.JUMP_IF_FALSE, args)
 
 
-class GlacierOpJump:
+class Jump:
     def __init__(self, offset):
         self.offset = offset
 
@@ -202,7 +202,7 @@ class GlacierOpJump:
         bc.write_op(bytecode.OpCode.JUMP, args)
 
 
-class GlacierOpStruct:
+class Struct:
     def __init__(self, struct_id):
         self.struct_id = struct_id
 
@@ -212,7 +212,7 @@ class GlacierOpStruct:
         bc.write_op(bytecode.OpCode.STRUCT, args)
 
 
-class GlacierOpGetStructMember:
+class GetStructMember:
     def __init__(self, member_index):
         self.member_index = member_index
 
@@ -222,7 +222,7 @@ class GlacierOpGetStructMember:
         bc.write_op(bytecode.OpCode.GET_STRUCT_MEMBER, args)
 
 
-class GlacierOpSetStructMember:
+class SetStructMember:
     def __init__(self, member_index):
         self.member_index = member_index
 
@@ -232,7 +232,7 @@ class GlacierOpSetStructMember:
         bc.write_op(bytecode.OpCode.SET_STRUCT_MEMBER, args)
 
 
-class GlacierOpLt:
+class Lt:
     def __init__(self):
         pass
 
@@ -241,7 +241,7 @@ class GlacierOpLt:
         bc.write_op(bytecode.OpCode.LT, args)
 
 
-class GlacierOpVec:
+class Vec:
     def __init__(self, size):
         self.size = size
 
@@ -251,7 +251,7 @@ class GlacierOpVec:
         bc.write_op(bytecode.OpCode.VEC, args)
 
 
-class GlacierOpVecAccess:
+class VecAccess:
     def __init__(self):
         pass
 
@@ -260,7 +260,7 @@ class GlacierOpVecAccess:
         bc.write_op(bytecode.OpCode.VEC_ACCESS, args)
 
 
-class GlacierOpMap:
+class Map:
     def __init__(self, size):
         self.size = size
 
@@ -270,7 +270,7 @@ class GlacierOpMap:
         bc.write_op(bytecode.OpCode.MAP, args)
 
 
-class GlacierOpMapAccess:
+class MapAccess:
     def __init__(self):
         pass
 
@@ -279,7 +279,7 @@ class GlacierOpMapAccess:
         bc.write_op(bytecode.OpCode.MAP_ACCESS, args)
 
 
-class GlacierOpVecPush:
+class VecPush:
     def __init__(self):
         pass
 
@@ -288,7 +288,7 @@ class GlacierOpVecPush:
         bc.write_op(bytecode.OpCode.VEC_PUSH, args)
 
 
-class GlacierOpVecLen:
+class VecLen:
     def __init__(self):
         pass
 
@@ -297,7 +297,7 @@ class GlacierOpVecLen:
         bc.write_op(bytecode.OpCode.VEC_LEN, args)
 
 
-class GlacierOpVecPop:
+class VecPop:
     def __init__(self):
         pass
 
@@ -306,7 +306,7 @@ class GlacierOpVecPop:
         bc.write_op(bytecode.OpCode.VEC_POP, args)
 
 
-class GlacierOpMapInsert:
+class MapInsert:
     def __init__(self):
         pass
 

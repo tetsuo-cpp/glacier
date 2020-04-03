@@ -1,4 +1,4 @@
-from .. import ast, bytecode, lexer
+from .. import ast, bytecode, lexer, ops
 
 
 class VariableStore:
@@ -53,7 +53,7 @@ class CodeGenerator(ast.ASTWalker):
         # For functions returning void, there's an implicit return at the end of the function.
         assert expr.return_type is not None
         if expr.return_type.kind:
-            self.bc.write_op(bytecode.OpCode.RETURN)
+            ops.Return().serialise(self.bc)
 
     def _allocate_function_id(self, name):
         if name in self.functions:
@@ -67,13 +67,13 @@ class CodeGenerator(ast.ASTWalker):
 
     def _walk_return_statement(self, expr):
         if expr.expr is None:
-            self.bc.write_op(bytecode.OpCode.RETURN)
+            ops.Return().serialise(self.bc)
         else:
             self._walk(expr.expr)
-            self.bc.write_op(bytecode.OpCode.RETURN_VAL)
+            ops.ReturnVal().serialise(self.bc)
 
     def _walk_number(self, expr):
-        self.bc.write_op(bytecode.OpCode.INT, [expr.value])
+        ops.Int(expr.value).serialise(self.bc)
 
     def _walk_string(self, expr):
         args = list()
@@ -84,13 +84,13 @@ class CodeGenerator(ast.ASTWalker):
     def _walk_vector(self, expr):
         for e in reversed(expr.elements):
             self._walk(e)
-        self.bc.write_op(bytecode.OpCode.VEC, [len(expr.elements)])
+        ops.Vec(len(expr.elements)).serialise(self.bc)
 
     def _walk_map(self, expr):
         for (key, value) in expr.elements:
             self._walk(key)
             self._walk(value)
-        self.bc.write_op(bytecode.OpCode.MAP, [len(expr.elements)])
+        ops.Map(len(expr.elements)).serialise(self.bc)
 
     def _walk_index(self, expr):
         # Walk the expr.
@@ -98,15 +98,15 @@ class CodeGenerator(ast.ASTWalker):
         # Now push the index to the stack.
         self._walk(expr.index)
         if expr.expr.ret_type.kind == ast.TypeKind.VECTOR:
-            self.bc.write_op(bytecode.OpCode.VEC_ACCESS)
+            ops.VecAccess().serialise(self.bc)
         else:
             assert expr.expr.ret_type.kind == ast.TypeKind.MAP
-            self.bc.write_op(bytecode.OpCode.MAP_ACCESS)
+            ops.MapAccess().serialise(self.bc)
 
     def _walk_let_statement(self, expr):
         self._walk(expr.rhs)
         variable_id = self.variables.register_variable(expr.name)
-        self.bc.write_op(bytecode.OpCode.SET_VAR, [variable_id])
+        ops.SetVar(variable_id).serialise(self.bc)
 
     def _walk_if_statement(self, expr):
         self._walk(expr.cond)
@@ -186,7 +186,7 @@ class CodeGenerator(ast.ASTWalker):
                 i = 0
                 for m in s.members:
                     if m.name == expr.lhs.member_name:
-                        self.bc.write_op(bytecode.OpCode.SET_STRUCT_MEMBER, [i])
+                        ops.SetStructMember(i).serialise(self.bc)
                         return
                     i += 1
             raise RuntimeError("couldn't find the right struct")
@@ -213,7 +213,7 @@ class CodeGenerator(ast.ASTWalker):
                 default_value = struct_def.members[i].default_value
                 assert default_value is not None
                 self._walk(default_value)
-        self.bc.write_op(bytecode.OpCode.STRUCT, [struct_def.type_id])
+        ops.Struct(struct_def.type_id).serialise(self.bc)
 
     def _walk_function_call(self, expr):
         if self.intrinsics.is_intrinsic(expr.name):
@@ -223,7 +223,7 @@ class CodeGenerator(ast.ASTWalker):
             raise RuntimeError("reference to unrecognised function {0}.".format(expr.name))
         for arg in expr.args:
             self._walk(arg)
-        self.bc.write_op(bytecode.OpCode.CALL_FUNC, [self.functions[expr.name].function_id])
+        ops.CallFunc(self.functions[expr.name].function_id).serialise(self.bc)
 
     def _walk_member_access(self, expr):
         # Codegen to push the struct to the stack.
@@ -234,7 +234,7 @@ class CodeGenerator(ast.ASTWalker):
             i = 0
             for m in s.members:
                 if m.name == expr.member_name:
-                    self.bc.write_op(bytecode.OpCode.GET_STRUCT_MEMBER, [i])
+                    ops.GetStructMember(i).serialise(self.bc)
                     return
                 i += 1
         raise RuntimeError("couldn't find the right struct")
