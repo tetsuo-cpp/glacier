@@ -41,12 +41,9 @@ class CodeGenerator(ast.ASTWalker):
         expr.function_id = self._allocate_function_id(expr.name)
         self.functions[expr.name] = expr
         expr.offset = self.bc.current_offset()
-        args = list()
-        args.append(expr.function_id)
-        args.append(len(expr.args))
         for a in expr.args:
             self.variables.register_variable(a[0])
-        self.bc.write_op(bytecode.OpCode.FUNCTION_DEF, args)
+        ops.FunctionDef(expr.function_id, len(expr.args)).serialise(self.bc)
         for s in expr.statements:
             self._walk(s)
         self.variables.clear()
@@ -148,7 +145,7 @@ class CodeGenerator(ast.ASTWalker):
             self._walk(statement)
 
         # Jump back to the beginning of the loop and eval the cond again.
-        self.bc.write_op(bytecode.OpCode.JUMP, [before_loop])
+        ops.Jump(before_loop).serialise(self.bc)
 
         after_loop_body = self.bc.current_offset()
         self.bc.edit_op(skip_loop_body, bytecode.OpCode.JUMP_IF_FALSE, [after_loop_body])
@@ -159,17 +156,17 @@ class CodeGenerator(ast.ASTWalker):
             self._walk(expr.lhs)
         self._walk(expr.rhs)
         if expr.operator.type == lexer.TokenType.ADD:
-            self.bc.write_op(bytecode.OpCode.ADD)
+            ops.Add().serialise(self.bc)
         elif expr.operator.type == lexer.TokenType.SUBTRACT:
-            self.bc.write_op(bytecode.OpCode.SUBTRACT)
+            ops.Subtract().serialise(self.bc)
         elif expr.operator.type == lexer.TokenType.MULTIPLY:
-            self.bc.write_op(bytecode.OpCode.MULTIPLY)
+            ops.Multiply().serialise(self.bc)
         elif expr.operator.type == lexer.TokenType.DIVIDE:
-            self.bc.write_op(bytecode.OpCode.DIVIDE)
+            ops.Divide().serialise(self.bc)
         elif expr.operator.type == lexer.TokenType.EQUALS:
-            self.bc.write_op(bytecode.OpCode.EQ)
+            ops.Eq().serialise(self.bc)
         elif expr.operator.type == lexer.TokenType.LESS_THAN:
-            self.bc.write_op(bytecode.OpCode.LT)
+            ops.Lt().serialise(self.bc)
         elif expr.operator.type == lexer.TokenType.ASSIGN:
             self._walk_assignment(expr)
         else:
@@ -178,7 +175,7 @@ class CodeGenerator(ast.ASTWalker):
     def _walk_assignment(self, expr):
         assert expr.operator.type == lexer.TokenType.ASSIGN
         if isinstance(expr.lhs, ast.VariableRef):
-            self.bc.write_op(bytecode.OpCode.SET_VAR, [self.variables.get_variable(expr.lhs.name)])
+            ops.SetVar(self.variables.get_variable(expr.lhs.name)).serialise(self.bc)
         elif isinstance(expr.lhs, ast.MemberAccess):
             self._walk(expr.lhs.expr)
             # We've already done type deduction so we can do this properly later.
@@ -198,7 +195,7 @@ class CodeGenerator(ast.ASTWalker):
             )
 
     def _walk_variable(self, expr):
-        self.bc.write_op(bytecode.OpCode.GET_VAR, [self.variables.get_variable(expr.name)])
+        ops.GetVar(self.variables.get_variable(expr.name)).serialise(self.bc)
 
     def _walk_constructor(self, expr):
         # Get the struct id.
