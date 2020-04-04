@@ -1,6 +1,5 @@
-from compiler.bytecode import OpCode
 from compiler.passes.type_check import TypeError
-from .. import ast
+from .. import ast, ops
 
 
 class IntrinsicFunction:
@@ -30,7 +29,7 @@ def _print_codegen(codegen, expr):
     # Type check should verified this already.
     assert len(expr.args) == 1
     codegen._walk(expr.args[0])
-    codegen.bc.write_op(OpCode.PRINT)
+    ops.Print().serialise(codegen.bc)
 
 
 def _push_type_check(type_check, expr):
@@ -56,7 +55,7 @@ def _push_codegen(codegen, expr):
     assert len(expr.args) == 2
     codegen._walk(expr.args[0])
     codegen._walk(expr.args[1])
-    codegen.bc.write_op(OpCode.VEC_PUSH)
+    ops.VecPush().serialise(codegen.bc)
 
 
 def _len_type_check(type_check, expr):
@@ -74,7 +73,7 @@ def _len_type_check(type_check, expr):
 def _len_codegen(codegen, expr):
     assert len(expr.args) == 1
     codegen._walk(expr.args[0])
-    codegen.bc.write_op(OpCode.VEC_LEN)
+    ops.VecLen().serialise(codegen.bc)
 
 
 def _pop_type_check(type_check, expr):
@@ -91,7 +90,7 @@ def _pop_type_check(type_check, expr):
 def _pop_codegen(codegen, expr):
     assert len(expr.args) == 1
     codegen._walk(expr.args[0])
-    codegen.bc.write_op(OpCode.VEC_POP)
+    ops.VecPop().serialise(codegen.bc)
 
 
 def _insert_type_check(type_check, expr):
@@ -123,7 +122,7 @@ def _insert_codegen(codegen, expr):
     assert len(expr.args) == 3
     for arg in expr.args:
         codegen._walk(arg)
-    codegen.bc.write_op(OpCode.MAP_INSERT)
+    ops.MapInsert().serialise(codegen.bc)
 
 
 INTRINSICS = [

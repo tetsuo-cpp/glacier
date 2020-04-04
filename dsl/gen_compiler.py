@@ -26,9 +26,10 @@ def _gen_op(op):
     # Generate constructor.
     ctor_source = "def __init__(self"
     for arg in op.args:
-        ctor_source += ", {}".format(arg.name)
+        ctor_source += ", {} = None".format(arg.name)
     ctor_source += "):\n"
     if op.args:
+        ctor_source += INDENT + "self._offset = None\n"
         for arg in op.args:
             ctor_source += INDENT + "self.{0} = {0}\n".format(arg.name)
     else:
@@ -46,15 +47,59 @@ def _gen_op(op):
             serialise_source += INDENT + "args.append(len(self.{}))\n".format(arg.name)
             serialise_source += INDENT + "args.extend(self.{})\n".format(arg.name)
     # Write the actual opcode.
-    serialise_source += INDENT + "bc.write_op(bytecode.OpCode.{}, args)\n".format(op.name.upper())
+    if op.args:
+        inner_indent = " " * 12
+        serialise_source += INDENT + "if self._offset is not None:\n"
+        serialise_source += (
+            inner_indent
+            + "bc.edit_op(self._offset, bytecode.OpCode.{}, args)\n".format(op.name.upper())
+        )
+        serialise_source += INDENT + "else:\n"
+        serialise_source += inner_indent + "bc.write_op(bytecode.OpCode.{}, args)\n".format(
+            op.name.upper()
+        )
+    else:
+        serialise_source += INDENT + "bc.write_op(bytecode.OpCode.{}, args)\n".format(
+            op.name.upper()
+        )
+    serialise_source += INDENT + "return self\n"
+
+    # Generate reserve and assign function if we have arguments.
+    reserve_source = str()
+    assign_source = str()
+    if op.args:
+        reserve_source = "def reserve(self, bc):\n"
+        reserve_source += INDENT + "self._offset = bc.current_offset()\n"
+        reserve_source += INDENT + "args = ["
+        for arg in op.args:
+            if arg != op.args[0]:
+                reserve_source += ", "
+            reserve_source += "0xFF"
+        reserve_source += "]\n"
+        reserve_source += INDENT + "bc.write_op(bytecode.OpCode.{}, args)\n".format(op.name.upper())
+        reserve_source += INDENT + "return self\n"
+
+        assign_source = "def assign(self"
+        for arg in op.args:
+            assign_source += ", {}".format(arg.name)
+        assign_source += "):\n"
+        for arg in op.args:
+            assign_source += INDENT + "self.{0} = {0}\n".format(arg.name)
+        assign_source += INDENT + "return self\n"
 
     # Create the class.
     op_source = """
 class {0}:
     {1}
     {2}
+    {3}
+    {4}
 """.format(
-        _convert_snake_to_pascal(op.name), ctor_source, serialise_source
+        _convert_snake_to_pascal(op.name),
+        ctor_source,
+        serialise_source,
+        reserve_source,
+        assign_source,
     )
     return op_source
 

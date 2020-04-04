@@ -4,7 +4,8 @@ from compiler import bytecode
 
 
 class StructDef:
-    def __init__(self, type_id, member_id):
+    def __init__(self, type_id=None, member_id=None):
+        self._offset = None
         self.type_id = type_id
         self.member_id = member_id
 
@@ -13,11 +14,27 @@ class StructDef:
         args.append(self.type_id)
         args.append(len(self.member_id))
         args.extend(self.member_id)
+        if self._offset is not None:
+            bc.edit_op(self._offset, bytecode.OpCode.STRUCT_DEF, args)
+        else:
+            bc.write_op(bytecode.OpCode.STRUCT_DEF, args)
+        return self
+
+    def reserve(self, bc):
+        self._offset = bc.current_offset()
+        args = [0xFF, 0xFF]
         bc.write_op(bytecode.OpCode.STRUCT_DEF, args)
+        return self
+
+    def assign(self, type_id, member_id):
+        self.type_id = type_id
+        self.member_id = member_id
+        return self
 
 
 class FunctionDef:
-    def __init__(self, function_id, num_args):
+    def __init__(self, function_id=None, num_args=None):
+        self._offset = None
         self.function_id = function_id
         self.num_args = num_args
 
@@ -25,37 +42,97 @@ class FunctionDef:
         args = list()
         args.append(self.function_id)
         args.append(self.num_args)
+        if self._offset is not None:
+            bc.edit_op(self._offset, bytecode.OpCode.FUNCTION_DEF, args)
+        else:
+            bc.write_op(bytecode.OpCode.FUNCTION_DEF, args)
+        return self
+
+    def reserve(self, bc):
+        self._offset = bc.current_offset()
+        args = [0xFF, 0xFF]
         bc.write_op(bytecode.OpCode.FUNCTION_DEF, args)
+        return self
+
+    def assign(self, function_id, num_args):
+        self.function_id = function_id
+        self.num_args = num_args
+        return self
 
 
 class SetVar:
-    def __init__(self, variable_id):
+    def __init__(self, variable_id=None):
+        self._offset = None
         self.variable_id = variable_id
 
     def serialise(self, bc):
         args = list()
         args.append(self.variable_id)
+        if self._offset is not None:
+            bc.edit_op(self._offset, bytecode.OpCode.SET_VAR, args)
+        else:
+            bc.write_op(bytecode.OpCode.SET_VAR, args)
+        return self
+
+    def reserve(self, bc):
+        self._offset = bc.current_offset()
+        args = [0xFF]
         bc.write_op(bytecode.OpCode.SET_VAR, args)
+        return self
+
+    def assign(self, variable_id):
+        self.variable_id = variable_id
+        return self
 
 
 class GetVar:
-    def __init__(self, variable_id):
+    def __init__(self, variable_id=None):
+        self._offset = None
         self.variable_id = variable_id
 
     def serialise(self, bc):
         args = list()
         args.append(self.variable_id)
+        if self._offset is not None:
+            bc.edit_op(self._offset, bytecode.OpCode.GET_VAR, args)
+        else:
+            bc.write_op(bytecode.OpCode.GET_VAR, args)
+        return self
+
+    def reserve(self, bc):
+        self._offset = bc.current_offset()
+        args = [0xFF]
         bc.write_op(bytecode.OpCode.GET_VAR, args)
+        return self
+
+    def assign(self, variable_id):
+        self.variable_id = variable_id
+        return self
 
 
 class CallFunc:
-    def __init__(self, function_id):
+    def __init__(self, function_id=None):
+        self._offset = None
         self.function_id = function_id
 
     def serialise(self, bc):
         args = list()
         args.append(self.function_id)
+        if self._offset is not None:
+            bc.edit_op(self._offset, bytecode.OpCode.CALL_FUNC, args)
+        else:
+            bc.write_op(bytecode.OpCode.CALL_FUNC, args)
+        return self
+
+    def reserve(self, bc):
+        self._offset = bc.current_offset()
+        args = [0xFF]
         bc.write_op(bytecode.OpCode.CALL_FUNC, args)
+        return self
+
+    def assign(self, function_id):
+        self.function_id = function_id
+        return self
 
 
 class Return:
@@ -65,6 +142,7 @@ class Return:
     def serialise(self, bc):
         args = list()
         bc.write_op(bytecode.OpCode.RETURN, args)
+        return self
 
 
 class ReturnVal:
@@ -74,6 +152,7 @@ class ReturnVal:
     def serialise(self, bc):
         args = list()
         bc.write_op(bytecode.OpCode.RETURN_VAL, args)
+        return self
 
 
 class Add:
@@ -83,27 +162,58 @@ class Add:
     def serialise(self, bc):
         args = list()
         bc.write_op(bytecode.OpCode.ADD, args)
+        return self
 
 
 class Int:
-    def __init__(self, value):
+    def __init__(self, value=None):
+        self._offset = None
         self.value = value
 
     def serialise(self, bc):
         args = list()
         args.append(self.value)
+        if self._offset is not None:
+            bc.edit_op(self._offset, bytecode.OpCode.INT, args)
+        else:
+            bc.write_op(bytecode.OpCode.INT, args)
+        return self
+
+    def reserve(self, bc):
+        self._offset = bc.current_offset()
+        args = [0xFF]
         bc.write_op(bytecode.OpCode.INT, args)
+        return self
+
+    def assign(self, value):
+        self.value = value
+        return self
 
 
 class String:
-    def __init__(self, bytes):
+    def __init__(self, bytes=None):
+        self._offset = None
         self.bytes = bytes
 
     def serialise(self, bc):
         args = list()
         args.append(len(self.bytes))
         args.extend(self.bytes)
+        if self._offset is not None:
+            bc.edit_op(self._offset, bytecode.OpCode.STRING, args)
+        else:
+            bc.write_op(bytecode.OpCode.STRING, args)
+        return self
+
+    def reserve(self, bc):
+        self._offset = bc.current_offset()
+        args = [0xFF]
         bc.write_op(bytecode.OpCode.STRING, args)
+        return self
+
+    def assign(self, bytes):
+        self.bytes = bytes
+        return self
 
 
 class Subtract:
@@ -113,6 +223,7 @@ class Subtract:
     def serialise(self, bc):
         args = list()
         bc.write_op(bytecode.OpCode.SUBTRACT, args)
+        return self
 
 
 class Multiply:
@@ -122,6 +233,7 @@ class Multiply:
     def serialise(self, bc):
         args = list()
         bc.write_op(bytecode.OpCode.MULTIPLY, args)
+        return self
 
 
 class Divide:
@@ -131,10 +243,12 @@ class Divide:
     def serialise(self, bc):
         args = list()
         bc.write_op(bytecode.OpCode.DIVIDE, args)
+        return self
 
 
 class FunctionJmp:
-    def __init__(self, function_id, offset):
+    def __init__(self, function_id=None, offset=None):
+        self._offset = None
         self.function_id = function_id
         self.offset = offset
 
@@ -142,7 +256,22 @@ class FunctionJmp:
         args = list()
         args.append(self.function_id)
         args.append(self.offset)
+        if self._offset is not None:
+            bc.edit_op(self._offset, bytecode.OpCode.FUNCTION_JMP, args)
+        else:
+            bc.write_op(bytecode.OpCode.FUNCTION_JMP, args)
+        return self
+
+    def reserve(self, bc):
+        self._offset = bc.current_offset()
+        args = [0xFF, 0xFF]
         bc.write_op(bytecode.OpCode.FUNCTION_JMP, args)
+        return self
+
+    def assign(self, function_id, offset):
+        self.function_id = function_id
+        self.offset = offset
+        return self
 
 
 class HeaderEnd:
@@ -152,6 +281,7 @@ class HeaderEnd:
     def serialise(self, bc):
         args = list()
         bc.write_op(bytecode.OpCode.HEADER_END, args)
+        return self
 
 
 class Print:
@@ -161,6 +291,7 @@ class Print:
     def serialise(self, bc):
         args = list()
         bc.write_op(bytecode.OpCode.PRINT, args)
+        return self
 
 
 class Eq:
@@ -170,66 +301,157 @@ class Eq:
     def serialise(self, bc):
         args = list()
         bc.write_op(bytecode.OpCode.EQ, args)
+        return self
 
 
 class JumpIfTrue:
-    def __init__(self, offset):
+    def __init__(self, offset=None):
+        self._offset = None
         self.offset = offset
 
     def serialise(self, bc):
         args = list()
         args.append(self.offset)
+        if self._offset is not None:
+            bc.edit_op(self._offset, bytecode.OpCode.JUMP_IF_TRUE, args)
+        else:
+            bc.write_op(bytecode.OpCode.JUMP_IF_TRUE, args)
+        return self
+
+    def reserve(self, bc):
+        self._offset = bc.current_offset()
+        args = [0xFF]
         bc.write_op(bytecode.OpCode.JUMP_IF_TRUE, args)
+        return self
+
+    def assign(self, offset):
+        self.offset = offset
+        return self
 
 
 class JumpIfFalse:
-    def __init__(self, offset):
+    def __init__(self, offset=None):
+        self._offset = None
         self.offset = offset
 
     def serialise(self, bc):
         args = list()
         args.append(self.offset)
+        if self._offset is not None:
+            bc.edit_op(self._offset, bytecode.OpCode.JUMP_IF_FALSE, args)
+        else:
+            bc.write_op(bytecode.OpCode.JUMP_IF_FALSE, args)
+        return self
+
+    def reserve(self, bc):
+        self._offset = bc.current_offset()
+        args = [0xFF]
         bc.write_op(bytecode.OpCode.JUMP_IF_FALSE, args)
+        return self
+
+    def assign(self, offset):
+        self.offset = offset
+        return self
 
 
 class Jump:
-    def __init__(self, offset):
+    def __init__(self, offset=None):
+        self._offset = None
         self.offset = offset
 
     def serialise(self, bc):
         args = list()
         args.append(self.offset)
+        if self._offset is not None:
+            bc.edit_op(self._offset, bytecode.OpCode.JUMP, args)
+        else:
+            bc.write_op(bytecode.OpCode.JUMP, args)
+        return self
+
+    def reserve(self, bc):
+        self._offset = bc.current_offset()
+        args = [0xFF]
         bc.write_op(bytecode.OpCode.JUMP, args)
+        return self
+
+    def assign(self, offset):
+        self.offset = offset
+        return self
 
 
 class Struct:
-    def __init__(self, struct_id):
+    def __init__(self, struct_id=None):
+        self._offset = None
         self.struct_id = struct_id
 
     def serialise(self, bc):
         args = list()
         args.append(self.struct_id)
+        if self._offset is not None:
+            bc.edit_op(self._offset, bytecode.OpCode.STRUCT, args)
+        else:
+            bc.write_op(bytecode.OpCode.STRUCT, args)
+        return self
+
+    def reserve(self, bc):
+        self._offset = bc.current_offset()
+        args = [0xFF]
         bc.write_op(bytecode.OpCode.STRUCT, args)
+        return self
+
+    def assign(self, struct_id):
+        self.struct_id = struct_id
+        return self
 
 
 class GetStructMember:
-    def __init__(self, member_index):
+    def __init__(self, member_index=None):
+        self._offset = None
         self.member_index = member_index
 
     def serialise(self, bc):
         args = list()
         args.append(self.member_index)
+        if self._offset is not None:
+            bc.edit_op(self._offset, bytecode.OpCode.GET_STRUCT_MEMBER, args)
+        else:
+            bc.write_op(bytecode.OpCode.GET_STRUCT_MEMBER, args)
+        return self
+
+    def reserve(self, bc):
+        self._offset = bc.current_offset()
+        args = [0xFF]
         bc.write_op(bytecode.OpCode.GET_STRUCT_MEMBER, args)
+        return self
+
+    def assign(self, member_index):
+        self.member_index = member_index
+        return self
 
 
 class SetStructMember:
-    def __init__(self, member_index):
+    def __init__(self, member_index=None):
+        self._offset = None
         self.member_index = member_index
 
     def serialise(self, bc):
         args = list()
         args.append(self.member_index)
+        if self._offset is not None:
+            bc.edit_op(self._offset, bytecode.OpCode.SET_STRUCT_MEMBER, args)
+        else:
+            bc.write_op(bytecode.OpCode.SET_STRUCT_MEMBER, args)
+        return self
+
+    def reserve(self, bc):
+        self._offset = bc.current_offset()
+        args = [0xFF]
         bc.write_op(bytecode.OpCode.SET_STRUCT_MEMBER, args)
+        return self
+
+    def assign(self, member_index):
+        self.member_index = member_index
+        return self
 
 
 class Lt:
@@ -239,16 +461,32 @@ class Lt:
     def serialise(self, bc):
         args = list()
         bc.write_op(bytecode.OpCode.LT, args)
+        return self
 
 
 class Vec:
-    def __init__(self, size):
+    def __init__(self, size=None):
+        self._offset = None
         self.size = size
 
     def serialise(self, bc):
         args = list()
         args.append(self.size)
+        if self._offset is not None:
+            bc.edit_op(self._offset, bytecode.OpCode.VEC, args)
+        else:
+            bc.write_op(bytecode.OpCode.VEC, args)
+        return self
+
+    def reserve(self, bc):
+        self._offset = bc.current_offset()
+        args = [0xFF]
         bc.write_op(bytecode.OpCode.VEC, args)
+        return self
+
+    def assign(self, size):
+        self.size = size
+        return self
 
 
 class VecAccess:
@@ -258,16 +496,32 @@ class VecAccess:
     def serialise(self, bc):
         args = list()
         bc.write_op(bytecode.OpCode.VEC_ACCESS, args)
+        return self
 
 
 class Map:
-    def __init__(self, size):
+    def __init__(self, size=None):
+        self._offset = None
         self.size = size
 
     def serialise(self, bc):
         args = list()
         args.append(self.size)
+        if self._offset is not None:
+            bc.edit_op(self._offset, bytecode.OpCode.MAP, args)
+        else:
+            bc.write_op(bytecode.OpCode.MAP, args)
+        return self
+
+    def reserve(self, bc):
+        self._offset = bc.current_offset()
+        args = [0xFF]
         bc.write_op(bytecode.OpCode.MAP, args)
+        return self
+
+    def assign(self, size):
+        self.size = size
+        return self
 
 
 class MapAccess:
@@ -277,6 +531,7 @@ class MapAccess:
     def serialise(self, bc):
         args = list()
         bc.write_op(bytecode.OpCode.MAP_ACCESS, args)
+        return self
 
 
 class VecPush:
@@ -286,6 +541,7 @@ class VecPush:
     def serialise(self, bc):
         args = list()
         bc.write_op(bytecode.OpCode.VEC_PUSH, args)
+        return self
 
 
 class VecLen:
@@ -295,6 +551,7 @@ class VecLen:
     def serialise(self, bc):
         args = list()
         bc.write_op(bytecode.OpCode.VEC_LEN, args)
+        return self
 
 
 class VecPop:
@@ -304,6 +561,7 @@ class VecPop:
     def serialise(self, bc):
         args = list()
         bc.write_op(bytecode.OpCode.VEC_POP, args)
+        return self
 
 
 class MapInsert:
@@ -313,3 +571,4 @@ class MapInsert:
     def serialise(self, bc):
         args = list()
         bc.write_op(bytecode.OpCode.MAP_INSERT, args)
+        return self

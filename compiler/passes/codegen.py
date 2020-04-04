@@ -109,25 +109,23 @@ class CodeGenerator(ast.ASTWalker):
         self._walk(expr.cond)
 
         # Jump to "else" branch if the cond was false.
-        skip_then_offset = self.bc.current_offset()
-        self.bc.write_op(bytecode.OpCode.JUMP_IF_FALSE, [0xFF])
+        skip_then = ops.JumpIfFalse().reserve(self.bc)
 
         for statement in expr.then_statements:
             self._walk(statement)
 
         # Skip the else branch if we're executing "then".
-        skip_else_offset = self.bc.current_offset()
-        self.bc.write_op(bytecode.OpCode.JUMP, [0xFF])
+        skip_else = ops.Jump().reserve(self.bc)
 
         # Go back and edit the "else" jump.
         after_then = self.bc.current_offset()
-        self.bc.edit_op(skip_then_offset, bytecode.OpCode.JUMP_IF_FALSE, [after_then])
+        skip_then.assign(after_then).serialise(self.bc)
 
         for statement in expr.else_statements:
             self._walk(statement)
 
         after_else = self.bc.current_offset()
-        self.bc.edit_op(skip_else_offset, bytecode.OpCode.JUMP, [after_else])
+        skip_else.assign(after_else).serialise(self.bc)
 
     def _walk_while_loop(self, expr):
         # Every loop iteration is going to jump back up here.
@@ -138,8 +136,7 @@ class CodeGenerator(ast.ASTWalker):
 
         # Jump out of the loop if the cond is false.
         # Come back and edit this when we know what bytecode offset the loop ends at.
-        skip_loop_body = self.bc.current_offset()
-        self.bc.write_op(bytecode.OpCode.JUMP_IF_FALSE, [0xFF])
+        skip_loop = ops.JumpIfFalse().reserve(self.bc)
 
         for statement in expr.loop_body:
             self._walk(statement)
@@ -148,7 +145,7 @@ class CodeGenerator(ast.ASTWalker):
         ops.Jump(before_loop).serialise(self.bc)
 
         after_loop_body = self.bc.current_offset()
-        self.bc.edit_op(skip_loop_body, bytecode.OpCode.JUMP_IF_FALSE, [after_loop_body])
+        skip_loop.assign(after_loop_body).serialise(self.bc)
 
     def _walk_binary_op(self, expr):
         # If we're assigning to a variable, don't evaluate it.
