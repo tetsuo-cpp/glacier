@@ -22,6 +22,7 @@ def _convert_snake_to_pascal(snake_str):
     return convert_str
 
 
+# FIXME: Add some helpers here to manage indentation and scoping.
 def _gen_op(op):
     # Generate constructor.
     ctor_source = "def __init__(self"
@@ -34,6 +35,7 @@ def _gen_op(op):
             ctor_source += INDENT + "self.{0} = {0}\n".format(arg.name)
     else:
         ctor_source += INDENT + "pass\n"
+    header_op = isinstance(op, ops.GlacierVMHeaderOp)
 
     # Generate serialise function.
     serialise_source = "def serialise(self, bc):\n"
@@ -45,9 +47,14 @@ def _gen_op(op):
         else:
             assert isinstance(arg, ops.GlacierVMEnumeratedArg)
             serialise_source += INDENT + "args.append(len(self.{}))\n".format(arg.name)
-            serialise_source += INDENT + "args.extend(self.{})\n".format(arg.name)
+            if arg.size == ops.GlacierVMArgType.CHAR:
+                serialise_source += INDENT + "args.extend(bytes(self.{}, 'utf-8'))\n".format(
+                    arg.name
+                )
+            else:
+                serialise_source += INDENT + "args.extend(self.{})\n".format(arg.name)
     # Write the actual opcode.
-    if op.args:
+    if op.args and not header_op:
         inner_indent = " " * 12
         serialise_source += INDENT + "if self._offset is not None:\n"
         serialise_source += (
@@ -59,15 +66,20 @@ def _gen_op(op):
             op.name.upper()
         )
     else:
-        serialise_source += INDENT + "bc.write_op(bytecode.OpCode.{}, args)\n".format(
-            op.name.upper()
-        )
+        if not header_op:
+            serialise_source += INDENT + "bc.write_op(bytecode.OpCode.{}, args)\n".format(
+                op.name.upper()
+            )
+        else:
+            serialise_source += INDENT + "bc.write_header(bytecode.OpCode.{}, args)\n".format(
+                op.name.upper()
+            )
     serialise_source += INDENT + "return self\n"
 
     # Generate reserve and assign function if we have arguments.
     reserve_source = str()
     assign_source = str()
-    if op.args:
+    if op.args and not header_op:
         reserve_source = "def reserve(self, bc):\n"
         reserve_source += INDENT + "self._offset = bc.current_offset()\n"
         reserve_source += INDENT + "args = ["

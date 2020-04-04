@@ -3,55 +3,55 @@
 from dsl import ops, gen_compiler, gen_vm
 
 GLACIER_OPS = [
-    ops.GlacierVMOp(
+    ops.GlacierVMHeaderOp(
         "struct_def",
         [
-            ops.GlacierVMArg("type_id", ops.GlacierVMArgSize.BIT_32),
-            ops.GlacierVMEnumeratedArg("member_id", ops.GlacierVMArgSize.BIT_8),
+            ops.GlacierVMArg("type_id", ops.GlacierVMArgType.BIT_32),
+            ops.GlacierVMEnumeratedArg("member_id", ops.GlacierVMArgType.BIT_8),
         ],
     ),
     ops.GlacierVMOp(
         "function_def",
         [
-            ops.GlacierVMArg("function_id", ops.GlacierVMArgSize.BIT_64),
-            ops.GlacierVMArg("num_args", ops.GlacierVMArgSize.BIT_8),
+            ops.GlacierVMArg("function_id", ops.GlacierVMArgType.BIT_64),
+            ops.GlacierVMArg("num_args", ops.GlacierVMArgType.BIT_8),
         ],
     ),
-    ops.GlacierVMOp("set_var", [ops.GlacierVMArg("variable_id", ops.GlacierVMArgSize.BIT_8)]),
-    ops.GlacierVMOp("get_var", [ops.GlacierVMArg("variable_id", ops.GlacierVMArgSize.BIT_8)]),
-    ops.GlacierVMOp("call_func", [ops.GlacierVMArg("function_id", ops.GlacierVMArgSize.BIT_64)]),
+    ops.GlacierVMOp("set_var", [ops.GlacierVMArg("variable_id", ops.GlacierVMArgType.BIT_8)]),
+    ops.GlacierVMOp("get_var", [ops.GlacierVMArg("variable_id", ops.GlacierVMArgType.BIT_8)]),
+    ops.GlacierVMOp("call_func", [ops.GlacierVMArg("function_id", ops.GlacierVMArgType.BIT_64)]),
     ops.GlacierVMOp("return", []),
     ops.GlacierVMOp("return_val", []),
     ops.GlacierVMOp("add", []),
-    ops.GlacierVMOp("int", [ops.GlacierVMArg("value", ops.GlacierVMArgSize.BIT_64)]),
-    ops.GlacierVMOp("string", [ops.GlacierVMEnumeratedArg("bytes", ops.GlacierVMArgSize.BIT_8)]),
+    ops.GlacierVMOp("int", [ops.GlacierVMArg("value", ops.GlacierVMArgType.BIT_64)]),
+    ops.GlacierVMOp("string", [ops.GlacierVMEnumeratedArg("bytes", ops.GlacierVMArgType.CHAR)]),
     ops.GlacierVMOp("subtract", []),
     ops.GlacierVMOp("multiply", []),
     ops.GlacierVMOp("divide", []),
-    ops.GlacierVMOp(
+    ops.GlacierVMHeaderOp(
         "function_jmp",
         [
-            ops.GlacierVMArg("function_id", ops.GlacierVMArgSize.BIT_64),
-            ops.GlacierVMArg("offset", ops.GlacierVMArgSize.BIT_32),
+            ops.GlacierVMArg("function_id", ops.GlacierVMArgType.BIT_64),
+            ops.GlacierVMArg("offset", ops.GlacierVMArgType.BIT_32),
         ],
     ),
     ops.GlacierVMOp("header_end", []),
     ops.GlacierVMOp("print", []),
     ops.GlacierVMOp("eq", []),
-    ops.GlacierVMOp("jump_if_true", [ops.GlacierVMArg("offset", ops.GlacierVMArgSize.BIT_32)]),
-    ops.GlacierVMOp("jump_if_false", [ops.GlacierVMArg("offset", ops.GlacierVMArgSize.BIT_32)]),
-    ops.GlacierVMOp("jump", [ops.GlacierVMArg("offset", ops.GlacierVMArgSize.BIT_32)]),
-    ops.GlacierVMOp("struct", [ops.GlacierVMArg("struct_id", ops.GlacierVMArgSize.BIT_16)]),
+    ops.GlacierVMOp("jump_if_true", [ops.GlacierVMArg("offset", ops.GlacierVMArgType.BIT_32)]),
+    ops.GlacierVMOp("jump_if_false", [ops.GlacierVMArg("offset", ops.GlacierVMArgType.BIT_32)]),
+    ops.GlacierVMOp("jump", [ops.GlacierVMArg("offset", ops.GlacierVMArgType.BIT_32)]),
+    ops.GlacierVMOp("struct", [ops.GlacierVMArg("struct_id", ops.GlacierVMArgType.BIT_16)]),
     ops.GlacierVMOp(
-        "get_struct_member", [ops.GlacierVMArg("member_index", ops.GlacierVMArgSize.BIT_8)]
+        "get_struct_member", [ops.GlacierVMArg("member_index", ops.GlacierVMArgType.BIT_8)]
     ),
     ops.GlacierVMOp(
-        "set_struct_member", [ops.GlacierVMArg("member_index", ops.GlacierVMArgSize.BIT_8)]
+        "set_struct_member", [ops.GlacierVMArg("member_index", ops.GlacierVMArgType.BIT_8)]
     ),
     ops.GlacierVMOp("lt", []),
-    ops.GlacierVMOp("vec", [ops.GlacierVMArg("size", ops.GlacierVMArgSize.BIT_8)]),
+    ops.GlacierVMOp("vec", [ops.GlacierVMArg("size", ops.GlacierVMArgType.BIT_8)]),
     ops.GlacierVMOp("vec_access", []),
-    ops.GlacierVMOp("map", [ops.GlacierVMArg("size", ops.GlacierVMArgSize.BIT_8)]),
+    ops.GlacierVMOp("map", [ops.GlacierVMArg("size", ops.GlacierVMArgType.BIT_8)]),
     ops.GlacierVMOp("map_access", []),
     ops.GlacierVMOp("vec_push", []),
     ops.GlacierVMOp("vec_len", []),

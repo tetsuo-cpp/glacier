@@ -14,21 +14,7 @@ class StructDef:
         args.append(self.type_id)
         args.append(len(self.member_id))
         args.extend(self.member_id)
-        if self._offset is not None:
-            bc.edit_op(self._offset, bytecode.OpCode.STRUCT_DEF, args)
-        else:
-            bc.write_op(bytecode.OpCode.STRUCT_DEF, args)
-        return self
-
-    def reserve(self, bc):
-        self._offset = bc.current_offset()
-        args = [0xFF, 0xFF]
-        bc.write_op(bytecode.OpCode.STRUCT_DEF, args)
-        return self
-
-    def assign(self, type_id, member_id):
-        self.type_id = type_id
-        self.member_id = member_id
+        bc.write_header(bytecode.OpCode.STRUCT_DEF, args)
         return self
 
 
@@ -198,7 +184,7 @@ class String:
     def serialise(self, bc):
         args = list()
         args.append(len(self.bytes))
-        args.extend(self.bytes)
+        args.extend(bytes(self.bytes, "utf-8"))
         if self._offset is not None:
             bc.edit_op(self._offset, bytecode.OpCode.STRING, args)
         else:
@@ -256,21 +242,7 @@ class FunctionJmp:
         args = list()
         args.append(self.function_id)
         args.append(self.offset)
-        if self._offset is not None:
-            bc.edit_op(self._offset, bytecode.OpCode.FUNCTION_JMP, args)
-        else:
-            bc.write_op(bytecode.OpCode.FUNCTION_JMP, args)
-        return self
-
-    def reserve(self, bc):
-        self._offset = bc.current_offset()
-        args = [0xFF, 0xFF]
-        bc.write_op(bytecode.OpCode.FUNCTION_JMP, args)
-        return self
-
-    def assign(self, function_id, offset):
-        self.function_id = function_id
-        self.offset = offset
+        bc.write_header(bytecode.OpCode.FUNCTION_JMP, args)
         return self
 
 

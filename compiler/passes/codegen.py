@@ -1,4 +1,4 @@
-from .. import ast, bytecode, lexer, ops
+from .. import ast, lexer, ops
 
 
 class VariableStore:
@@ -73,10 +73,7 @@ class CodeGenerator(ast.ASTWalker):
         ops.Int(expr.value).serialise(self.bc)
 
     def _walk_string(self, expr):
-        args = list()
-        args.append(len(expr.value))
-        args.extend(bytes(expr.value, "utf-8"))
-        self.bc.write_op(bytecode.OpCode.STRING, args)
+        ops.String(expr.value).serialise(self.bc)
 
     def _walk_vector(self, expr):
         for e in reversed(expr.elements):

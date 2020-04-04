@@ -1,4 +1,4 @@
-from .. import ast, bytecode
+from .. import ast, ops
 
 
 class FunctionTable(ast.ASTWalker):
@@ -11,4 +11,4 @@ class FunctionTable(ast.ASTWalker):
 
     def _walk_function(self, expr):
         assert hasattr(expr, "function_id") and hasattr(expr, "offset")
-        self.bc.write_header(bytecode.OpCode.FUNCTION_JMP, [expr.function_id, expr.offset])
+        ops.FunctionJmp(expr.function_id, expr.offset).serialise(self.bc)

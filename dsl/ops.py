@@ -2,7 +2,8 @@ import enum
 
 
 # FIXME: Use this in the DSL generation.
-class GlacierVMArgSize(enum.Enum):
+class GlacierVMArgType(enum.Enum):
+    CHAR = enum.auto()
     BIT_8 = enum.auto()
     BIT_16 = enum.auto()
     BIT_32 = enum.auto()
@@ -10,6 +11,12 @@ class GlacierVMArgSize(enum.Enum):
 
 
 class GlacierVMOp:
+    def __init__(self, name, args):
+        self.name = name
+        self.args = args
+
+
+class GlacierVMHeaderOp:
     def __init__(self, name, args):
         self.name = name
         self.args = args
