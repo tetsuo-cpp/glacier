@@ -15,6 +15,7 @@ typedef struct {
 int glacierMapInit(GlacierMap *map);
 int glacierMapSet(GlacierMap *map, GlacierValue key, GlacierValue value);
 int glacierMapGet(GlacierMap *map, GlacierValue key, GlacierValue *value);
+int glacierMapUnset(GlacierMap *map, GlacierValue key);
 void glacierMapDestroy(GlacierMap *map);
 
 #endif // GLACIERVM_MAP_H

@@ -62,13 +62,42 @@ int glacierMapGet(GlacierMap *map, GlacierValue key, GlacierValue *value) {
   if (index >= map->numBuckets)
     return GLC_KEY_MISS;
   GlacierMapNode *node = &map->buckets[index];
-  for (; node != NULL; node = node->next) {
+  for (; node; node = node->next) {
     if (node->set && glacierMapKeyEq(node->key, key)) {
       *value = node->value;
       return GLC_OK;
     }
   }
   return GLC_KEY_MISS;
+}
+
+int glacierMapUnset(GlacierMap *map, GlacierValue key) {
+  size_t index = glacierMapHash(map->clHashKey, key) % map->numBuckets;
+  if (index >= map->numBuckets)
+    return GLC_KEY_MISS;
+  GlacierMapNode *prev = NULL;
+  GlacierMapNode *node = &map->buckets[index];
+  for (; node; prev = node, node = node->next)
+    if (node->set && glacierMapKeyEq(node->key, key))
+      goto remove;
+  return GLC_KEY_MISS;
+remove:
+  if (prev) {
+    prev->next = node->next;
+    glacierGCFree((char **)&node);
+  } else {
+    GlacierMapNode *nextNode = node->next;
+    if (nextNode) {
+      // Bitwise copy so we're pointing to the one after next.
+      // Looks as if we just duplicated the second node and "removed" the first.
+      *node = *nextNode;
+      // Now free the second since it's redundant.
+      glacierGCFree((char **)&nextNode);
+    } else
+      // This means we're the only node in this bucket. Just unset it.
+      node->set = false;
+  }
+  return GLC_OK;
 }
 
 void glacierMapDestroy(GlacierMap *map) {

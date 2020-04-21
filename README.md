@@ -146,3 +146,4 @@ The definitions of what ops exist in the GlacierVM are described by a Python DSL
 * More tests around static typing.
 * Reduce technical debt and general hackiness.
 * Improve compiler errors and diagnostics.
+* Add an error handling mechanism.
