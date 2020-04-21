@@ -9,7 +9,7 @@ Setup a Python virtual environment for running the Glacier compiler.
 ```
 $ bash setup_env.sh
 ```
-The Glacier VM requires the Boehm-Demers-Weiser Garbage Collector so this needs to be pulled in as a submodule before invoking the CMake build.
+The Glacier VM requires dependencies such as the Boehm-Demers-Weiser Garbage Collector so they need to be pulled in as submodules before invoking the CMake build.
 ```
 $ git submodule init
 $ cmake . && make
@@ -120,25 +120,29 @@ Glacier also provides a bytecode disassembler to debug the compiler and VM.
 ```
 $ ./glacierd system_tests/example_1/example_1.bc
 STRUCT_DEF (0)
-  TypeId: 2
-  NumMembers: 2
-    MemberTypeId0: 1
-    MemberTypeId1: 0
+  type_id: 2
+  member_id_len: 2
+    member_id_0: 1
+    member_id_1: 0
 FUNCTION_JMP (5)
-  TypeId: 1
-  Offset: 0
+  function_id: 1
+  offset: 0
 FUNCTION_JMP (8)
-  TypeId: 2
-  Offset: 9
+  function_id: 2
+  offset: 10
 FUNCTION_JMP (11)
-  TypeId: 0
-  Offset: 18
+  function_id: 0
+  offset: 20
 ...
 ```
+## Glacier DSL
+The definitions of what ops exist in the GlacierVM are described by a Python DSL in `glacierdsl`. Running `glacierdsl` will generate:
+* A C header for the VM containing `#define`s for each opcode (`Ops.h`).
+* A Python file for the compiler containing serialisation classes for writing bytecode for each op (`compiler/ops.py`).
+* A Python file for the disassembler containing a function to print an op from bytecode in human readable form (`disassembler/ops.py`).
 ## TODO
 * Make object stack resizeable.
 * More sensible bytecode format (at the moment all arguments are 1 byte).
-* Generate bytecode definitions in C and Python from a definition language.
 * More tests around static typing.
 * Reduce technical debt and general hackiness.
 * Improve compiler errors and diagnostics.
