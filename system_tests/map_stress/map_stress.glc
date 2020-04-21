@@ -1,0 +1,9 @@
+fn main() -> void {
+  let m = {}<int, int>;
+  let counter = 0;
+  while (counter < 255) {
+    insert(m, counter, counter * 10);
+    counter = counter + 1;
+  }
+  print("Success!");
+}

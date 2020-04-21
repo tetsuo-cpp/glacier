@@ -125,6 +125,9 @@ int glacierMapRebuild(GlacierMap *map) {
   GlacierMap newMap = {.buckets = NULL, .numBuckets = map->numBuckets * 2};
   GLC_RET(glacierGCAlloc(newMap.numBuckets * sizeof(GlacierMapNode),
                          (char **)&newMap.buckets));
+  // Seed this properly later.
+  newMap.clHashKey = get_random_key_for_clhash(UINT64_C(0x23a23cf5033c3c81),
+                                               UINT64_C(0xb3816f6a2c68e530));
   for (size_t i = 0; i < map->numBuckets; ++i) {
     GlacierMapNode *current = &map->buckets[i];
     while (current != NULL && current->set) {
