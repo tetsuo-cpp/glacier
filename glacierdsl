@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from dsl import ops, gen_compiler, gen_vm
+from dsl import ops, gen_compiler, gen_disassembler, gen_vm
 
 GLACIER_OPS = [
     ops.GlacierVMHeaderOp(
@@ -61,6 +61,7 @@ GLACIER_OPS = [
 
 GLACIER_VM_SOURCE = "vm/Ops.h"
 GLACIER_COMPILER_SOURCE = "compiler/ops.py"
+GLACIER_DISASSEMBLER_SOURCE = "disassembler/ops.py"
 
 
 def generate_vm():
@@ -77,9 +78,17 @@ def generate_compiler():
     print("glacierdsl: Generated compiler sources.")
 
 
+def generate_disassembler():
+    disassembler_source = gen_disassembler.gen_disassembler(GLACIER_OPS)
+    with open(GLACIER_DISASSEMBLER_SOURCE, "w") as f:
+        f.write(disassembler_source)
+    print("glacierdsl: Generated disassembler sources.")
+
+
 def glacierdsl():
     generate_vm()
     generate_compiler()
+    generate_disassembler()
 
 
 if __name__ == "__main__":

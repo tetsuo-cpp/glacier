@@ -11,6 +11,7 @@ black --line-length=100 glacierc
 black --line-length=100 glacierd
 black --line-length=100 glacierdsl
 black --line-length=100 compiler/
+black --line-length=100 disassembler/
 black --line-length=100 dsl/
 black --line-length=100 tests/
 
