@@ -8,7 +8,7 @@ from compiler.passes.intrinsics import Intrinsics
 from compiler.passes.struct_defs import StructureDefinitions
 from compiler.passes.function_table import FunctionTable
 from compiler.passes.type_check import TypeChecker, TypeError
-from compiler.lexer import Lexer, TokenType
+from compiler.lexer import Lexer, LexerError, TokenType
 from compiler.parser import Parser
 
 
@@ -48,7 +48,11 @@ def glacierc_compile(src, o, print_tokens, print_ast, print_bc):
 
     tokens = list()
     while True:
-        tok = lexer.lex_token()
+        try:
+            tok = lexer.lex_token()
+        except LexerError as e:
+            print("lexer error: {}".format(e))
+            sys.exit(1)
         tokens.append(tok)
         if tok.type == TokenType.EOF:
             break

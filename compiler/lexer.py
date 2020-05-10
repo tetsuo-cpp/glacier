@@ -97,6 +97,10 @@ SYMBOLS = {
 }
 
 
+class LexerError(Exception):
+    pass
+
+
 class Lexer:
     def __init__(self, buffer):
         self.buffer = buffer
@@ -104,7 +108,10 @@ class Lexer:
         self._get_char()
 
     def lex_token(self):
-        self._trim_whitespace()
+        while True:
+            self._trim_whitespace()
+            if not self._trim_comments():
+                break
         if self.cur_char is None:
             return Token(TokenType.EOF)
         if self.cur_char.isnumeric():
@@ -122,9 +129,24 @@ class Lexer:
         self.cur_char = self.buffer[self.pos]
         self.pos += 1
 
+    def _peek_char(self):
+        if self.pos >= len(self.buffer):
+            return None
+        return self.buffer[self.pos]
+
     def _trim_whitespace(self):
         while self.cur_char is not None and self.cur_char.isspace():
             self._get_char()
+
+    # FIXME: Not 100% sure whether the lexer is the correct spot to be doing this.
+    def _trim_comments(self):
+        # We need to peek ahead one character so that we don't get mixed up with division.
+        if self.cur_char == "/" and self._peek_char() == "/":
+            while self.cur_char is not None and self.cur_char != "\n":
+                self._get_char()
+            self._get_char()
+            return True
+        return False
 
     def _lex_number(self):
         value = self.cur_char
@@ -157,7 +179,7 @@ class Lexer:
             else:
                 break
         if self.cur_char is None:
-            raise RuntimeError("encountered string with no closing quote")
+            raise LexerError("encountered string with no closing quote")
         self._get_char()
         return Token(TokenType.STRING_LITERAL, value)
 
@@ -174,4 +196,4 @@ class Lexer:
         elif single in SYMBOLS:
             return Token(SYMBOLS[single], single)
         else:
-            return None
+            raise LexerError("encountered unknown symbol: {}".format(single))

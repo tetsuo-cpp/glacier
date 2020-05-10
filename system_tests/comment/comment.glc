@@ -1,0 +1,6 @@
+// Main function.
+fn main() -> void {
+  let x = 1; // Assign value of 1.
+  // Print x.
+  print(x);
+}
