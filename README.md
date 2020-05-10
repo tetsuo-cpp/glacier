@@ -43,7 +43,7 @@ fn main() -> void {
   // Print numbers from 0-9.
   let count = 0;
   while (count < 10) {
-    if (counter == 5) {
+    if (count == 5) {
       print("five");
     } else {
       print(count);
