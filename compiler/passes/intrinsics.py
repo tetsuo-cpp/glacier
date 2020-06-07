@@ -125,12 +125,24 @@ def _insert_codegen(codegen, expr):
     ops.MapInsert().serialise(codegen.bc)
 
 
+def _read_str_type_check(type_check, expr):
+    if len(expr.args) != 0:
+        raise TypeError('The "readStr" builtin takes no arguments')
+    expr.ret_type = ast.Type(ast.TypeKind.STRING)
+
+
+def _read_str_codegen(codegen, expr):
+    assert len(expr.args) == 0
+    ops.ReadStr().serialise(codegen.bc)
+
+
 INTRINSICS = [
     IntrinsicFunction("print", _print_codegen, _print_type_check),
     IntrinsicFunction("push", _push_codegen, _push_type_check),
     IntrinsicFunction("len", _len_codegen, _len_type_check),
     IntrinsicFunction("pop", _pop_codegen, _pop_type_check),
     IntrinsicFunction("insert", _insert_codegen, _insert_type_check),
+    IntrinsicFunction("readStr", _read_str_codegen, _read_str_type_check),
 ]
 
 

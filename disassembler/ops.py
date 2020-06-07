@@ -175,6 +175,10 @@ def _disassemble_map_insert(reader):
     print("MAP_INSERT ({})".format(reader.index - 1))
 
 
+def _disassemble_read_str(reader):
+    print("READ_STR ({})".format(reader.index - 1))
+
+
 def disassemble_op(reader, op):
     if op == OpCode.STRUCT_DEF.value:
         _disassemble_struct_def(reader)
@@ -240,3 +244,5 @@ def disassemble_op(reader, op):
         _disassemble_vec_pop(reader)
     if op == OpCode.MAP_INSERT.value:
         _disassemble_map_insert(reader)
+    if op == OpCode.READ_STR.value:
+        _disassemble_read_str(reader)

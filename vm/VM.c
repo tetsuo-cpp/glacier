@@ -5,6 +5,7 @@
 
 #include <assert.h>
 #include <stdio.h>
+#include <string.h>
 
 static int glacierVMStructDef(GlacierVM *vm);
 static int glacierVMFunctionDef(GlacierVM *vm);
@@ -37,6 +38,7 @@ static int glacierVMVectorPush(GlacierVM *vm);
 static int glacierVMVectorLen(GlacierVM *vm);
 static int glacierVMVectorPop(GlacierVM *vm);
 static int glacierVMMapInsert(GlacierVM *vm);
+static int glacierVMReadStr(GlacierVM *vm);
 
 void glacierVMInit(GlacierVM *vm, GlacierByteCode *bc, GlacierStack *stack,
                    GlacierTable *functionTable, GlacierCallStack *cs,
@@ -195,6 +197,9 @@ static int glacierVMFunctionDef(GlacierVM *vm) {
       break;
     case GLC_BYTECODE_MAP_INSERT:
       GLC_RET(glacierVMMapInsert(vm));
+      break;
+    case GLC_BYTECODE_READ_STR:
+      GLC_RET(glacierVMReadStr(vm));
       break;
     default:
       GLC_LOG_ERR("VM: Parsed unrecognised instruction %d.\n", opCode);
@@ -606,4 +611,23 @@ static int glacierVMMapInsert(GlacierVM *vm) {
   GlacierMap *m = map.mapValue;
   GLC_RET(glacierMapSet(m, key, value));
   return GLC_OK;
+}
+
+static int glacierVMReadStr(GlacierVM *vm) {
+  char *line = NULL;
+  size_t len = 0;
+  int bytesRead = getline(&line, &len, stdin);
+  if (bytesRead == -1)
+    return GLC_ERROR;
+  char *stringVal;
+  GLC_RET(glacierGCAlloc(sizeof(char) * (bytesRead + 1), &stringVal));
+  memcpy(stringVal, line, bytesRead);
+  stringVal[bytesRead] = '\0';
+  int ret = 0;
+  GLC_ERR(glacierStackPush(vm->stack, glacierValueFromString(stringVal)));
+err:
+  free(line);
+  if (ret != 0)
+    glacierGCFree((char **)&stringVal);
+  return ret;
 }

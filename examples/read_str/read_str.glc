@@ -1,0 +1,5 @@
+fn main() -> void {
+  // Read some input from the command line.
+  let tmp = readStr();
+  print(tmp);
+}

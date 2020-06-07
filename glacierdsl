@@ -57,6 +57,7 @@ GLACIER_OPS = [
     ops.GlacierVMOp("vec_len", []),
     ops.GlacierVMOp("vec_pop", []),
     ops.GlacierVMOp("map_insert", []),
+    ops.GlacierVMOp("read_str", []),
 ]
 
 GLACIER_VM_SOURCE = "vm/Ops.h"
