@@ -37,6 +37,7 @@ class OpCode(Enum):
     VEC_POP = 0x1E
     MAP_INSERT = 0x1F
     READ_STR = 0x20
+    READ_INT = 0x21
 
 
 class StructDef:
@@ -589,4 +590,14 @@ class ReadStr:
     def serialise(self, bc):
         args = list()
         bc.write_op(OpCode.READ_STR, args)
+        return self
+
+
+class ReadInt:
+    def __init__(self):
+        pass
+
+    def serialise(self, bc):
+        args = list()
+        bc.write_op(OpCode.READ_INT, args)
         return self

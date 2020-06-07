@@ -179,6 +179,10 @@ def _disassemble_read_str(reader):
     print("READ_STR ({})".format(reader.index - 1))
 
 
+def _disassemble_read_int(reader):
+    print("READ_INT ({})".format(reader.index - 1))
+
+
 def disassemble_op(reader, op):
     if op == OpCode.STRUCT_DEF.value:
         _disassemble_struct_def(reader)
@@ -246,3 +250,5 @@ def disassemble_op(reader, op):
         _disassemble_map_insert(reader)
     if op == OpCode.READ_STR.value:
         _disassemble_read_str(reader)
+    if op == OpCode.READ_INT.value:
+        _disassemble_read_int(reader)

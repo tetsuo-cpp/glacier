@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
+#include <sys/errno.h>
 
 static int glacierVMStructDef(GlacierVM *vm);
 static int glacierVMFunctionDef(GlacierVM *vm);
@@ -39,6 +40,7 @@ static int glacierVMVectorLen(GlacierVM *vm);
 static int glacierVMVectorPop(GlacierVM *vm);
 static int glacierVMMapInsert(GlacierVM *vm);
 static int glacierVMReadStr(GlacierVM *vm);
+static int glacierVMReadInt(GlacierVM *vm);
 
 void glacierVMInit(GlacierVM *vm, GlacierByteCode *bc, GlacierStack *stack,
                    GlacierTable *functionTable, GlacierCallStack *cs,
@@ -200,6 +202,9 @@ static int glacierVMFunctionDef(GlacierVM *vm) {
       break;
     case GLC_BYTECODE_READ_STR:
       GLC_RET(glacierVMReadStr(vm));
+      break;
+    case GLC_BYTECODE_READ_INT:
+      GLC_RET(glacierVMReadInt(vm));
       break;
     default:
       GLC_LOG_ERR("VM: Parsed unrecognised instruction %d.\n", opCode);
@@ -629,5 +634,21 @@ err:
   free(line);
   if (ret != 0)
     glacierGCFree((char **)&stringVal);
+  return ret;
+}
+
+static int glacierVMReadInt(GlacierVM *vm) {
+  char *line = NULL;
+  size_t len = 0;
+  int bytesRead = getline(&line, &len, stdin);
+  if (bytesRead == -1)
+    return GLC_ERROR;
+  uint64_t value = strtoul(line, NULL, 10);
+  if (errno != 0)
+    value = UINT64_MAX;
+  int ret = 0;
+  GLC_ERR(glacierStackPush(vm->stack, glacierValueFromInt(value)));
+err:
+  free(line);
   return ret;
 }

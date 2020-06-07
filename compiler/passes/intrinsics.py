@@ -136,6 +136,17 @@ def _read_str_codegen(codegen, expr):
     ops.ReadStr().serialise(codegen.bc)
 
 
+def _read_int_type_check(type_check, expr):
+    if len(expr.args) != 0:
+        raise TypeError('The "readInt" builtin takes no arguments')
+    expr.ret_type = ast.Type(ast.TypeKind.INT)
+
+
+def _read_int_codegen(codegen, expr):
+    assert len(expr.args) == 0
+    ops.ReadInt().serialise(codegen.bc)
+
+
 INTRINSICS = [
     IntrinsicFunction("print", _print_codegen, _print_type_check),
     IntrinsicFunction("push", _push_codegen, _push_type_check),
@@ -143,6 +154,7 @@ INTRINSICS = [
     IntrinsicFunction("pop", _pop_codegen, _pop_type_check),
     IntrinsicFunction("insert", _insert_codegen, _insert_type_check),
     IntrinsicFunction("readStr", _read_str_codegen, _read_str_type_check),
+    IntrinsicFunction("readInt", _read_int_codegen, _read_int_type_check),
 ]
 
 

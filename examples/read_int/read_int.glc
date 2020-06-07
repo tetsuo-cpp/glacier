@@ -1,0 +1,9 @@
+fn main() -> void {
+  // A simple program that takes two command line inputs and sums them.
+  print("Enter the first number: ");
+  let lhs = readInt();
+  print("Enter the second number: ");
+  let rhs = readInt();
+  print("The sum is: ");
+  print(lhs + rhs);
+}
