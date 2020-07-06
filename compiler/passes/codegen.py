@@ -145,6 +145,13 @@ class CodeGenerator(ast.ASTWalker):
         skip_loop.assign(after_loop_body).serialise(self.bc)
 
     def _walk_binary_op(self, expr):
+        # We implement greater than by reversing the operands for less than.
+        if expr.operator.type == lexer.TokenType.GREATER_THAN:
+            self._walk(expr.rhs)
+            self._walk(expr.lhs)
+            ops.Lt().serialise(self.bc)
+            return
+
         # If we're assigning to a variable, don't evaluate it.
         if expr.operator.type != lexer.TokenType.ASSIGN:
             self._walk(expr.lhs)
